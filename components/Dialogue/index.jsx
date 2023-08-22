@@ -107,7 +107,7 @@ function Dialogue({
               setSelectedModel={setSelectedModel}
             />
             <h1 className="text-4xl font-bold text-center dark:bg-gray-800 text-gray-300 dark:text-gray-600 ml-auto mr-auto mb-10 sm:mb-16 ">
-              myChat
+              nabu
             </h1>
           </div>
         )}

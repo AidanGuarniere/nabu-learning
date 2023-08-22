@@ -1,14 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ['system', 'user', 'assistant'],
+    enum: ["system", "user", "assistant"],
     required: true,
   },
-  // model: {
-  //   type: String,
-  //   required: true,
-  // },
   content: {
     type: String,
     required: true,
@@ -19,11 +15,64 @@ const messageSchema = new mongoose.Schema({
   },
 });
 
+const functionSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      minlength: 1,
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      minlength: 1,
+      trim: true,
+    },
+    parameters: {
+      type: {
+        type: String,
+        required: true,
+        minlength: 1,
+        trim: true,
+      },
+      properties: {
+        type: Map,
+        of: {
+          type: {
+            type: String,
+            required: true,
+            minlength: 1,
+            trim: true,
+          },
+          description: {
+            type: String,
+            required: true,
+            minlength: 1,
+            trim: true,
+          },
+        },
+      },
+      required: [
+        {
+          type: String,
+          minlength: 1,
+          trim: true,
+        },
+      ],
+    },
+  },
+  { _id: false }
+);
+
+const messageLimit = (val) => {
+  return val.length <= 100;
+};
 
 const chatSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   title: {
@@ -34,10 +83,13 @@ const chatSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  messages: [messageSchema],
+  messages: {
+    type: [messageSchema],
+    validate: [messageLimit, "chat exceeds message limit"],
+  },
+  functions: { type: [functionSchema] },
 });
 
-
-const Chat = mongoose.models.Chat || mongoose.model('Chat', chatSchema);
+const Chat = mongoose.models.Chat || mongoose.model("Chat", chatSchema);
 
 module.exports = { Chat, chatSchema };
