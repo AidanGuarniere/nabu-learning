@@ -1,14 +1,14 @@
 import dbConnect  from "../../../utils/dbConnect.js";
 import User from "../../../models/UserSchema";
-import rateLimiter from "../../../utils/rateLimiter";
+// import rateLimiter from "../../../utils/rateLimiter";
 
 async function handlePostRequest(req, res) {
   const { username, password, openAIAPIKey } = req.body;
-  try {
-    await rateLimiter(req, res);
-  } catch (err) {
-    return res.status(429).json({ error: "Too many requests" });
-  }
+  // try {
+  //   await rateLimiter(req, res);
+  // } catch (err) {
+  //   return res.status(429).json({ error: "Too many requests" });
+  // }
 
   const existingUser = await User.findOne({ username });
   if (existingUser) {
@@ -29,7 +29,7 @@ async function handlePostRequest(req, res) {
     },
     credentials: {
       username: newUser.username,
-      password: req.body.password,
+      password: newUser.password,
     },
   });
 }
@@ -45,6 +45,6 @@ export default async function handler(req, res) {
     const result = await handlePostRequest(req, res);
     return result;
   } catch (error) {
-    return res.status(400).json({ error });
+    return res.status(400).json({ error: error.message || "An unknown error occurred." });
   }
 }

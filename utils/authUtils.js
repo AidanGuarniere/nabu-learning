@@ -5,6 +5,7 @@ export async function handleSignUp(username, password, openAIAPIKey) {
   try {
     const csrfToken = await getCsrfToken();
 
+    console.log(csrfToken)
     const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: {
@@ -25,11 +26,10 @@ export async function handleSignUp(username, password, openAIAPIKey) {
       });
 
       if (!signInResult.ok) {
-        console.error("B Sign in failed:", signInResult.error);
+        console.error("User sign in failed:", signInResult.error);
       }
     } else {
-      const errorData = await response.json();
-      console.error("A Signup failed:", errorData.error);
+      console.error("User creation failed:", response);
     }
   } catch (error) {
     console.error("An error occurred during signup:", error);

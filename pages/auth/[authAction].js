@@ -125,7 +125,7 @@ const AuthForm = () => {
           onChange={(event) => setPassword(event.target.value)}
           onFocus={() => setPasswordFocused(true)}
           onBlur={() => setPasswordFocused(false)}
-          pattern="^[A-Za-z\d!@#$%^&*_+|;':,.?-]{8,}$"
+          // pattern="^[A-Za-z\d!@#$%^&*_+|;':,.?-]{8,}$"
           minLength={8}
           required
           className={`w-full p-2 mb-4 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:border ${
