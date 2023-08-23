@@ -23,8 +23,8 @@ async function handleGetRequest(req, res, userId) {
 }
 
 async function handlePostRequest(req, res, userId) {
-  const { title, messages, model } = req.body;
-  const newChat = await Chat.create({ userId, title, messages, model });
+  const { chatPreferences, messages,} = req.body;
+  const newChat = await Chat.create({ userId, chatPreferences, messages,  });
   res.status(201).json(newChat);
 }
 

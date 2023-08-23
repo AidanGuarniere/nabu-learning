@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect component
 import GenericInput from "./GenericInput";
 import GenericSelect from "./GenericSelect";
+import { createChat } from "../../../utils/chatUtils";
+import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
-const PreferencesForm = ({ setChatPreferences }) => {
+const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   // State for Model Selection
   const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo");
 
@@ -25,7 +27,9 @@ const PreferencesForm = ({ setChatPreferences }) => {
   const [personalInfo, setPersonalInfo] = useState("");
 
   // Function to handle form submission
-  const handleChatPreferencesFormSubmit = (e) => {
+  // Inside PreferencesForm component
+
+  const handleChatPreferencesFormSubmit = async (e) => {
     e.preventDefault();
 
     // Gather all the preferences into a chatPreferences object
@@ -39,12 +43,10 @@ const PreferencesForm = ({ setChatPreferences }) => {
       personalInfo,
     };
 
-    // update chatPreferences upon form submission
-    setChatPreferences(userChatPreferences);
-  };
+    // setLoading(true); // Start loading
 
-  useEffect(() => {
-    // set state values to default
+    // Call the chat creation logic
+    await createNewChat(userChatPreferences);
     setSelectedModel("gpt-3.5-turbo");
     setTutorType("");
     setTutorName("");
@@ -52,7 +54,75 @@ const PreferencesForm = ({ setChatPreferences }) => {
     setTopic("");
     setGoal("");
     setPersonalInfo("");
-  }, []);
+    // setLoading(false); // End loading
+  };
+
+  const createNewChat = async (userChatPreferences) => {
+    const systemMessageContent = `
+    Your name is ${userChatPreferences.tutorName} are a ${
+      userChatPreferences.tutorType
+    } style tutor instructed to behave according to the following description: ${
+      userChatPreferences.tutorBehavior
+    }. Stay in character throughout the discussion. 
+    The topic of discussion is ${
+      userChatPreferences.topic
+    }, and the specific goal is ${userChatPreferences.goal}.
+    ${
+      userChatPreferences.personalInfo
+        ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
+        : ""
+    }
+  `;
+
+    const userGreetingContent =
+      "Introduce yourself to the user and briefly acknowledge the topic and goal of the discussion";
+
+    const messageHistory = [
+      { role: "system", content: systemMessageContent },
+      { role: "user", content: userGreetingContent },
+    ];
+
+    const gptResponse = await sendMessageHistoryToGPT({
+      model: userChatPreferences.selectedModel,
+      messageHistory: messageHistory,
+    });
+
+    messageHistory.push(gptResponse[2]); // Append GPT response
+
+    console.log(messageHistory);
+    const newChatData = {
+      userId: session.user.id,
+      chatPreferences: {
+        model: userChatPreferences.selectedModel || "gpt-3.5-turbo",
+        tutorType: userChatPreferences.tutorType,
+        personality: userChatPreferences.tutorBehavior,
+        topic: userChatPreferences.topic,
+        chatGoal: userChatPreferences.goal,
+        personalInfo: userChatPreferences.personalInfo,
+      },
+      messages: messageHistory,
+    };
+    try {
+      const newChat = await createChat(newChatData);
+      setChats((prevChats) =>
+        prevChats.length ? [...prevChats, newChat] : [newChat]
+      );
+      setSelectedChat(newChat._id);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  // useEffect(() => {
+  //   // set state values to default
+    // setSelectedModel("gpt-3.5-turbo");
+    // setTutorType("");
+    // setTutorName("");
+    // setTutorBehavior("");
+    // setTopic("");
+    // setGoal("");
+    // setPersonalInfo("");
+  // }, []);
 
   return (
     <form
