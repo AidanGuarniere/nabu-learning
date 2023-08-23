@@ -52,24 +52,23 @@ const PreferencesForm = ({ setChatPreferences }) => {
     setPersonalInfo("");
   };
 
-
   return (
     <form
       onSubmit={handleChatPreferencesFormSubmit}
-      className="w-full h-full py-6 px-10 border bg-gray-100 rounded-lg shadow-md"
+      className="w-full h-full max-w-5xl mx-auto px-10 bg-white rounded-lg"
     >
+      <div className="text-2xl font-semibold mb-4">Chat Preferences</div>
       <ModelSelect
         selectedModel={selectedModel}
         setSelectedModel={setSelectedModel}
       />
-      <div className="flex flex-wrap -mx-3">
-        <div className="w-full md:w-1/2 p-3 flex flex-col">
-          <GenericInput
-            label="Tutor Name"
-            value={tutorName}
-            onChange={setTutorName}
-            placeholder="Socrates"
-          />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col justify-between">
+          {" "}
+          {/* Flexbox added here */}
+          <div className="text-center text-xl font-semibold mb-2">
+            Tutor Information
+          </div>
           <GenericSelect
             label="Tutor Type"
             value={tutorType}
@@ -77,38 +76,53 @@ const PreferencesForm = ({ setChatPreferences }) => {
             options={["Traditional", "Socratic"]}
           />
           <GenericInput
+            label="Tutor Name"
+            value={tutorName}
+            onChange={setTutorName}
+            placeholder="Socrates"
+            maxLength={50}
+          />
+          <GenericInput
             label="Tutor Behavior"
             value={tutorBehavior}
             onChange={setTutorBehavior}
             placeholder="What kind of personality or behavior do you want your tutor to have?"
+            maxLength={200}
           />
         </div>
-        <div className="w-full md:w-1/2 p-3 flex flex-col">
+        <div className="flex flex-col justify-between">
+          {" "}
+          {/* Flexbox added here */}
+          <div className="text-center text-xl font-semibold mb-2">
+            Discussion Details
+          </div>
           <GenericInput
             label="Topic"
             value={topic}
             onChange={setTopic}
             placeholder="Enter the topic of discussion"
+            maxLength={200}
           />
           <GenericInput
             label="Goal"
             value={goal}
             onChange={setGoal}
             placeholder="Enter the goal for this discussion"
+            maxLength={200}
           />
           <GenericInput
             label="Personal Info"
             value={personalInfo}
             onChange={setPersonalInfo}
             placeholder="Enter any personal info you feel is relevant to the discussion"
+            maxLength={200}
           />
         </div>
       </div>
-
-      <div className="text-center mt-6">
+      <div className="text-center">
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="w-1/6 p-2 rounded-md text-white btn-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
         >
           Submit
         </button>

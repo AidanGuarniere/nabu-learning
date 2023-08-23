@@ -2,7 +2,7 @@ import React from "react";
 
 const GenericSelect = ({ label, value, onChange, options }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-4 h-1/3">
       <label
         className="block text-gray-700 text-xl font-bold mb-2"
         htmlFor={label}
@@ -13,8 +13,11 @@ const GenericSelect = ({ label, value, onChange, options }) => {
         id={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className=" appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="appearance-none border rounded w-full py-4 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
+        <option value="" disabled hidden>
+          Select an option
+        </option>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}

@@ -1,22 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 
-const GenericInput = ({ label, value, onChange, placeholder }) => {
+const GenericInput = ({ label, value, onChange, placeholder, maxLength }) => {
+  const [characterCount, setCharacterCount] = useState(0);
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    // Enforce a maximum of 200 characters
+    if (inputValue.length <= 200) {
+      onChange(inputValue);
+      setCharacterCount(inputValue.length);
+    }
+  };
+
   return (
-    <div className="mb-4">
+    <div className="mb-4 h-1/3">
       <label
         className="block text-gray-700 text-xl font-bold mb-2"
         htmlFor={label}
       >
         {label}
       </label>
-      <input
-        type="text"
+      <textarea
         id={label}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleInputChange}
         placeholder={placeholder}
-        className=" appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        rows="2"
+        maxLength={maxLength}
+        className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
+      <div className="text-right text-gray-600">
+        {characterCount}/{maxLength}
+      </div>
     </div>
   );
 };
