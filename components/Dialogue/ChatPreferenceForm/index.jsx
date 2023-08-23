@@ -84,7 +84,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
         }, and the specific goal is ${userChatPreferences.goal}.
         ${
           userChatPreferences.personalInfo
-            ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
+            ? `Here is some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
             : ""
         }
       `;
@@ -100,7 +100,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
         The specific goal is ${userChatPreferences.goal}.
         ${
           userChatPreferences.personalInfo
-            ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
+            ? `Here is some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
             : ""
         }
       `;
@@ -198,7 +198,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
               <h2 className="text-2xl font-semibold mb-4">discussion</h2>
               <p className="text-gray-700 mb-4">
                 Engage in an interactive discussion with a virtual tutor. Choose
-                the tutor's personality, style, and more.
+                the tutor&apos;s personality, style, and more.
               </p>
               <button
                 onClick={() => updatePreferences("mode", "Discussion")}
