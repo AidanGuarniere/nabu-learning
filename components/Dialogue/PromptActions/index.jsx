@@ -43,7 +43,6 @@ function PromptActions({
     const selectedIndex = chats.findIndex((chat) => chat._id === selectedChat);
     //change to selectedChat
     const updatedChat = { ...chats[selectedIndex] };
-    console.log(updatedChat)
     const messageModel = updatedChat.chatPreferences.selectedModel;
     updatedChat.messages.push({
       role: "user",

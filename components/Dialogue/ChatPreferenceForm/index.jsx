@@ -9,6 +9,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   // State for Model Selection
   const [stage, setStage] = useState(1);
 
+  const [loading, setLoading] = useState(false);
+
   const [preferences, setPreferences] = useState({
     mode: "", // "Discussion" or "Note Generation"
     selectedModel: "gpt-3.5-turbo",
@@ -39,9 +41,6 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     }));
   };
 
-  // useEffect(() => {
-  //   console.log(preferences);
-  // }, [preferences]);
 
   // Function to handle form submission
   // Inside PreferencesForm component
@@ -70,15 +69,19 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     // setLoading(false); // End loading
   };
   const createNewChat = async (userChatPreferences) => {
+    setLoading(true);
     let systemMessageContent;
 
     if (userChatPreferences.mode === "Discussion") {
       systemMessageContent = `
         Your name is ${userChatPreferences.tutorName} and you are a ${
         userChatPreferences.tutorType
-      } style tutor instructed to behave according to the following description: ${
+      } style tutor ${
+        userChatPreferences.tutorType === "Socratic" &&
+        "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions."
+      } instructed to behave according to the following description: ${
         userChatPreferences.tutorBehavior
-      }. Stay in character throughout the discussion. 
+      }. Emulate this description to the best of your ability and in character throughout the discussion. 
         The topic of discussion is ${
           userChatPreferences.topic
         }, and the specific goal is ${userChatPreferences.goal}.
@@ -150,6 +153,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
         });
       } catch (error) {
         setError(error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -181,166 +186,182 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        goToNextStage();
-      }}
-      className="w-full h-full flex flex-col justify-center items-center max-w-5xl mx-auto px-10 bg-white rounded-lg"
-    >
-      {stage === 1 && (
-        <>
-          {" "}
-          <h1 className="text-center text-4xl mb-8 md:mb-20">choose your interaction</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:max-w-3xl">
-            {/* Discussion Selection */}
-            <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-              <h2 className="text-2xl font-semibold mb-4">discussion</h2>
-              <p className="text-gray-700 mb-4">
-                Engage in an interactive discussion with a virtual tutor. Choose
-                the tutor&apos;s personality, style, and more.
-              </p>
-              <button
-                onClick={() => updatePreferences("mode", "Discussion")}
-                className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-              >
-                Select
-              </button>
-            </div>
-            {/* Note Generation Selection */}
-            <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-              <h2 className="text-2xl font-semibold mb-4">note generation</h2>
-              <p className="text-gray-700 mb-4">
-                Generate notes in various formats such as Cornell, list, or
-                sentences. Customize the tone, title, and details.
-              </p>
-              <button
-                onClick={() => updatePreferences("mode", "Note Generation")}
-                className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-              >
-                Select
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-      {stage === 2 && (
-        <div className="flex flex-col justify-between w-full">
-          {" "}
-          {/* Flexbox added here */}
-          <div className="block text-gray-700 text-xl text-center  mb-2">
-            Topic Details
-          </div>
-          <GenericInput
-            label="Topic"
-            value={preferences.topic}
-            onChange={(value) => updatePreferences("topic", value)}
-            placeholder="Enter the topic of discussion"
-            maxLength={200}
-          />
-          <GenericInput
-            label="Goal"
-            value={preferences.goal}
-            onChange={(value) => updatePreferences("goal", value)}
-            placeholder="Enter the goal for this discussion"
-            maxLength={200}
-          />
-          <GenericInput
-            label="Personal Info"
-            value={preferences.personalInfo}
-            onChange={(value) => updatePreferences("personalInfo", value)}
-            placeholder="Enter any personal info you feel is relevant to the discussion"
-            maxLength={200}
-          />
-        </div>
-      )}
-
-      {stage === 3 && preferences.mode === "Discussion" && (
-        <div className="flex flex-col justify-between">
-          {" "}
-          {/* Flexbox added here */}
-          <div className="block text-gray-700 text-xl text-center  mb-2">
-            Tutor Information
-          </div>
-          <GenericSelect
-            label="Tutor Type"
-            value={preferences.tutorType}
-            onChange={(value) => updatePreferences("tutorType", value)}
-            options={["Traditional", "Socratic"]}
-          />
-          <GenericInput
-            label="Tutor Name"
-            value={preferences.tutorName}
-            onChange={(value) => updatePreferences("tutorName", value)}
-            placeholder="Socrates"
-            maxLength={50}
-          />
-          <GenericInput
-            label="Tutor Behavior"
-            value={preferences.tutorBehavior}
-            onChange={(value) => updatePreferences("tutorBehavior", value)}
-            placeholder="What kind of personality or behavior do you want your tutor to have?"
-            maxLength={200}
-          />
-        </div>
-      )}
-
-      {stage === 3 && preferences.mode === "Note Generation" && (
-        <div className="flex flex-col justify-between">
-          {" "}
-          {/* Flexbox added here */}
-          <div className="block text-gray-700 text-xl text-center  mb-2">
-            Note Preferences
-          </div>
-          <GenericSelect
-            label="Note Type"
-            value={preferences.noteType}
-            onChange={(value) => updatePreferences("noteType", value)}
-            options={["Sentences", "List", "Cornell"]}
-          />
-          <GenericInput
-            label="Note Title"
-            value={preferences.noteTitle}
-            onChange={(value) => updatePreferences("noteTitle", value)}
-            placeholder="Notes on X"
-            maxLength={50}
-          />
-          <GenericInput
-            label="Writing Style"
-            value={preferences.noteWritingStyle}
-            onChange={(value) => updatePreferences("noteWritingStyle", value)}
-            placeholder="What kind of writing style do you want your notes written in?"
-            maxLength={200}
-          />
-        </div>
-      )}
-
-      {stage > 1 && (
-        <div className="flex justify-center items-center w-full md:max-w-3xl mt-8">
-          <button
-            onClick={goToPreviousStage}
-            className="btn-secondary w-1/5 mx-4 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-          >
-            Back
-          </button>
-          {stage < 3 ? (
-            <button
-              className="btn-primary w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-              disabled={!checkIfStageComplete(stage, preferences)} // Logic to check if all options are filled
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              className="btn-primary w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-              onClick={handleChatPreferencesFormSubmit}
-            >
-              Submit
-            </button>
+    <div className="w-full h-full ">
+      {loading ? (
+        "loading"
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            // goToNextStage();
+          }}
+          className="w-full h-full flex flex-col justify-center items-center max-w-5xl mx-auto px-10 bg-white rounded-lg"
+        >
+          {stage === 1 && (
+            <>
+              {" "}
+              <h1 className="text-center text-4xl mb-8 md:mb-20">
+                choose your interaction
+              </h1>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:max-w-3xl">
+                {/* Discussion Selection */}
+                <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:shadow-xl transform transition-all duration-500 hover:scale-105">
+                  <h2 className="text-2xl mb-4">discussion</h2>
+                  <p className="text-center text-gray-700 mb-4">
+                    Engage in an interactive discussion with a virtual tutor.
+                    Choose the tutor&apos;s personality, style, and more.
+                  </p>
+                  <button
+                    onClick={() => {
+                      updatePreferences("mode", "Discussion"), goToNextStage();
+                    }}
+                    className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+                  >
+                    select
+                  </button>
+                </div>
+                {/* Note Generation Selection */}
+                <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:shadow-xl transform transition-all duration-500 hover:scale-105">
+                  <h2 className="text-2xl mb-4">note generation</h2>
+                  <p className="text-center text-gray-700 mb-4">
+                    Generate notes in various formats such as Cornell, list, or
+                    sentences. Customize the tone, title, and details.
+                  </p>
+                  <button
+                    onClick={() => {
+                      updatePreferences("mode", "Note Generation"),
+                        goToNextStage();
+                    }}
+                    className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+                  >
+                    select
+                  </button>
+                </div>
+              </div>
+            </>
           )}
-        </div>
+          {stage === 2 && (
+            <div className="flex flex-col justify-between w-full h-2/3">
+              {" "}
+              {/* Flexbox added here */}
+              <div className="block text-gray-700 text-xl text-center  mb-2">
+                Topic Details
+              </div>
+              <GenericInput
+                label="Topic"
+                value={preferences.topic}
+                onChange={(value) => updatePreferences("topic", value)}
+                placeholder="Enter the topic of discussion"
+                maxLength={200}
+              />
+              <GenericInput
+                label="Goal"
+                value={preferences.goal}
+                onChange={(value) => updatePreferences("goal", value)}
+                placeholder="Enter the goal for this discussion"
+                maxLength={200}
+              />
+              <GenericInput
+                label="Personal Info"
+                value={preferences.personalInfo}
+                onChange={(value) => updatePreferences("personalInfo", value)}
+                placeholder="Enter any personal info you feel is relevant to the discussion e.g. your experience with the topic"
+                maxLength={200}
+              />
+            </div>
+          )}
+
+          {stage === 3 && preferences.mode === "Discussion" && (
+            <div className="flex flex-col justify-between w-full h-2/3">
+              {" "}
+              {/* Flexbox added here */}
+              <div className="block text-gray-700 text-xl text-center mb-2">
+                Tutor Information
+              </div>
+              <GenericSelect
+                label="Tutor Type"
+                value={preferences.tutorType}
+                onChange={(value) => updatePreferences("tutorType", value)}
+                options={["Traditional", "Socratic"]}
+              />
+              <GenericInput
+                label="Tutor Name"
+                value={preferences.tutorName}
+                onChange={(value) => updatePreferences("tutorName", value)}
+                placeholder="Socrates"
+                maxLength={50}
+              />
+              <GenericInput
+                label="Tutor Behavior"
+                value={preferences.tutorBehavior}
+                onChange={(value) => updatePreferences("tutorBehavior", value)}
+                placeholder="What kind of personality or behavior do you want your tutor to have?"
+                maxLength={200}
+              />
+            </div>
+          )}
+
+          {stage === 3 && preferences.mode === "Note Generation" && (
+            <div className="flex flex-col justify-between w-full h-2/3">
+              {" "}
+              {/* Flexbox added here */}
+              <div className="block text-gray-700 text-xl text-center mb-2">
+                Note Preferences
+              </div>
+              <GenericSelect
+                label="Note Type"
+                value={preferences.noteType}
+                onChange={(value) => updatePreferences("noteType", value)}
+                options={["Sentences", "List", "Cornell"]}
+              />
+              <GenericInput
+                label="Note Title"
+                value={preferences.noteTitle}
+                onChange={(value) => updatePreferences("noteTitle", value)}
+                placeholder="Enter your note title here"
+                maxLength={50}
+              />
+              <GenericInput
+                label="Writing Style"
+                value={preferences.noteWritingStyle}
+                onChange={(value) =>
+                  updatePreferences("noteWritingStyle", value)
+                }
+                placeholder="Specify your preferred writing style"
+                maxLength={200}
+              />
+            </div>
+          )}
+
+          {stage > 1 && (
+            <div className="flex justify-center items-center w-full md:max-w-3xl mt-8">
+              <button
+                onClick={goToPreviousStage}
+                className="btn-secondary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+              >
+                back
+              </button>
+              {stage < 3 ? (
+                <button
+                  className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                  disabled={!checkIfStageComplete(stage, preferences)}
+                  onClick={goToNextStage} // Logic to check if all options are filled
+                >
+                  next
+                </button>
+              ) : (
+                <button
+                  className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                  onClick={handleChatPreferencesFormSubmit}
+                >
+                  submit
+                </button>
+              )}
+            </div>
+          )}
+        </form>
       )}
-    </form>
+    </div>
   );
 };
 

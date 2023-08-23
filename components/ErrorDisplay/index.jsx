@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 function ErrorDisplay({ error, setError }) {
   useEffect(() => {
-    console.log(error);
+    console.error(error);
   }, [error]);
 
   return (
