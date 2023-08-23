@@ -3,7 +3,7 @@ import ErrorDisplay from "../ErrorDisplay";
 import PromptActions from "./PromptActions";
 import ChatScrollButton from "./ChatScrollButton";
 import MessageList from "./MessageList";
-import ChatPreferenceForm from "./ChatPreferenceForm"
+import ChatPreferenceForm from "./ChatPreferenceForm";
 import ModelSelect from "./ChatPreferenceForm/ModelSelect";
 
 function Dialogue({
@@ -113,19 +113,21 @@ function Dialogue({
             </h1> */}
           </div>
         )}
-        {/* <PromptActions
-          chatPreferences={chatPreferences}
-          // selectedModel={selectedModel}
-          session={session}
-          setError={setError}
-          userText={userText}
-          setUserText={setUserText}
-          chats={chats}
-          setChats={setChats}
-          selectedChat={selectedChat}
-          setSelectedChat={setSelectedChat}
-          chatRef={chatRef}
-        /> */}
+        {chatPreferences.topic && 
+          <PromptActions
+            chatPreferences={chatPreferences}
+            // selectedModel={selectedModel}
+            session={session}
+            setError={setError}
+            userText={userText}
+            setUserText={setUserText}
+            chats={chats}
+            setChats={setChats}
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+            chatRef={chatRef}
+          />
+        }
       </div>
     </div>
   );

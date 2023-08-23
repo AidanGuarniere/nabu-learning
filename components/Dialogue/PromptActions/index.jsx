@@ -19,6 +19,70 @@ function PromptActions({
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
 
+  useEffect(() => {
+    if (chatPreferences) {
+      const createNewChat = async () => {
+        const systemMessageContent = `
+          You are a ${
+            chatPreferences.tutorType
+          } tutor instructed to behave according to the following description: ${
+          chatPreferences.personality
+        }. 
+          The topic of discussion is ${
+            chatPreferences.topic
+          }, and the specific goal is ${chatPreferences.chatGoal}.
+          ${
+            chatPreferences.personalInfo
+              ? `Here's some additional information on the user: ${chatPreferences.personalInfo}`
+              : ""
+          }
+        `;
+
+        const userGreetingContent =
+          "Please introduce yourself and explain how you can assist me with the chosen topic.";
+
+        const messageHistory = [
+          { role: "system", content: systemMessageContent },
+          { role: "user", content: userGreetingContent },
+        ];
+
+        const gptResponse = await sendMessageHistoryToGPT({
+          model: chatPreferences.selectedModel,
+          messageHistory: messageHistory,
+        });
+        console.log(gptResponse);
+
+        messageHistory.push(gptResponse[2]); // Append GPT response
+
+        const newChatData = {
+          userId: session.user.id,
+          chatPreferences: {
+            model: chatPreferences.selectedModel || "gpt-3.5-turbo",
+            tutorType: chatPreferences.tutorType,
+            personality: chatPreferences.tutorBehavior,
+            topic: chatPreferences.topic,
+            chatGoal: chatPreferences.goal,
+            personalInfo: chatPreferences.personalInfo,
+          },
+          messages: messageHistory,
+        };
+        try {
+          const newChat = await createChat(newChatData);
+          // Update local state to reflect the newly created chat
+          setChats((prevChats) =>
+            prevChats.length ? [...prevChats, newChat] : [newChat]
+          );
+          setSelectedChat(newChat._id);
+        } catch (error) {
+          // Handle error if chat creation fails
+          setError(error);
+        }
+      };
+
+      createNewChat();
+    }
+  }, [chatPreferences]);
+
   // TODO: Implement chat preferences response
   useEffect(() => {
     if (selectedChat) {

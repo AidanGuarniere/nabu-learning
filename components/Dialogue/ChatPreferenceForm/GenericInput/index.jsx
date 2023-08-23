@@ -14,10 +14,7 @@ const GenericInput = ({ label, value, onChange, placeholder, maxLength }) => {
 
   return (
     <div className="mb-4 h-1/3">
-      <label
-        className="block text-gray-700 text-xl font-bold mb-2"
-        htmlFor={label}
-      >
+      <label className="text-gray-700 text-xl font-semibold " htmlFor={label}>
         {label}
       </label>
       <textarea
@@ -27,9 +24,9 @@ const GenericInput = ({ label, value, onChange, placeholder, maxLength }) => {
         placeholder={placeholder}
         rows="2"
         maxLength={maxLength}
-        className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="resize-none h-4/5 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
-      <div className="text-right text-gray-600">
+      <div className="text-right text-gray-600 text-sm">
         {characterCount}/{maxLength}
       </div>
     </div>

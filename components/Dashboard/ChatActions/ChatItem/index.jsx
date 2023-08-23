@@ -20,7 +20,7 @@ export default function ChatItem({
   const [chatTitle, setChatTitle] = useState("");
 
   useEffect(() => {
-    const chatTitleValue = chat.title.substring(0, 20);
+    const chatTitleValue = "chat.topic.substring(0, 20)";
     setChatTitle(chatTitleValue);
   }, [chat]);
 

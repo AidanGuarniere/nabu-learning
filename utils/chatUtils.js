@@ -61,6 +61,7 @@ export const deleteChats = async (chatId) => {
 export const createChat = async (chatData) => {
   try {
     const response = await axios.post("/api/chats", chatData);
+    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error creating chat:", error);

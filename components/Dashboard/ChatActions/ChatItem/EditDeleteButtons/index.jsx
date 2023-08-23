@@ -76,7 +76,7 @@ export default function EditDeleteButtons({
           confirmAction={(e) => {
             e.stopPropagation();
 
-            if (chat.title !== titleInputValue) {
+            if ("chat.topic" !== titleInputValue) {
               handleEditChatTitle(selectedChat, titleInputValue);
             } else {
               setShowTitleInput(false);
@@ -108,7 +108,7 @@ export default function EditDeleteButtons({
             className="p-1 hover:text-white"
             onClick={(e) => {
               e.stopPropagation();
-              setTitleInputValue(chat.title);
+              setTitleInputValue("chat.topic");
               setShowTitleInput(true);
             }}
           >
