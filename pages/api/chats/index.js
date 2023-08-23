@@ -10,17 +10,30 @@ async function handleGetRequest(req, res, userId) {
 
   // if fields are specified, return only those fields
   if (fields) {
-    const whitelist = ["id", "title", "model"];
+    const whitelist = ["id", "chatPreferences.topic"]; // Updated whitelist
     const fieldList = fields
       .split(",")
+      .map((field) => field.trim()) // Remove any spaces
       .filter((field) => whitelist.includes(field));
-    userChats = await Chat.find({ userId }, fieldList.join(" "));
+
+    // If you want to project a specific subfield, use the following format
+    const projection = fieldList.reduce((obj, field) => {
+      if (field === "chatPreferences.topic") {
+        obj["chatPreferences.topic"] = 1; // Include the subfield
+      } else {
+        obj[field] = 1; // Include other fields
+      }
+      return obj;
+    }, {});
+
+    userChats = await Chat.find({ userId }, projection);
   } else {
     userChats = await Chat.find({ userId });
   }
 
   res.status(200).json(userChats);
 }
+
 
 async function handlePostRequest(req, res, userId) {
   const { chatPreferences, messages,} = req.body;

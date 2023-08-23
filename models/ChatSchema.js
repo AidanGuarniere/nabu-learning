@@ -11,6 +11,10 @@ const chatPreferencesSchema = new mongoose.Schema({
     required: [true, "Tutor type is required"],
     enum: ["Socratic", "Traditional", "Test Prep", "Interactive"], // Add more tutoring styles as needed
   },
+  tutorName: {
+    type: String,
+    required: [true, "Tutor behavior is required"],
+  },
   personality: {
     type: String,
     required: [true, "Tutor behavior is required"],

@@ -14,11 +14,12 @@ export const fetchChats = async () => {
   return [];
 };
 
-export const fetchChatTitles = async () => {
+export const fetchChatTopics = async () => {
   try {
     const response = await axios.get("/api/chats", {
-      params: { fields: "id,title" },
+      params: { fields: "id, chatPreferences.topic" },
     });
+    console.log(response);
     if (response.data) {
       return response.data;
     }
@@ -28,6 +29,7 @@ export const fetchChatTitles = async () => {
   }
   return [];
 };
+
 
 // Fetches a specific chat by id
 export const fetchChatById = async (chatId) => {

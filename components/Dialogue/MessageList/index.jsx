@@ -17,9 +17,8 @@ function MessageList({ chats, selectedChat, session, setChats }) {
   return (
     <>
       {/* change to setSelectedChat*/}
-
       {messages.map((message, index) =>
-        message.role === "system" ? null : (
+        index < 2 || message.role === "system" ? null : (
           <MessageItem
             key={`${message["_id"]}${index}`}
             message={message}
@@ -30,6 +29,7 @@ function MessageList({ chats, selectedChat, session, setChats }) {
           />
         )
       )}
+
       <div className="bg-white h-[33.75%] dark:bg-gray-800" />
     </>
   );

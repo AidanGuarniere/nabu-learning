@@ -87,41 +87,41 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       messageHistory: messageHistory,
     });
 
-    messageHistory.push(gptResponse[2]); // Append GPT response
-
-    console.log(messageHistory);
-    const newChatData = {
-      userId: session.user.id,
-      chatPreferences: {
-        model: userChatPreferences.selectedModel || "gpt-3.5-turbo",
-        tutorType: userChatPreferences.tutorType,
-        personality: userChatPreferences.tutorBehavior,
-        topic: userChatPreferences.topic,
-        chatGoal: userChatPreferences.goal,
-        personalInfo: userChatPreferences.personalInfo,
-      },
-      messages: messageHistory,
-    };
-    try {
-      const newChat = await createChat(newChatData);
-      setChats((prevChats) =>
-        prevChats.length ? [...prevChats, newChat] : [newChat]
-      );
-      setSelectedChat(newChat._id);
-    } catch (error) {
-      setError(error);
+    if (gptResponse) {
+      const newChatData = {
+        userId: session.user.id,
+        chatPreferences: {
+          model: userChatPreferences.selectedModel || "gpt-3.5-turbo",
+          tutorType: userChatPreferences.tutorType,
+          tutorName: userChatPreferences.tutorName,
+          personality: userChatPreferences.tutorBehavior,
+          topic: userChatPreferences.topic,
+          chatGoal: userChatPreferences.goal,
+          personalInfo: userChatPreferences.personalInfo,
+        },
+        messages: messageHistory,
+      };
+      try {
+        const newChat = await createChat(newChatData);
+        setChats((prevChats) =>
+          prevChats.length ? [...prevChats, newChat] : [newChat]
+        );
+        setSelectedChat(newChat._id);
+      } catch (error) {
+        setError(error);
+      }
     }
   };
 
   // useEffect(() => {
   //   // set state values to default
-    // setSelectedModel("gpt-3.5-turbo");
-    // setTutorType("");
-    // setTutorName("");
-    // setTutorBehavior("");
-    // setTopic("");
-    // setGoal("");
-    // setPersonalInfo("");
+  // setSelectedModel("gpt-3.5-turbo");
+  // setTutorType("");
+  // setTutorName("");
+  // setTutorBehavior("");
+  // setTopic("");
+  // setGoal("");
+  // setPersonalInfo("");
   // }, []);
 
   return (
