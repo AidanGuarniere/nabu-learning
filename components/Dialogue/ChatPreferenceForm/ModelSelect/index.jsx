@@ -24,7 +24,7 @@ const ModelSelect = ({ selectedModel, setSelectedModel }) => {
   };
 
   return (
-    <div className="absolute  top-10 flex flex-col justify-center items-center w-full ">
+    <div className="flex flex-col justify-center items-center w-full ">
       <label
         className="block text-gray-700 text-center text-xl font-bold mb-2"
         htmlFor="model-select"
@@ -45,9 +45,9 @@ const ModelSelect = ({ selectedModel, setSelectedModel }) => {
             <option key={"gpt-4"} value={"gpt-4"}>
               {"gpt-4"}
             </option>
-            <option key={"gpt-4-0314"} value={"gpt-4-0314"}>
+            {/* <option key={"gpt-4-0314"} value={"gpt-4-0314"}>
               {"gpt-4-0314"}
-            </option>
+            </option> */}
           </>
         )}
       </select>

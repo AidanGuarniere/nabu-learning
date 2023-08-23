@@ -50,11 +50,11 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   const userId = session.user.id;
-  try {
-    await rateLimiter(userId);
-  } catch (err) {
-    return res.status(429).json({ error: "Too many requests" });
-  }
+  // try {
+  //   await rateLimiter(userId);
+  // } catch (err) {
+  //   return res.status(429).json({ error: "Too many requests" });
+  // }
   
   try {
     switch (method) {

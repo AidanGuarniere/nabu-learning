@@ -8,6 +8,7 @@ function PromptActions({
   session,
   setError,
   userText,
+  chatPreferences,
   selectedModel,
   setUserText,
   chats,
@@ -18,6 +19,7 @@ function PromptActions({
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
 
+  // TODO: Implement chat preferences response
   useEffect(() => {
     if (selectedChat) {
       //  change to selectedChat.messages
@@ -38,7 +40,7 @@ function PromptActions({
     //  change to selectedChat.id
     let chatId = selectedChat;
     //  change to selectedChat.model
-    let messageModel = selectedModel;
+    let messageModel = chatPreferences.model;
     if (selectedChat) {
       //change to selectedChat
       const selectedIndex = chats.findIndex(
@@ -73,7 +75,7 @@ function PromptActions({
       ];
       const newChatData = {
         userId: session.user.id,
-        title: userText,
+        title: chatPreferences.topic,
         model: selectedModel,
         messages: firstMessages,
       };

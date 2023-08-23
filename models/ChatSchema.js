@@ -1,4 +1,33 @@
 const mongoose = require("mongoose");
+
+const chatPreferencesSchema = new mongoose.Schema({
+  model: {
+    type: String,
+    required: [true, "Model selection is required"],
+    enum: ["gpt-3.5-turbo", "gpt-4"], // Add more models as needed
+  },
+  tutorType: {
+    type: String,
+    required: [true, "Tutor type is required"],
+    enum: ["Socratic", "Traditional", "Test Prep", "Interactive"], // Add more tutoring styles as needed
+  },
+  personality: {
+    type: String,
+    required: [true, "Tutor behavior is required"],
+  },
+  topic: {
+    type: String,
+    required: [true, "Topic is required"],
+  },
+  chatGoal: {
+    type: String,
+    required: [true, "Specific goal is required"],
+  },
+  personalInfo: {
+    type: String, // Define this based on the expected structure of personal information
+  },
+});
+
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
@@ -75,14 +104,7 @@ const chatSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  model: {
-    type: String,
-    required: true,
-  },
+  chatPreferences: chatPreferencesSchema,
   messages: {
     type: [messageSchema],
     validate: [messageLimit, "chat exceeds message limit"],

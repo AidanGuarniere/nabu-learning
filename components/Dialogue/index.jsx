@@ -3,7 +3,8 @@ import ErrorDisplay from "../ErrorDisplay";
 import PromptActions from "./PromptActions";
 import ChatScrollButton from "./ChatScrollButton";
 import MessageList from "./MessageList";
-import ModelSelect from "./ModelSelect";
+import ChatPreferenceForm from "./ChatPreferenceForm"
+import ModelSelect from "./ChatPreferenceForm/ModelSelect";
 
 function Dialogue({
   session,
@@ -22,17 +23,18 @@ function Dialogue({
   const [scrollHeight, setScrollHeight] = useState();
   const [prevSelectedChat, setPrevSelectedChat] = useState(null);
   const [prevMessageCount, setPrevMessageCount] = useState(0);
-  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo");
+  const [chatPreferences, setChatPreferences] = useState({});
+  // const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo");
   const selectedChatIndex = chats.findIndex(
-    //chande to .id
+    //change to .id
     (chat) => chat._id === selectedChat
   );
 
-  useEffect(() => {
-    if (selectedChat === null) {
-      setSelectedModel("gpt-3.5-turbo");
-    }
-  }, [selectedChat]);
+  // useEffect(() => {
+  //   if (selectedChat === null) {
+  //     setSelectedModel("gpt-3.5-turbo");
+  //   }
+  // }, [selectedChat]);
 
   useLayoutEffect(() => {
     if (chatRef.current) {
@@ -101,18 +103,19 @@ function Dialogue({
             <ChatScrollButton chatRef={chatRef} scrollHeight={scrollHeight} />
           </div>
         ) : (
-          <div className="flex flex-col gap-2 items-center justify-center flex-grow ">
-            <ModelSelect
-              selectedModel={selectedModel}
-              setSelectedModel={setSelectedModel}
+          <div className="flex flex-col items-center justify-center w-full h-full ">
+            <ChatPreferenceForm
+              chatPreferences={chatPreferences}
+              setChatPreferences={setChatPreferences}
             />
-            <h1 className="text-4xl font-bold text-center dark:bg-gray-800 text-gray-300 dark:text-gray-600 ml-auto mr-auto mb-10 sm:mb-16 ">
+            {/* <h1 className="text-4xl font-bold text-center dark:bg-gray-800 text-gray-300 dark:text-gray-600 ml-auto mr-auto mb-10 sm:mb-16 ">
               nabu
-            </h1>
+            </h1> */}
           </div>
         )}
-        <PromptActions
-          selectedModel={selectedModel}
+        {/* <PromptActions
+          chatPreferences={chatPreferences}
+          // selectedModel={selectedModel}
           session={session}
           setError={setError}
           userText={userText}
@@ -122,7 +125,7 @@ function Dialogue({
           selectedChat={selectedChat}
           setSelectedChat={setSelectedChat}
           chatRef={chatRef}
-        />
+        /> */}
       </div>
     </div>
   );

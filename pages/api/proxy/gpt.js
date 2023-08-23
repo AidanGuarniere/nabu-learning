@@ -40,11 +40,11 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   const userId = session.user.id;
-  try {
-    await rateLimiter(userId);
-  } catch (err) {
-    return res.status(429).json({ error: "Too many requests" });
-  }
+  // try {
+  //   await rateLimiter(userId);
+  // } catch (err) {
+  //   return res.status(429).json({ error: "Too many requests" });
+  // }
   try {
     const user = await User.findById(session.user.id);
     const { model, messages } = req.body;
