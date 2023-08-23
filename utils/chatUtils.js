@@ -14,12 +14,11 @@ export const fetchChats = async () => {
   return [];
 };
 
-export const fetchChatTopics = async () => {
+export const fetchChatsBasicInfo = async () => {
   try {
     const response = await axios.get("/api/chats", {
-      params: { fields: "id, chatPreferences.topic" },
+      params: { fields: "id, chatPreferences.topic, chatPreferences.mode" },
     });
-    console.log(response);
     if (response.data) {
       return response.data;
     }
@@ -29,7 +28,6 @@ export const fetchChatTopics = async () => {
   }
   return [];
 };
-
 
 // Fetches a specific chat by id
 export const fetchChatById = async (chatId) => {
@@ -63,7 +61,6 @@ export const deleteChats = async (chatId) => {
 export const createChat = async (chatData) => {
   try {
     const response = await axios.post("/api/chats", chatData);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error creating chat:", error);

@@ -5,7 +5,6 @@ export async function handleSignUp(username, password, openAIAPIKey) {
   try {
     const csrfToken = await getCsrfToken();
 
-    console.log(csrfToken)
     const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: {

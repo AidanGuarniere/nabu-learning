@@ -7,75 +7,109 @@ import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
 const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   // State for Model Selection
-  const [selectedModel, setSelectedModel] = useState("gpt-3.5-turbo");
+  const [stage, setStage] = useState(1);
 
-  // State for Tutor Type
-  const [tutorType, setTutorType] = useState("");
+  const [preferences, setPreferences] = useState({
+    mode: "", // "Discussion" or "Note Generation"
+    selectedModel: "gpt-3.5-turbo",
+    tutorType: "",
+    tutorName: "",
+    tutorBehavior: "",
+    topic: "",
+    goal: "",
+    personalInfo: "",
+    noteType: "", // For note generation (e.g., "Cornell", "Bullets")
+    noteTitle: "", // For note generation (e.g., "Cornell", "Bullets")
+    noteTone: "", // For note generation (e.g., "Formal", "Casual")
+    // Additional preferences as needed
+  });
 
-  const [tutorName, setTutorName] = useState("");
+  const goToNextStage = () => {
+    setStage((prevStage) => prevStage + 1);
+  };
 
-  // State for Tutor Behavior
-  const [tutorBehavior, setTutorBehavior] = useState("");
+  const goToPreviousStage = () => {
+    setStage((prevStage) => prevStage - 1);
+  };
 
-  // State for Topic of Discussion
-  const [topic, setTopic] = useState("");
+  const updatePreferences = (key, value) => {
+    setPreferences((prevPreferences) => ({
+      ...prevPreferences,
+      [key]: value,
+    }));
+  };
 
-  // State for Specific Goal
-  const [goal, setGoal] = useState("");
-
-  // State for Personal Information
-  const [personalInfo, setPersonalInfo] = useState("");
+  // useEffect(() => {
+  //   console.log(preferences);
+  // }, [preferences]);
 
   // Function to handle form submission
   // Inside PreferencesForm component
-
   const handleChatPreferencesFormSubmit = async (e) => {
     e.preventDefault();
 
     // Gather all the preferences into a chatPreferences object
     const userChatPreferences = {
-      selectedModel,
-      tutorType,
-      tutorName,
-      tutorBehavior,
-      topic,
-      goal,
-      personalInfo,
+      mode: preferences.mode,
+      selectedModel: preferences.selectedModel,
+      tutorType: preferences.tutorType,
+      tutorName: preferences.tutorName,
+      tutorBehavior: preferences.tutorBehavior,
+      topic: preferences.topic,
+      goal: preferences.goal,
+      personalInfo: preferences.personalInfo,
+      noteType: preferences.noteType,
+      noteTitle: preferences.noteTitle,
+      noteTone: preferences.noteTone,
     };
 
     // setLoading(true); // Start loading
 
     // Call the chat creation logic
     await createNewChat(userChatPreferences);
-    setSelectedModel("gpt-3.5-turbo");
-    setTutorType("");
-    setTutorName("");
-    setTutorBehavior("");
-    setTopic("");
-    setGoal("");
-    setPersonalInfo("");
     // setLoading(false); // End loading
   };
-
   const createNewChat = async (userChatPreferences) => {
-    const systemMessageContent = `
-    Your name is ${userChatPreferences.tutorName} are a ${
-      userChatPreferences.tutorType
-    } style tutor instructed to behave according to the following description: ${
-      userChatPreferences.tutorBehavior
-    }. Stay in character throughout the discussion. 
-    The topic of discussion is ${
-      userChatPreferences.topic
-    }, and the specific goal is ${userChatPreferences.goal}.
-    ${
-      userChatPreferences.personalInfo
-        ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
-        : ""
+    let systemMessageContent;
+
+    if (userChatPreferences.mode === "Discussion") {
+      systemMessageContent = `
+        Your name is ${userChatPreferences.tutorName} and you are a ${
+        userChatPreferences.tutorType
+      } style tutor instructed to behave according to the following description: ${
+        userChatPreferences.tutorBehavior
+      }. Stay in character throughout the discussion. 
+        The topic of discussion is ${
+          userChatPreferences.topic
+        }, and the specific goal is ${userChatPreferences.goal}.
+        ${
+          userChatPreferences.personalInfo
+            ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
+            : ""
+        }
+      `;
+    } else if (userChatPreferences.mode === "Note Generation") {
+      systemMessageContent = `
+        You are instructed to generate notes on the topic: ${
+          userChatPreferences.topic
+        }. The notes should be in the ${
+        userChatPreferences.noteType
+      } format, titled "${userChatPreferences.noteTitle}", and written in a ${
+        userChatPreferences.noteTone
+      } tone. 
+        The specific goal is ${userChatPreferences.goal}.
+        ${
+          userChatPreferences.personalInfo
+            ? `Here's some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
+            : ""
+        }
+      `;
     }
-  `;
 
     const userGreetingContent =
-      "Introduce yourself to the user and briefly acknowledge the topic and goal of the discussion";
+      userChatPreferences.mode === "Discussion"
+        ? "Introduce yourself to the user and briefly acknowledge the topic and goal of the discussion."
+        : "Start creating notes according to the given instructions.";
 
     const messageHistory = [
       { role: "system", content: systemMessageContent },
@@ -91,13 +125,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       const newChatData = {
         userId: session.user.id,
         chatPreferences: {
-          model: userChatPreferences.selectedModel || "gpt-3.5-turbo",
-          tutorType: userChatPreferences.tutorType,
-          tutorName: userChatPreferences.tutorName,
-          personality: userChatPreferences.tutorBehavior,
-          topic: userChatPreferences.topic,
-          chatGoal: userChatPreferences.goal,
-          personalInfo: userChatPreferences.personalInfo,
+          ...userChatPreferences,
         },
         messages: messageHistory,
       };
@@ -107,102 +135,211 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
           prevChats.length ? [...prevChats, newChat] : [newChat]
         );
         setSelectedChat(newChat._id);
+        setPreferences({
+          mode: "",
+          selectedModel: "gpt-3.5-turbo",
+          tutorType: "",
+          tutorName: "",
+          tutorBehavior: "",
+          topic: "",
+          goal: "",
+          personalInfo: "",
+          noteType: "",
+          noteTitle: "",
+          noteTone: "",
+        });
       } catch (error) {
         setError(error);
       }
     }
   };
 
-  // useEffect(() => {
-  //   // set state values to default
-  // setSelectedModel("gpt-3.5-turbo");
-  // setTutorType("");
-  // setTutorName("");
-  // setTutorBehavior("");
-  // setTopic("");
-  // setGoal("");
-  // setPersonalInfo("");
-  // }, []);
+  const checkIfStageComplete = (stage, preferences) => {
+    switch (stage) {
+      case 1:
+        return preferences.mode !== "";
+      case 2:
+        return (
+          preferences.topic !== "" &&
+          preferences.goal !== "" &&
+          preferences.personalInfo !== ""
+        );
+      case 3:
+        if (preferences.mode === "Discussion") {
+          return (
+            preferences.tutorType !== "" &&
+            preferences.tutorName !== "" &&
+            preferences.tutorBehavior !== ""
+          );
+        } else if (preferences.mode === "Note Generation") {
+          return preferences.noteType !== "" && preferences.noteTitle !== "";
+        }
+        break;
+      default:
+        return false;
+    }
+  };
 
   return (
     <form
-      onSubmit={handleChatPreferencesFormSubmit}
-      className="w-full h-full max-w-5xl mx-auto px-10 bg-white rounded-lg"
+      onSubmit={(e) => {
+        e.preventDefault();
+        goToNextStage();
+      }}
+      className="w-full h-full flex flex-col justify-center items-center max-w-5xl mx-auto px-10 bg-white rounded-lg"
     >
-      <div className="fixed text-gray-700 text-2xl font-semibold mt-4">
-        Discussion Preferences
-      </div>
-      <div className="h-full w-full py-4">
-        <ModelSelect
-          selectedModel={selectedModel}
-          setSelectedModel={setSelectedModel}
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col justify-between">
-            {" "}
-            {/* Flexbox added here */}
-            <div className="block text-gray-700 text-xl text-center font-bold mb-2">
-              Tutor Information
+      {stage === 1 && (
+        <>
+          {" "}
+          <h1 className="text-center text-4xl mb-8 md:mb-20">choose your interaction</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full md:max-w-3xl">
+            {/* Discussion Selection */}
+            <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+              <h2 className="text-2xl font-semibold mb-4">discussion</h2>
+              <p className="text-gray-700 mb-4">
+                Engage in an interactive discussion with a virtual tutor. Choose
+                the tutor's personality, style, and more.
+              </p>
+              <button
+                onClick={() => updatePreferences("mode", "Discussion")}
+                className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+              >
+                Select
+              </button>
             </div>
-            <GenericSelect
-              label="Tutor Type"
-              value={tutorType}
-              onChange={setTutorType}
-              options={["Traditional", "Socratic"]}
-            />
-            <GenericInput
-              label="Tutor Name"
-              value={tutorName}
-              onChange={setTutorName}
-              placeholder="Socrates"
-              maxLength={50}
-            />
-            <GenericInput
-              label="Tutor Behavior"
-              value={tutorBehavior}
-              onChange={setTutorBehavior}
-              placeholder="What kind of personality or behavior do you want your tutor to have?"
-              maxLength={200}
-            />
-          </div>
-          <div className="flex flex-col justify-between">
-            {" "}
-            {/* Flexbox added here */}
-            <div className="block text-gray-700 text-xl text-center font-bold mb-2">
-              Discussion Details
+            {/* Note Generation Selection */}
+            <div className="flex flex-col items-center p-8 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+              <h2 className="text-2xl font-semibold mb-4">note generation</h2>
+              <p className="text-gray-700 mb-4">
+                Generate notes in various formats such as Cornell, list, or
+                sentences. Customize the tone, title, and details.
+              </p>
+              <button
+                onClick={() => updatePreferences("mode", "Note Generation")}
+                className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+              >
+                Select
+              </button>
             </div>
-            <GenericInput
-              label="Topic"
-              value={topic}
-              onChange={setTopic}
-              placeholder="Enter the topic of discussion"
-              maxLength={200}
-            />
-            <GenericInput
-              label="Goal"
-              value={goal}
-              onChange={setGoal}
-              placeholder="Enter the goal for this discussion"
-              maxLength={200}
-            />
-            <GenericInput
-              label="Personal Info"
-              value={personalInfo}
-              onChange={setPersonalInfo}
-              placeholder="Enter any personal info you feel is relevant to the discussion"
-              maxLength={200}
-            />
           </div>
+        </>
+      )}
+      {stage === 2 && (
+        <div className="flex flex-col justify-between w-full">
+          {" "}
+          {/* Flexbox added here */}
+          <div className="block text-gray-700 text-xl text-center  mb-2">
+            Topic Details
+          </div>
+          <GenericInput
+            label="Topic"
+            value={preferences.topic}
+            onChange={(value) => updatePreferences("topic", value)}
+            placeholder="Enter the topic of discussion"
+            maxLength={200}
+          />
+          <GenericInput
+            label="Goal"
+            value={preferences.goal}
+            onChange={(value) => updatePreferences("goal", value)}
+            placeholder="Enter the goal for this discussion"
+            maxLength={200}
+          />
+          <GenericInput
+            label="Personal Info"
+            value={preferences.personalInfo}
+            onChange={(value) => updatePreferences("personalInfo", value)}
+            placeholder="Enter any personal info you feel is relevant to the discussion"
+            maxLength={200}
+          />
         </div>
-        <div className="text-center">
+      )}
+
+      {stage === 3 && preferences.mode === "Discussion" && (
+        <div className="flex flex-col justify-between">
+          {" "}
+          {/* Flexbox added here */}
+          <div className="block text-gray-700 text-xl text-center  mb-2">
+            Tutor Information
+          </div>
+          <GenericSelect
+            label="Tutor Type"
+            value={preferences.tutorType}
+            onChange={(value) => updatePreferences("tutorType", value)}
+            options={["Traditional", "Socratic"]}
+          />
+          <GenericInput
+            label="Tutor Name"
+            value={preferences.tutorName}
+            onChange={(value) => updatePreferences("tutorName", value)}
+            placeholder="Socrates"
+            maxLength={50}
+          />
+          <GenericInput
+            label="Tutor Behavior"
+            value={preferences.tutorBehavior}
+            onChange={(value) => updatePreferences("tutorBehavior", value)}
+            placeholder="What kind of personality or behavior do you want your tutor to have?"
+            maxLength={200}
+          />
+        </div>
+      )}
+
+      {stage === 3 && preferences.mode === "Note Generation" && (
+        <div className="flex flex-col justify-between">
+          {" "}
+          {/* Flexbox added here */}
+          <div className="block text-gray-700 text-xl text-center  mb-2">
+            Note Preferences
+          </div>
+          <GenericSelect
+            label="Note Type"
+            value={preferences.noteType}
+            onChange={(value) => updatePreferences("noteType", value)}
+            options={["Sentences", "List", "Cornell"]}
+          />
+          <GenericInput
+            label="Note Title"
+            value={preferences.noteTitle}
+            onChange={(value) => updatePreferences("noteTitle", value)}
+            placeholder="Notes on X"
+            maxLength={50}
+          />
+          <GenericInput
+            label="Writing Style"
+            value={preferences.noteWritingStyle}
+            onChange={(value) => updatePreferences("noteWritingStyle", value)}
+            placeholder="What kind of writing style do you want your notes written in?"
+            maxLength={200}
+          />
+        </div>
+      )}
+
+      {stage > 1 && (
+        <div className="flex justify-center items-center w-full md:max-w-3xl mt-8">
           <button
-            type="submit"
-            className="w-1/6 mt-8 p-2 rounded-md text-white btn-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+            onClick={goToPreviousStage}
+            className="btn-secondary w-1/5 mx-4 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
           >
-            Submit
+            Back
           </button>
+          {stage < 3 ? (
+            <button
+              className="btn-primary w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+              disabled={!checkIfStageComplete(stage, preferences)} // Logic to check if all options are filled
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              className="btn-primary w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
+              onClick={handleChatPreferencesFormSubmit}
+            >
+              Submit
+            </button>
+          )}
         </div>
-      </div>
+      )}
     </form>
   );
 };

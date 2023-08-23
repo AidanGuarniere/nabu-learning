@@ -34,3 +34,5 @@ yarn-error.log*
 
 #prompt file
 prompt.yaml
+
+.vercel

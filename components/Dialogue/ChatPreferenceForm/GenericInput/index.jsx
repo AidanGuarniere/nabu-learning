@@ -1,20 +1,27 @@
 import React, { useState } from "react";
 
-const GenericInput = ({ label, value, onChange, placeholder, maxLength }) => {
+const GenericInput = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  maxLength,
+  keyToUpdate,
+}) => {
   const [characterCount, setCharacterCount] = useState(0);
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     // Enforce a maximum of 200 characters
-    if (inputValue.length <= 200) {
-      onChange(inputValue);
+    if (inputValue.length <= maxLength) {
+      onChange(inputValue); // Call onChange with the inputValue only
       setCharacterCount(inputValue.length);
     }
   };
 
   return (
     <div className="mb-4 h-1/3">
-      <label className="text-gray-700 text-xl font-semibold " htmlFor={label}>
+      <label className="text-gray-700 text-xl " htmlFor={label}>
         {label}
       </label>
       <textarea

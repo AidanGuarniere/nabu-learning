@@ -88,7 +88,7 @@ function Dialogue({
             <div className="flex justify-center items-center h-10 w-full border-b border-gray-500/20">
               <span className="text-gray-500">
                 {/* change to selectedChat.model */}
-                {chats[selectedChatIndex].chatPreferences.topic}, {chats[selectedChatIndex].chatPreferences.tutorName} 
+                {chats[selectedChatIndex].chatPreferences.topic}, { chats[selectedChatIndex].chatPreferences.tutorName ? chats[selectedChatIndex].chatPreferences.tutorName : chats[selectedChatIndex].chatPreferences.noteType} 
               </span>
             </div>
             {/* change to selectedChat, setSelectedChat*/}

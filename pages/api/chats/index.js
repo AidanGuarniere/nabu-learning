@@ -4,13 +4,43 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 import rateLimiter from "../../../utils/rateLimiter";
 
+// async function handleGetRequest(req, res, userId) {
+//   const { fields } = req.query;
+//   let userChats;
+
+//   // if fields are specified, return only those fields
+//   if (fields) {
+//     const whitelist = ["id", "chatPreferences.topic"]; // Updated whitelist
+//     const fieldList = fields
+//       .split(",")
+//       .map((field) => field.trim()) // Remove any spaces
+//       .filter((field) => whitelist.includes(field));
+
+//     // If you want to project a specific subfield, use the following format
+//     const projection = fieldList.reduce((obj, field) => {
+//       if (field === "chatPreferences.topic") {
+//         obj["chatPreferences.topic"] = 1; // Include the subfield
+//       } else {
+//         obj[field] = 1; // Include other fields
+//       }
+//       return obj;
+//     }, {});
+
+//     userChats = await Chat.find({ userId }, projection);
+//   } else {
+//     userChats = await Chat.find({ userId });
+//   }
+
+//   res.status(200).json(userChats);
+// }
+
 async function handleGetRequest(req, res, userId) {
   const { fields } = req.query;
   let userChats;
 
   // if fields are specified, return only those fields
   if (fields) {
-    const whitelist = ["id", "chatPreferences.topic"]; // Updated whitelist
+    const whitelist = ["id", "chatPreferences.topic", "chatPreferences.mode"]; // Updated whitelist
     const fieldList = fields
       .split(",")
       .map((field) => field.trim()) // Remove any spaces
@@ -18,8 +48,9 @@ async function handleGetRequest(req, res, userId) {
 
     // If you want to project a specific subfield, use the following format
     const projection = fieldList.reduce((obj, field) => {
-      if (field === "chatPreferences.topic") {
-        obj["chatPreferences.topic"] = 1; // Include the subfield
+      if (field.startsWith("chatPreferences.")) {
+        const subfield = field.split(".").slice(1).join(".");
+        obj[`chatPreferences.${subfield}`] = 1; // Include the subfield
       } else {
         obj[field] = 1; // Include other fields
       }

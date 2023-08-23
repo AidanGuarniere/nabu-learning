@@ -11,7 +11,7 @@ function UserActions({ chats, session, setError, handleDeleteChats }) {
         {session && (
           <>
             <ApiKeyInput session={session} setError={setError} />
-            <DarkModeToggle />
+            {/* <DarkModeToggle /> */}
             <LogoutButton />
           </>
         )}

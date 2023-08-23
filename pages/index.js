@@ -5,7 +5,7 @@ import Dialogue from "../components/Dialogue";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { fetchChatTopics } from "../utils/chatUtils";
+import { fetchChatsBasicInfo } from "../utils/chatUtils";
 import Footer from "../components/Footer";
 
 export default function Home() {
@@ -41,19 +41,18 @@ export default function Home() {
     if (status === "unauthenticated") {
       router.push("/auth");
     } else if (session && status === "authenticated") {
-      const handleFetchChatTopics = async () => {
+      const handleFetchChatsBasicInfo = async () => {
         try {
-          const chatTopics = await fetchChatTopics();
-          console.log(chatTopics)
-          if (chatTopics.length !== chatsRef.length) {
-            setChats(chatTopics);
+          const chatsBasicInfo = await fetchChatsBasicInfo();
+          if (chatsBasicInfo.length !== chatsRef.length) {
+            setChats(chatsBasicInfo);
           }
         } catch (error) {
           console.error("Error fetching chat titles:", error);
         }
       };
 
-      handleFetchChatTopics();
+      handleFetchChatsBasicInfo();
     }
   }, [session, status, router, chatsRef]);
 
@@ -73,7 +72,6 @@ export default function Home() {
             const selectedIndex = updatedChats.findIndex(
               (chat) => chat._id === selectedChat
             );
-            console.log(selectedIndex)
             updatedChats[selectedIndex] = response.data;
             setChats(updatedChats);
           }

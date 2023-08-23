@@ -1,6 +1,6 @@
-# nabu: A ChatGPT Clone
+# nabu
 
-nabu is an open-source project modeled after ChatGPT. It provides a user-friendly interface for interacting with GPT-like LLMs via the OpenAI API. This project is NOT directly affiliated with OpenAI in any way.
+nabu is an open-source project designed to help people learn with AI
 
 ## Table of Contents
 

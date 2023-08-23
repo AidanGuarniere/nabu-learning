@@ -43,8 +43,8 @@ function PromptActions({
     const selectedIndex = chats.findIndex((chat) => chat._id === selectedChat);
     //change to selectedChat
     const updatedChat = { ...chats[selectedIndex] };
-    console.log(updatedChat);
-    const messageModel = updatedChat.chatPreferences.model;
+    console.log(updatedChat)
+    const messageModel = updatedChat.chatPreferences.selectedModel;
     updatedChat.messages.push({
       role: "user",
       content: userText,
@@ -60,7 +60,6 @@ function PromptActions({
 
     setUserText("");
     e.target.style.height = "auto";
-    console.log(messageModel);
     return { chatId, messageModel, messageHistory };
   };
 
@@ -138,11 +137,13 @@ function PromptActions({
 
   return (
     <div className="md:pl-[260px] absolute bottom-0 left-0 w-full pt-8 pb-24 md:pb-12 bg-vert-light-gradient dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradientborder-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent">
-      <RegenResponseButton
-        handleRegen={handleRegen}
-        loading={loading}
-        showRegen={showRegen}
-      />
+      {!loading && (
+        <RegenResponseButton
+          handleRegen={handleRegen}
+          loading={loading}
+          showRegen={showRegen}
+        />
+      )}
       <PromptForm
         userText={userText}
         setUserText={setUserText}

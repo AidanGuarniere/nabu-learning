@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ChatItemIcon from "./ChatItemIcon";
 import TitleInput from "./TitleInput";
 import EditDeleteButtons from "./EditDeleteButtons";
+import NoteItemIcon from "./NoteItemIcon";
 
 export default function ChatItem({
   session,
@@ -20,7 +21,6 @@ export default function ChatItem({
   const [chatTitle, setChatTitle] = useState("");
 
   useEffect(() => {
-    console.log(chat)
     const chatTitleValue = chat.chatPreferences.topic.substring(0, 20);
     setChatTitle(chatTitleValue);
   }, [chat]);
@@ -40,7 +40,11 @@ export default function ChatItem({
         setSelectedChat(chat._id);
       }}
     >
-      <ChatItemIcon />
+      {chat.chatPreferences.mode === "Discussion" ? (
+        <ChatItemIcon />
+      ) : (
+        <NoteItemIcon />
+      )}
       <span className="flex-1 text-ellipsis overflow-hidden break-all relative">
         {isSelectedChat ? (
           showTitleInput ? (

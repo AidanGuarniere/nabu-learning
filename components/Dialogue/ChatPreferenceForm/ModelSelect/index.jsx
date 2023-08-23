@@ -26,7 +26,7 @@ const ModelSelect = ({ selectedModel, setSelectedModel }) => {
   return (
     <div className="flex flex-col justify-center items-center w-full ">
       <label
-        className="block text-gray-700 text-center text-xl font-bold mb-2"
+        className="block text-gray-700 text-center text-xl mb-2"
         htmlFor="model-select"
       >
         Select Model
