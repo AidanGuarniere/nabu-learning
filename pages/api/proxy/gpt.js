@@ -6,7 +6,7 @@ import { decrypt } from "../../../utils/crypto";
 import { Configuration, OpenAIApi } from "openai";
 import rateLimiter from "../../../utils/rateLimiter";
 
-const fetchDataFromAPI = async (model, messages, apiKey) => {
+const fetchDataFromAPI = async (model, messages, functions, function_call, apiKey) => {
   const configuration = new Configuration({
     apiKey,
   });
@@ -15,6 +15,8 @@ const fetchDataFromAPI = async (model, messages, apiKey) => {
     const completion = await openai.createChatCompletion({
       model: model,
       messages: messages,
+      functions: functions,
+      function_call: function_call,
     });
     return completion.data;
   } catch (error) {
@@ -23,9 +25,9 @@ const fetchDataFromAPI = async (model, messages, apiKey) => {
   }
 };
 
-const handleRequest = async (user, model, messages) => {
+const handleRequest = async (user, model, messages, functions, function_call) => {
   const decryptedApiKey = await decrypt(user.apiKey);
-  return fetchDataFromAPI(model, messages, decryptedApiKey);
+  return fetchDataFromAPI(model, messages, functions,function_call, decryptedApiKey);
 };
 
 export default async function handler(req, res) {
@@ -47,8 +49,8 @@ export default async function handler(req, res) {
   // }
   try {
     const user = await User.findById(session.user.id);
-    const { model, messages } = req.body;
-    const completion = await handleRequest(user, model, messages);
+    const { model, messages, functions, function_call } = req.body;
+    const completion = await handleRequest(user, model, messages, functions, function_call);
     res.status(200).json({ completion });
   } catch (error) {
     const statusCode = error.status || 500;

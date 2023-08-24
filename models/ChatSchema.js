@@ -45,7 +45,6 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
 });
 
-
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
@@ -54,8 +53,13 @@ const messageSchema = new mongoose.Schema({
   },
   content: {
     type: String,
-    required: true,
   },
+  function_call: {
+    type: {
+      name: { type: String, required: true },
+      arguments: { type: Object, required: true }, // Change this line
+    },
+  },  
   createdAt: {
     type: Date,
     default: Date.now,

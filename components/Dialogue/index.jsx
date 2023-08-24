@@ -51,12 +51,14 @@ function Dialogue({
           currentChat.messages.length !== prevMessageCount)
       ) {
         // L solution for attempted scroll before message render
-        setTimeout(() => {
-          chatRef.current.scrollTo({
-            top: chatRef.current.scrollHeight,
-            behavior: "auto",
-          });
-        }, 100);
+        if (chatRef.current) {
+          setTimeout(() => {
+            chatRef.current.scrollTo({
+              top: chatRef.current.scrollHeight,
+              behavior: "auto",
+            });
+          }, 100);
+        }
         if (currentChat.messages) {
           setPrevMessageCount(currentChat.messages.length);
         }
@@ -64,7 +66,7 @@ function Dialogue({
     }
     setPrevSelectedChat(selectedChat);
   }, [
-    chats,
+    // chats,
     selectedChat,
     selectedChatLoading,
     prevMessageCount,
@@ -86,9 +88,12 @@ function Dialogue({
             }}
           >
             <div className="flex justify-center items-center h-10 w-full border-b border-gray-500/20">
-              <span className="text-gray-500">
+              <span className="text-center md:text-left text-gray-500">
                 {/* change to selectedChat.model */}
-                {chats[selectedChatIndex].chatPreferences.topic}, { chats[selectedChatIndex].chatPreferences.tutorName ? chats[selectedChatIndex].chatPreferences.tutorName : chats[selectedChatIndex].chatPreferences.noteType} 
+                {chats[selectedChatIndex].chatPreferences.topic},{" "}
+                {chats[selectedChatIndex].chatPreferences.tutorName
+                  ? chats[selectedChatIndex].chatPreferences.tutorName
+                  : chats[selectedChatIndex].chatPreferences.noteType}
               </span>
             </div>
             {/* change to selectedChat, setSelectedChat*/}

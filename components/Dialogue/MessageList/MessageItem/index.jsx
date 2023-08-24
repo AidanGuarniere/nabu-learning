@@ -2,10 +2,20 @@ import React, { useState } from "react";
 import ChatIcon from "./Icons/ChatIcon";
 import UserIcon from "./Icons/UserIcon";
 import AssistantMessage from "./AssistantMessage";
+import CornellNotes from "./CornellNotes";
 import UserMessage from "./UserMessage";
 
 function MessageItem({ message, chats, selectedChat, session, setChats }) {
   const [selectedMessageId, setSelectedMessageId] = useState(null);
+
+  const isCornellNoteFunction = message.content 
+    && message.content.startsWith('FUNCTION CALLED') 
+    && message.content.includes('createCornellNotes');
+    
+  const noteData = isCornellNoteFunction 
+    ? JSON.parse(message.content.replace('FUNCTION CALLED: ', '')) 
+    : null;
+
   const handleMessageSelect = () => {
     if (message.role === "user" && selectedMessageId !== message["_id"]) {
       setSelectedMessageId(message["_id"]);
@@ -35,11 +45,13 @@ function MessageItem({ message, chats, selectedChat, session, setChats }) {
         </div>
 
         <div className="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
-          {message.role === "assistant" ? (
-            <AssistantMessage message={message.content} />
+        {message.role === "assistant" ? (
+            isCornellNoteFunction ? (
+              <CornellNotes noteData={noteData} />
+            ) : (
+              <AssistantMessage message={message.content} />
+            )
           ) : (
-            // {/* change to selectedChat, setSelectedChat*/}
-
             <UserMessage
               message={message}
               selectedMessageId={selectedMessageId}

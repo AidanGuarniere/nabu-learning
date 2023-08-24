@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const ModelSelect = ({ selectedModel, setSelectedModel }) => {
+const ModelSelect = ({ value, onChange, }) => {
   const [hasGPT4, setHasGPT4] = useState(false);
   useEffect(() => {
     // check if user's api key has access to gpt-4 api
@@ -17,14 +17,8 @@ const ModelSelect = ({ selectedModel, setSelectedModel }) => {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleModelSelect = (selection) => {
-    if (selectedModel !== selection) {
-      setSelectedModel(selection);
-    }
-  };
-
   return (
-    <div className="flex flex-col justify-center items-center w-full ">
+    <div className="flex flex-col justify-center items-center w-full mb-4 ">
       <label
         className="block text-gray-700 text-center text-xl mb-2"
         htmlFor="model-select"
@@ -33,8 +27,8 @@ const ModelSelect = ({ selectedModel, setSelectedModel }) => {
       </label>
       <select
         id="model-select"
-        value={selectedModel}
-        onChange={(e) => handleModelSelect(e.target.value)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
         className=" shadow appearance-none border rounded w-auto py-2 px-3 text-center text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
         <option key={"gpt-3.5-turbo"} value={"gpt-3.5-turbo"}>

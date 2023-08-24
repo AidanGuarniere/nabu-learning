@@ -1,3 +1,5 @@
+// ERROR WITH CONTINUING CORNELL NOTE CONVERSATIONS, MUST INTEGRATE OPENAI FUNCTION CALLS TO MESSAGE HISTORY
+
 import React, { useState, useEffect } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
@@ -18,7 +20,11 @@ function PromptActions({
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
 
-  // TODO: Implement chat preferences response
+  // useEffect(() => {
+  //   console.log(chats)
+  // }, [chats])
+  
+
   useEffect(() => {
     if (selectedChat) {
       //  change to selectedChat.messages
@@ -52,16 +58,18 @@ function PromptActions({
     let updatedChats = [...chats];
     updatedChats[selectedIndex] = updatedChat;
     setChats(updatedChats);
+    // issue may be here w way we are sending function based on gpt response
     messageHistory = updatedChat.messages.map((message) => ({
       role: message.role,
-      content: message.content,
+      content: message.content || JSON.stringify(message.function_call),
     }));
-
+    const chatFunctions = updatedChat.functions
     setUserText("");
     e.target.style.height = "auto";
-    return { chatId, messageModel, messageHistory };
+    return { chatId, messageModel, messageHistory, chatFunctions };
   };
 
+  // confusion here so problem likely
   const handleGPTResponse = async (chatId, messageData) => {
     const updatedChatData = {
       userId: session.user.id,
@@ -83,10 +91,14 @@ function PromptActions({
       try {
         // create Chat based on user prompt
         const messageData = await createMessageData(e);
+        // const openaiFunctions = await selectFunction(preferences);
         // send Chat message data to GPT API
+        console.log(messageData)
         const gptResponse = await sendMessageHistoryToGPT({
           model: messageData.messageModel,
           messageHistory: messageData.messageHistory,
+          functions: messageData.chatFunctions,
+          function_call: "auto",
         });
         // update Chat with GPT response
         await handleGPTResponse(messageData.chatId, gptResponse);
@@ -114,11 +126,14 @@ function PromptActions({
           .slice(0, -1)
           .map((message) => ({
             role: message.role,
-            content: message.content,
+            content: message.content || JSON.stringify(message.function_call),
           }));
+
         const gptResponse = await sendMessageHistoryToGPT({
           model: chats[selectedIndex].chatPreferences.model,
-          messageHistory: messageData,
+          messageHistory: messageData.messageHistory,
+          functions: chatFunctions,
+          function_call: "auto",
         });
         messageData.push(gptResponse.choices[0].message);
         updatedChat.messages = messageData;
