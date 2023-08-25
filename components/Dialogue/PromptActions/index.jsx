@@ -23,7 +23,6 @@ function PromptActions({
   // useEffect(() => {
   //   console.log(chats)
   // }, [chats])
-  
 
   useEffect(() => {
     if (selectedChat) {
@@ -63,7 +62,7 @@ function PromptActions({
       role: message.role,
       content: message.content || JSON.stringify(message.function_call),
     }));
-    const chatFunctions = updatedChat.functions
+    const chatFunctions = updatedChat.functions;
     setUserText("");
     e.target.style.height = "auto";
     return { chatId, messageModel, messageHistory, chatFunctions };
@@ -91,15 +90,22 @@ function PromptActions({
       try {
         // create Chat based on user prompt
         const messageData = await createMessageData(e);
-        // const openaiFunctions = await selectFunction(preferences);
+        let gptResponse;
         // send Chat message data to GPT API
-        console.log(messageData)
-        const gptResponse = await sendMessageHistoryToGPT({
-          model: messageData.messageModel,
-          messageHistory: messageData.messageHistory,
-          functions: messageData.chatFunctions,
-          function_call: "auto",
-        });
+        if (messageData.chatFunctions.length) {
+          gptResponse = await sendMessageHistoryToGPT({
+            model: messageData.messageModel,
+            messageHistory: messageData.messageHistory,
+            functions: messageData.chatFunctions,
+            function_call: "auto",
+          });
+        } else {
+          gptResponse = await sendMessageHistoryToGPT({
+            model: messageData.messageModel,
+            messageHistory: messageData.messageHistory,
+          });
+        }
+
         // update Chat with GPT response
         await handleGPTResponse(messageData.chatId, gptResponse);
         setLoading(false);

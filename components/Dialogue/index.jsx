@@ -93,7 +93,7 @@ function Dialogue({
                 {chats[selectedChatIndex].chatPreferences.topic},{" "}
                 {chats[selectedChatIndex].chatPreferences.tutorName
                   ? chats[selectedChatIndex].chatPreferences.tutorName
-                  : chats[selectedChatIndex].chatPreferences.noteType}
+                  : chats[selectedChatIndex].chatPreferences.noteType} Notes
               </span>
             </div>
             {/* change to selectedChat, setSelectedChat*/}

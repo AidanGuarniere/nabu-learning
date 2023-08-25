@@ -43,12 +43,13 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
   const selectFunction = (preferences) => {
     const interactionMode = preferences.mode;
-    const functions = [];
+    const aiFunctionsInfo = { function_call: "auto", functions: [] };
     if (interactionMode === "Note Generation") {
       if (preferences.noteType === "Cornell") {
         const createCornellNotes = {
           name: "createCornellNotes",
-          description: "A function to create Cornell notes with specific organization.",
+          description:
+            "A function to create Cornell notes with specific organization.",
           parameters: {
             type: "object",
             properties: {
@@ -63,16 +64,19 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                   properties: {
                     cue: {
                       type: "string",
-                      description: "A question or keyword related to the subject.",
+                      description:
+                        "A question or keyword related to the subject.",
                     },
                     response: {
                       type: "string",
-                      description: "The main note, detail, or explanation corresponding to the cue.",
+                      description:
+                        "The main note, detail, or explanation corresponding to the cue.",
                     },
                   },
                   required: ["cue", "response"],
                 },
-                description: "An array of objects containing cues and their corresponding responses.",
+                description:
+                  "An array of objects containing cues and their corresponding responses.",
               },
               summary: {
                 type: "string",
@@ -81,14 +85,15 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             },
             required: ["subject", "cuesAndResponses", "summary"],
           },
-        };        
-        functions.push(createCornellNotes);
+        };
+        aiFunctionsInfo.functions.push(createCornellNotes);
+        aiFunctionsInfo.function_call = { name: "createCornellNotes" };
       }
       //  else if (preferences.noteType === "List") {
       // } else {
       // }
     }
-    return functions;
+    return aiFunctionsInfo;
   };
 
   // Function to handle form submission
@@ -123,37 +128,42 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     // system message logic
     let systemMessageContent;
     if (userChatPreferences.mode === "Discussion") {
+      const socraticAddition = (tutorType) =>
+        tutorType === "Socratic"
+          ? "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions."
+          : "";
+
       systemMessageContent = `
-        Your name is ${userChatPreferences.tutorName} and you are a ${
+          Your name is ${
+            userChatPreferences.tutorName
+          }, and you are an expert in ${
+        userChatPreferences.topic
+      }. You will be taking on the role of a ${
         userChatPreferences.tutorType
-      } style tutor ${
-        userChatPreferences.tutorType === "Socratic" &&
-        "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions."
-      } instructed to behave according to the following description: ${
-        userChatPreferences.tutorBehavior
-      }. Emulate this description to the best of your ability and in character throughout the discussion. 
-        The topic of discussion is ${
-          userChatPreferences.topic
-        }, and the specific goal is ${userChatPreferences.goal}.
-        ${
-          userChatPreferences.personalInfo
-            ? `Here is some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
-            : ""
-        }
-      `;
+      } style tutor.
+          ${socraticAddition(userChatPreferences.tutorType)}
+          Your instructions are to guide the conversation towards understanding and achieving the user's goal: ${
+            userChatPreferences.goal
+          }.
+          Utilize your expertise in ${
+            userChatPreferences.topic
+          } to foster this understanding.
+          ${
+            userChatPreferences.personalInfo
+              ? `Additional information about the user: ${userChatPreferences.personalInfo}`
+              : ""
+          }
+        `;
     } else if (userChatPreferences.mode === "Note Generation") {
       systemMessageContent = `
         You are instructed to generate detailed and comprehensive notes on the topic: ${
           userChatPreferences.topic
-        }.
-        Specific areas to cover include: ${
-          userChatPreferences.subTopics || "N/A"
         }. 
         The notes should be in the ${
           userChatPreferences.noteType
         } format, titled "${userChatPreferences.noteTitle}", and written in a ${
         userChatPreferences.noteTone
-      } tone.
+      } tone. Feel free to include bullet points, equations, or code snippets in your answers if relevant. 
         The specific goal is to ${
           userChatPreferences.goal
         }, and the information provided must directly relate to this objective.
@@ -167,7 +177,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     }
 
     // send gpt functions based on interaction mode
-    const openaiFunctions = await selectFunction(preferences);
+    const aiFunctionsInfo = await selectFunction(preferences);
 
     // trigger interaction
     const userGreetingContent =
@@ -179,13 +189,21 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       { role: "system", content: systemMessageContent },
       { role: "user", content: userGreetingContent },
     ];
+    let gptResponse = {};
 
-    const gptResponse = await sendMessageHistoryToGPT({
-      model: userChatPreferences.selectedModel,
-      messageHistory: messageHistory,
-      functions: openaiFunctions,
-      function_call: { name: "createCornellNotes" },
-    });
+    if (aiFunctionsInfo.functions.length) {
+      gptResponse = await sendMessageHistoryToGPT({
+        model: userChatPreferences.selectedModel,
+        messageHistory: messageHistory,
+        functions: aiFunctionsInfo.functions,
+        function_call: aiFunctionsInfo.function_call,
+      });
+    } else {
+      gptResponse = await sendMessageHistoryToGPT({
+        model: userChatPreferences.selectedModel,
+        messageHistory: messageHistory,
+      });
+    }
 
     if (gptResponse) {
       // console.log(gptResponse)
@@ -195,7 +213,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
           ...userChatPreferences,
         },
         messages: messageHistory,
-        functions: openaiFunctions,
+        functions: aiFunctionsInfo.functions,
       };
       try {
         const newChat = await createChat(newChatData);

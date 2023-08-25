@@ -10,7 +10,7 @@ async function handleGetRequest(req, res, userId) {
 
   // if fields are specified, return only those fields
   if (fields) {
-    const whitelist = ["id", "chatPreferences.topic"]; // Updated whitelist
+    const whitelist = ["id", "chatPreferences.topic", "chatPreferences.mode"]; // Updated whitelist
     const fieldList = fields
       .split(",")
       .map((field) => field.trim()) // Remove any spaces
