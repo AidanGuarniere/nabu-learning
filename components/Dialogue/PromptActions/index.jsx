@@ -126,25 +126,29 @@ function PromptActions({
       setError(null);
       try {
         const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
-        const updatedChat = { ...chats[chatIndex] };
-
+        let updatedChat = { ...chats[chatIndex] };
+  
         const messageData = updatedChat.messages
           .slice(0, -1)
           .map((message) => ({
             role: message.role,
             content: message.content || JSON.stringify(message.function_call),
           }));
-
+  
         const gptResponse = await sendMessageHistoryToGPT({
-          model: chats[selectedIndex].chatPreferences.model,
-          messageHistory: messageData.messageHistory,
-          functions: chatFunctions,
+          model: updatedChat.chatPreferences.selectedModel,
+          messageHistory: messageData,
+          functions: updatedChat.functions,
           function_call: "auto",
         });
-        messageData.push(gptResponse.choices[0].message);
-        updatedChat.messages = messageData;
+  
+        if (gptResponse && gptResponse.length > 0) {
+          messageData[messageData.length - 1] = gptResponse[gptResponse.length - 1];
+        }
+  
+        updatedChat = { ...updatedChat, messages: messageData };
+  
         await updateChat(selectedChat, updatedChat);
-        //change to update selectedChat
         const updatedChats = await fetchChats();
         setChats(updatedChats);
         setLoading(false);
@@ -154,6 +158,7 @@ function PromptActions({
       }
     }
   };
+  
 
   return (
     <div className="md:pl-[260px] absolute bottom-0 left-0 w-full pt-8 pb-24 md:pb-12 bg-vert-light-gradient dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradientborder-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent">

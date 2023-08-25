@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { sendMessageHistoryToGPT } from "../../../../../utils/gptUtils";
 import { updateChat, fetchChats } from "../../../../../utils/chatUtils";
 
-function UserMessage({
+function  UserMessage({
   message,
   selectedMessageId,
   chats,
@@ -95,7 +95,7 @@ function UserMessage({
       ) : (
         <>
           <div className="relative w-full">
-            <p className="text-lg dark:text-gray-100 whitespace-pre-wrap px-[1.6rem] md:px-0">
+            <p className="text-lg dark:text-gray-100 whitespace-pre-wrap md:px-[1.6rem] md:px-0">
               {message.content}
             </p>
           </div>

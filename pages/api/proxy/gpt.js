@@ -18,6 +18,7 @@ const fetchDataFromAPI = async (model, messages, functions, function_call, apiKe
       functions: functions,
       function_call: function_call,
     });
+    // console.log(completion.data.choices[0]);
     return completion.data;
   } catch (error) {
     console.error(error);

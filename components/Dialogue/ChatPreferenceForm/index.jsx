@@ -48,14 +48,13 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       if (preferences.noteType === "Cornell") {
         const createCornellNotes = {
           name: "createCornellNotes",
-          description:
-            "A function to create Cornell notes with specific organization.",
+          description: "Crafts organized Cornell notes to elevate the user's ability to capture, review, and synthesize complex information.",
           parameters: {
             type: "object",
             properties: {
               subject: {
                 type: "string",
-                description: "The subject of the notes.",
+                description: "The subject or topic of focus, guiding the note's context.",
               },
               cuesAndResponses: {
                 type: "array",
@@ -64,28 +63,27 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                   properties: {
                     cue: {
                       type: "string",
-                      description:
-                        "A question or keyword related to the subject.",
+                      description: "A succinct question or keyword to trigger effective recall.",
                     },
-                    response: {
-                      type: "string",
-                      description:
-                        "The main note, detail, or explanation corresponding to the cue.",
-                    },
+                    responses: {
+                      type: "array",
+                      items: { type: "string" },
+                      description: "Concise points or explanations that directly relate to the cue.",
+                    },                    
                   },
-                  required: ["cue", "response"],
+                  required: ["cue", "responses"],
                 },
-                description:
-                  "An array of objects containing cues and their corresponding responses.",
+                description: "An array of cue-response pairs to form a cohesive understanding.",
               },
               summary: {
                 type: "string",
-                description: "A brief summary or conclusion of the notes.",
+                description: "A synthesized summary capturing key insights and implications.",
               },
             },
             required: ["subject", "cuesAndResponses", "summary"],
           },
         };
+        
         aiFunctionsInfo.functions.push(createCornellNotes);
         aiFunctionsInfo.function_call = { name: "createCornellNotes" };
       }
@@ -206,7 +204,6 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     }
 
     if (gptResponse) {
-      // console.log(gptResponse)
       const newChatData = {
         userId: session.user.id,
         chatPreferences: {
@@ -337,21 +334,21 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                 label="Topic"
                 value={preferences.topic}
                 onChange={(value) => updatePreferences("topic", value)}
-                placeholder="Enter the topic of discussion"
+                placeholder="Enter the topic of interaction"
                 maxLength={250}
               />
               <GenericInput
                 label="Goal"
                 value={preferences.goal}
                 onChange={(value) => updatePreferences("goal", value)}
-                placeholder="Enter the goal for this discussion"
+                placeholder="Enter the goal for this interaction"
                 maxLength={250}
               />
               <GenericInput
                 label="Personal Info"
                 value={preferences.personalInfo}
                 onChange={(value) => updatePreferences("personalInfo", value)}
-                placeholder="Enter any personal info you feel is relevant to the discussion e.g. your experience with the topic"
+                placeholder="Enter any personal info you feel is relevant to this interaction e.g. your experience with the topic"
                 maxLength={250}
               />
             </div>
