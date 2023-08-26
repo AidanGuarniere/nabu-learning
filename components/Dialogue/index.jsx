@@ -4,7 +4,6 @@ import PromptActions from "./PromptActions";
 import ChatScrollButton from "./ChatScrollButton";
 import MessageList from "./MessageList";
 import ChatPreferenceForm from "./ChatPreferenceForm";
-import ModelSelect from "./ChatPreferenceForm/ModelSelect";
 
 function Dialogue({
   session,
@@ -17,7 +16,6 @@ function Dialogue({
   selectedChat,
   setSelectedChat,
   selectedChatLoading,
-  setSelectedChatLoading,
 }) {
   const chatRef = useRef(null);
   const [scrollHeight, setScrollHeight] = useState();
@@ -27,12 +25,6 @@ function Dialogue({
     //change to .id
     (chat) => chat._id === selectedChat
   );
-
-  // useEffect(() => {
-  //   if (selectedChat === null) {
-  //     setSelectedModel("gpt-3.5-turbo");
-  //   }
-  // }, [selectedChat]);
 
   useLayoutEffect(() => {
     if (chatRef.current) {
@@ -89,14 +81,13 @@ function Dialogue({
           >
             <div className="flex justify-center items-center h-10 w-full border-b border-gray-500/20">
               <span className="text-center md:text-left text-gray-500">
-                {/* change to selectedChat.model */}
                 {chats[selectedChatIndex].chatPreferences.topic},{" "}
                 {chats[selectedChatIndex].chatPreferences.tutorName
                   ? chats[selectedChatIndex].chatPreferences.tutorName
-                  : chats[selectedChatIndex].chatPreferences.noteType} Notes
+                  : `${chats[selectedChatIndex].chatPreferences.noteType} Notes`}{" "}
+                
               </span>
             </div>
-            {/* change to selectedChat, setSelectedChat*/}
             <MessageList
               chats={chats}
               selectedChat={selectedChat}
@@ -113,9 +104,6 @@ function Dialogue({
               setChats={setChats}
               setSelectedChat={setSelectedChat}
             />
-            {/* <h1 className="text-4xl font-bold text-center dark:bg-gray-800 text-gray-300 dark:text-gray-600 ml-auto mr-auto mb-10 sm:mb-16 ">
-              nabu
-            </h1> */}
           </div>
         )}
         {selectedChat && (

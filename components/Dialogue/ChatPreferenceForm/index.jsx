@@ -275,7 +275,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             e.preventDefault();
             // goToNextStage();
           }}
-          className="w-full h-full flex flex-col justify-center items-center max-w-5xl mx-auto px-10 bg-white rounded-lg"
+          className="w-full h-full flex flex-col justify-center items-center max-w-5xl mx-auto p-8 bg-white rounded-lg"
         >
           {stage === 1 && (
             <div>
@@ -323,6 +323,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
               </div>
             </div>
           )}
+          
           {stage === 2 && (
             <div className="flex flex-col justify-between w-full h-3/4 md:h-2/3">
               {" "}
@@ -449,3 +450,72 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 };
 
 export default PreferencesForm;
+// {stage === 2 && (
+//   <div className="flex flex-col md:flex-row justify-between w-full md:h-2/3 overflow-y-auto">
+//     <div className="block text-gray-700 text-xl text-center mb-2 w-full">
+//       Topic Details
+//     </div>
+
+//     <div className="flex flex-col w-full md:w-1/2 p-2">
+//       <GenericInput
+//         label="Topic"
+//         value={preferences.topic}
+//         onChange={(value) => updatePreferences("topic", value)}
+//         placeholder="Enter the topic of interaction"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Sub-Topic"
+//         value={preferences.subTopic}
+//         onChange={(value) => updatePreferences("subTopic", value)}
+//         placeholder="Enter specific areas within the topic"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Prior Knowledge"
+//         value={preferences.priorKnowledge}
+//         onChange={(value) => updatePreferences("priorKnowledge", value)}
+//         placeholder="Enter topics/modules you've completed"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Learning Style"
+//         value={preferences.learningStyle}
+//         onChange={(value) => updatePreferences("learningStyle", value)}
+//         placeholder="Enter your preferred learning style"
+//         maxLength={250}
+//       />
+//     </div>
+
+//     <div className="flex flex-col w-full md:w-1/2 p-2">
+//       <GenericInput
+//         label="Goal"
+//         value={preferences.goal}
+//         onChange={(value) => updatePreferences("goal", value)}
+//         placeholder="Enter the goal for this interaction"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Challenges"
+//         value={preferences.challenges}
+//         onChange={(value) => updatePreferences("challenges", value)}
+//         placeholder="Enter areas you've found challenging"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Time Frame"
+//         value={preferences.timeFrame}
+//         onChange={(value) => updatePreferences("timeFrame", value)}
+//         placeholder="Enter the time frame for your goal"
+//         maxLength={250}
+//       />
+//       <GenericInput
+//         label="Personal Info"
+//         value={preferences.personalInfo}
+//         onChange={(value) => updatePreferences("personalInfo", value)}
+//         placeholder="Enter relevant personal info"
+//         maxLength={250}
+//       />
+//     </div>
+//   </div>
+// )}

@@ -18,7 +18,7 @@ const CornellNotes = ({ noteData }) => {
            <ul  className="w-2/3 py-2 text-gray-900" style={{ listStyleType: 'disc'}}>
 
               {item.responses.map((response, j) => (
-                <li className="mx-[1.6rem]">
+                <li className="mx-[1.6rem] md:px-[-1.6rem] px-0">
                   <AssistantMessage message={response} isNote={true} key={j} />
                 </li>
               ))}

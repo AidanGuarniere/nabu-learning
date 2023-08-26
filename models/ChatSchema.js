@@ -4,16 +4,15 @@ const chatPreferencesSchema = new mongoose.Schema({
   mode: {
     type: String,
     required: [true, "Mode selection is required"],
-    enum: ["Discussion", "Note Generation"],
+    enum: ["Discussion", "Note Generation", "Flashcard Generation"],
   },
   selectedModel: {
     type: String,
     required: [true, "Model selection is required"],
-    enum: ["gpt-3.5-turbo", "gpt-4"], // Add more models as needed
+    enum: ["gpt-3.5-turbo", "gpt-4"], 
   },
   tutorType: {
     type: String,
-    // enum: ["Socratic", "Traditional"], // Add more tutoring styles as needed
   },
   tutorName: {
     type: String,
@@ -25,23 +24,42 @@ const chatPreferencesSchema = new mongoose.Schema({
     type: String,
     required: [true, "Topic is required"],
   },
+  subTopic: {
+    type: String,
+  },
+  priorKnowledge: {
+    type: String,
+  },
+  learningStyle: {
+    type: String,
+  },
+  // challenges: {
+  //   type: [String],
+  // },
+  timeFrame: {
+    type: String,
+  },
   goal: {
     type: String,
     required: [true, "Specific goal is required"],
   },
   personalInfo: {
-    type: String, // Define this based on the expected structure of personal information
+    type: String, 
   },
   noteType: {
     type: String,
-    // enum: ["Sentences", "List", "Cornell"], // Define the types of notes as needed
   },
   noteTitle: {
     type: String,
   },
   noteTone: {
     type: String,
-    // enum: ["Formal", "Casual"], // Define the tones as needed
+  },
+  flashcardCount: {
+    type: String,
+  },
+  flashcardDifficulty: {
+    type: String,
   },
 });
 
