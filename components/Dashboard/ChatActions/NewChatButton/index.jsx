@@ -4,7 +4,7 @@ function NewChatButton({ setSelectedChat }) {
   return (
     <div className="p-2 md:p-[.55rem]">
       <button
-        className="dashboard-text w-full flex md:mb-0 p-[.775rem] items-center gap-3 rounded-[.425rem] hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer flex-shrink-0 border border-white/20"
+        className="dashboard-text w-full flex md:mb-0 p-[.775rem] items-center gap-3 rounded-[.425rem] hover:bg-gray-500/10 transition-colors duration-200 text-white text-[1rem] font-semibold cursor-pointer flex-shrink-0 border border-white/20"
         onClick={() => {
           setSelectedChat(null);
         }}

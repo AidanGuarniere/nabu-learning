@@ -58,7 +58,7 @@ function Dialogue({
     }
     setPrevSelectedChat(selectedChat);
   }, [
-    // chats,
+    chats,
     selectedChat,
     selectedChatLoading,
     prevMessageCount,
