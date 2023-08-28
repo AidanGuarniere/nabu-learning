@@ -11,21 +11,12 @@ const chatPreferencesSchema = new mongoose.Schema({
     required: [true, "Model selection is required"],
     enum: ["gpt-3.5-turbo", "gpt-4"], 
   },
-  tutorType: {
-    type: String,
-  },
-  tutorName: {
-    type: String,
-  },
-  tutorBehavior: {
-    type: String,
-  },
   topic: {
     type: String,
     required: [true, "Topic is required"],
   },
-  subTopic: {
-    type: String,
+  keyConcepts: {
+    type: [String],
   },
   priorKnowledge: {
     type: String,
@@ -45,6 +36,15 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   personalInfo: {
     type: String, 
+  },
+  tutorType: {
+    type: String,
+  },
+  tutorName: {
+    type: String,
+  },
+  tutorBehavior: {
+    type: String,
   },
   noteType: {
     type: String,

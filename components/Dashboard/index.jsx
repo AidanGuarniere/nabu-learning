@@ -101,7 +101,7 @@ function Dashboard({
         </button>
         <h1 className="text-base whitespace-nowrap overflow-hidden relative text-center px-4 w-[calc(100%-3rem)]">
           {chatTitle ? chatTitle : "New chat"}
-          <div className="absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-gray-800"></div>
+          <div className="absolute inset-y-0 right-0 w-8 z-10 md:bg-gradient-to-l from-gray-800"></div>
         </h1>
       </div>
 

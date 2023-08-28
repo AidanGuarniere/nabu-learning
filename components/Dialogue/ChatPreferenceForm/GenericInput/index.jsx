@@ -20,7 +20,7 @@ const GenericInput = ({
   };
 
   return (
-    <div className="mb-4 h-1/3">
+    <div className="mb-8 md:mb-0 xl:mb-8 h-1/3 md:h-auto">
       <label className="text-gray-700 text-xl " htmlFor={label}>
         {label}
       </label>
@@ -31,7 +31,7 @@ const GenericInput = ({
         placeholder={placeholder}
         rows="2"
         maxLength={maxLength}
-        className="resize-none h-4/5 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="resize-none h-full md:h-auto xl:h-full appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
       <div className="text-right text-gray-600 text-sm">
         {characterCount}/{maxLength}
