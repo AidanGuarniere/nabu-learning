@@ -58,7 +58,7 @@ function Dialogue({
     }
     setPrevSelectedChat(selectedChat);
   }, [
-    chats,
+    // chats,
     selectedChat,
     selectedChatLoading,
     prevMessageCount,
@@ -82,9 +82,10 @@ function Dialogue({
             <div className="flex justify-center items-center h-10 w-full border-b border-gray-500/20">
               <span className="text-center md:text-left text-gray-500">
                 {chats[selectedChatIndex].chatPreferences.topic},{" "}
-                {chats[selectedChatIndex].chatPreferences.tutorName
+                {chats[selectedChatIndex].chatPreferences.mode==="Tutor Session"
                   ? chats[selectedChatIndex].chatPreferences.tutorName
-                  : `${chats[selectedChatIndex].chatPreferences.noteType} Notes`}{" "}
+                  : chats[selectedChatIndex].chatPreferences.mode==="Note Generation" ?
+                  `${chats[selectedChatIndex].chatPreferences.noteType} Notes`: "Flashcards"}{" "}
                 
               </span>
             </div>

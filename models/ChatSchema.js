@@ -4,7 +4,7 @@ const chatPreferencesSchema = new mongoose.Schema({
   mode: {
     type: String,
     required: [true, "Mode selection is required"],
-    enum: ["Discussion", "Note Generation", "Flashcard Generation"],
+    enum: ["Tutor Session", "Note Generation", "Flashcard Generation"],
   },
   selectedModel: {
     type: String,

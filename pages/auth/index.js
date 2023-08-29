@@ -10,10 +10,10 @@ const Auth = () => {
       {/* bg-gradient-to-t from-gray-200 via-gray-100 to-green-200 animate-gradient-x" */}
       <div className="z-10 min-h-2/3 flex flex-col justify-center items-center p-6 sm:p-8 rounded-xl border border-gray-300 shadow-lg hover:shadow-xl w-5/6 sm:w-3/5 transform transition-all duration-500 hover:scale-105 bg-gray-100 bg-opacity-90">
         <h1 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl text-gray-800 font-light text-gray-900 my-6 ">
-          Welcome to nabu
+          welcome to nabu
         </h1>
         <h2 className="text-lg lg:text-xl text-gray-900">
-          nabu is an open source project modeled after ChatGPT.
+          nabu uses OpenAI's GPT models to facilitate AI-powered interactions.
           <br />
           nabu may produce inaccurate information.
         </h2>

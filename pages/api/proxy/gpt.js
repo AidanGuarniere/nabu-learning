@@ -55,6 +55,16 @@ export default async function handler(req, res) {
     res.status(200).json({ completion });
   } catch (error) {
     const statusCode = error.status || 500;
+  
+    console.error("Error Details:", {
+      status: statusCode,
+      message: error.message,
+      stack: error.stack,
+      requestBody: req.body,
+      userId: session?.user?.id,
+    });
+  
     res.status(statusCode).json({ error: error.message });
   }
+  
 }

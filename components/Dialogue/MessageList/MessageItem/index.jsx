@@ -3,17 +3,28 @@ import ChatIcon from "./Icons/ChatIcon";
 import UserIcon from "./Icons/UserIcon";
 import AssistantMessage from "./AssistantMessage";
 import CornellNotes from "./CornellNotes";
+import Flashcards from "./Flashcards"
 import UserMessage from "./UserMessage";
 
 function MessageItem({ message, chats, selectedChat, session, setChats }) {
   const [selectedMessageId, setSelectedMessageId] = useState(null);
 
-  const isCornellNoteFunction = message.content 
-    && message.content.startsWith('FUNCTION CALLED') 
-    && message.content.includes('createCornellNotes');
-    
-  const noteData = isCornellNoteFunction 
-    ? JSON.parse(message.content.replace('FUNCTION CALLED: ', '')) 
+  // check if the message to be displayed is a function call
+  // if so, identify which function was called
+  const isCornellNoteFunction =
+    message.content &&
+    message.content.startsWith("FUNCTION CALLED") &&
+    message.content.includes("createCornellNotes");
+  const noteData = isCornellNoteFunction
+    ? JSON.parse(message.content.replace("FUNCTION CALLED: ", ""))
+    : null;
+
+  const isFlashcardFunction =
+    message.content &&
+    message.content.startsWith("FUNCTION CALLED") &&
+    message.content.includes("generateFlashcards");
+  const flashcardData = isFlashcardFunction
+    ? JSON.parse(message.content.replace("FUNCTION CALLED: ", ""))
     : null;
 
   const handleMessageSelect = () => {
@@ -43,11 +54,12 @@ function MessageItem({ message, chats, selectedChat, session, setChats }) {
         <div className="w-8 h-8 flex flex-col justify-center items-center">
           {message.role === "assistant" ? <ChatIcon /> : <UserIcon />}
         </div>
-
         <div className="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
-        {message.role === "assistant" ? (
+          {message.role === "assistant" ? (
             isCornellNoteFunction ? (
               <CornellNotes noteData={noteData} />
+            ) : isFlashcardFunction ? (
+              <Flashcards flashcardData={flashcardData} />
             ) : (
               <AssistantMessage message={message.content} />
             )
@@ -62,6 +74,7 @@ function MessageItem({ message, chats, selectedChat, session, setChats }) {
             />
           )}
         </div>
+        
       </div>
     </div>
   );

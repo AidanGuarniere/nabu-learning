@@ -3,6 +3,7 @@ import ChatItemIcon from "./ChatItemIcon";
 import TitleInput from "./TitleInput";
 import EditDeleteButtons from "./EditDeleteButtons";
 import NoteItemIcon from "./NoteItemIcon";
+import FlashcardIcon from "./FlashcardIcon";
 
 export default function ChatItem({
   session,
@@ -40,11 +41,14 @@ export default function ChatItem({
         setSelectedChat(chat._id);
       }}
     >
-      {chat.chatPreferences.mode === "Discussion" ? (
+      {chat.chatPreferences.mode === "Tutor Session" ? (
         <ChatItemIcon />
+      ) : chat.chatPreferences.mode === "Flashcard Generation" ? (
+        <FlashcardIcon />
       ) : (
         <NoteItemIcon />
       )}
+
       <span className="flex-1 text-ellipsis overflow-hidden break-all relative">
         {isSelectedChat ? (
           showTitleInput ? (

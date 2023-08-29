@@ -12,7 +12,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   const [loading, setLoading] = useState(false);
 
   const [preferences, setPreferences] = useState({
-    mode: "", // "Discussion" or "Note Generation"
+    mode: "", // "Tutor Session" or "Note Generation"
     selectedModel: "gpt-3.5-turbo",
     tutorType: "",
     tutorName: "",
@@ -46,9 +46,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
   };
 
   const selectFunction = (preferences) => {
-    const interactionMode = preferences.mode;
     const aiFunctionsInfo = { function_call: "auto", functions: [] };
-    if (interactionMode === "Note Generation") {
+    if (preferences.mode === "Note Generation") {
       if (preferences.noteType === "Cornell") {
         const createCornellNotes = {
           name: "createCornellNotes",
@@ -100,6 +99,49 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       //  else if (preferences.noteType === "List") {
       // } else {
       // }
+    } else if (preferences.mode === "Flashcard Generation") {
+      const generateFlashcards = {
+        name: "generateFlashcards",
+        description:
+          "Generates a set of interactive flashcards to enhance user's active recall and spaced repetition learning.",
+        parameters: {
+          type: "object",
+          properties: {
+            subject: {
+              type: "string",
+              description: "The topic for the flashcards.",
+            },
+            cardPairs: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  question: {
+                    type: "string",
+                    description: "The front of the flashcard.",
+                  },
+                  answer: {
+                    type: "array",
+                    items: { type: "string" },
+                    description:
+                      "The answer or details at the back of the flashcard.",
+                  },
+                },
+                required: ["question", "answer"],
+              },
+              description: "An array of flashcard question-answer pairs.",
+            },
+            difficulty: {
+              type: "string",
+              description:
+                "Difficulty level for sorting or categorizing flashcards.",
+            },
+          },
+          required: ["subject", "cardPairs"],
+        },
+      };
+      aiFunctionsInfo.functions.push(generateFlashcards);
+      aiFunctionsInfo.function_call = { name: "generateFlashcards" };
     }
     return aiFunctionsInfo;
   };
@@ -135,7 +177,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
     // system message logic
     let systemMessageContent;
-    if (userChatPreferences.mode === "Discussion") {
+    if (userChatPreferences.mode === "Tutor Session") {
       const socraticAddition = (tutorType) =>
         tutorType === "Socratic"
           ? "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions."
@@ -182,6 +224,22 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
         }
         Please ensure that the content is in-depth and directly related to the main subject and user's goal.
       `;
+    } else if (userChatPreferences.mode === "Flashcard Generation") {
+      systemMessageContent = `
+        You are instructed to generate a set of ${
+          userChatPreferences.flashcardCount
+        } flashcards based on the topic: ${userChatPreferences.topic}.
+        Each flashcard should adhere to the selected difficulty level of ${
+          userChatPreferences.flashcardDifficulty
+        }.
+        The specific goal is to ${userChatPreferences.goal}.
+        ${
+          userChatPreferences.personalInfo
+            ? `Here's additional context about the user: ${userChatPreferences.personalInfo}`
+            : ""
+        }
+        Ensure that each flashcard directly contributes to achieving the user's specified objective.
+      `;
     }
 
     // send gpt functions based on interaction mode
@@ -189,9 +247,11 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
     // trigger interaction
     const userGreetingContent =
-      userChatPreferences.mode === "Discussion"
-        ? "Introduce yourself to the user and briefly acknowledge the topic and goal of the discussion."
-        : "Start creating notes according to the given instructions.";
+      userChatPreferences.mode === "Tutor Session"
+        ? "Introduce yourself to the user and briefly acknowledge the topic and goal of the tutoring session."
+        : userChatPreferences.mode === "Note Generation"
+        ? "Start creating notes according to the given instructions."
+        : "Initiate the process to generate flashcards in line with the given topic and difficulty.";
 
     const messageHistory = [
       { role: "system", content: systemMessageContent },
@@ -260,7 +320,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
           preferences.personalInfo !== ""
         );
       case 3:
-        if (preferences.mode === "Discussion") {
+        if (preferences.mode === "Tutor Session") {
           return (
             preferences.tutorType !== "" &&
             preferences.tutorName !== "" &&
@@ -315,16 +375,16 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                       Generate notes in various formats.
                     </p>
                   </div>
-                  {/* Discussion Selection */}
+                  {/* Tutor Session Selection */}
                   <div
                     className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
-                      updatePreferences("mode", "Discussion"), goToNextStage();
+                      updatePreferences("mode", "Tutor Session"), goToNextStage();
                     }}
                   >
                     <h2 className="text-2xl mb-2 md:mb-4">tutoring session</h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Engage in an interactive discussion with a virtual tutor.
+                      Engage in an academic dialogue with a virtual tutor.
                     </p>
                   </div>
                   {/* Flascard Generation Selection */}
@@ -349,7 +409,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             {stage === 2 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
                 <h2 className="block text-gray-700 text-2xl text-center mb-2">
-                  {preferences.mode === "Discussion"
+                  {preferences.mode === "Tutor Session"
                     ? "what would you like to discuss?"
                     : preferences.mode === "Note Generation"
                     ? "what topic should the notes cover?"
@@ -384,14 +444,14 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
                 <h2 className="block text-gray-700 text-2xl text-center mb-2">
-                  {preferences.mode === "Discussion"
+                  {preferences.mode === "Tutor Session"
                     ? "tutor preferences"
                     : preferences.mode === "Note Generation"
                     ? "note preferences"
                     : "flashcard preferences"}
                 </h2>
 
-                {preferences.mode === "Discussion" && (
+                {preferences.mode === "Tutor Session" && (
                   <>
                     <GenericSelect
                       label="Tutor Type"
