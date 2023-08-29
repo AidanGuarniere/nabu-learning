@@ -286,14 +286,16 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
               e.preventDefault();
               // goToNextStage();
             }}
-            className="w-full h-4/5 md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg overflow-y-auto"
+            className="w-full h-4/5 rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg overflow-y-auto"
           >
             {stage === 1 && (
               <div className="h-full flex flex-col justify-center items-center">
                 {" "}
-                <h1 className="text-center text-3xl md:text-4xl mb-2 md:mb-4">
-                  choose your interaction
-                </h1>
+                <div className="flex items-center mb-2 md:mb-4 py-2 px-4">
+                  <h1 className="text-center font-light text-3xl md:text-[2.4rem]">
+                    choose your interaction
+                  </h1>
+                </div>
                 <ModelSelect
                   onChange={(value) =>
                     updatePreferences("selectedModel", value)
@@ -302,7 +304,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full md:max-w-4xl">
                   {/* Note Generation Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Note Generation"),
                         goToNextStage();
@@ -312,19 +314,10 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                     <p className="text-center text-gray-700 h-1/2 mb-4">
                       Generate notes in various formats.
                     </p>
-                    {/* <button
-                    onClick={() => {
-                      updatePreferences("mode", "Note Generation"),
-                        goToNextStage();
-                    }}
-                    className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-                  >
-                    select
-                  </button> */}
                   </div>
                   {/* Discussion Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Discussion"), goToNextStage();
                     }}
@@ -333,18 +326,10 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                     <p className="text-center text-gray-700 h-1/2 mb-4">
                       Engage in an interactive discussion with a virtual tutor.
                     </p>
-                    {/* <button
-                    onClick={() => {
-                      updatePreferences("mode", "Discussion"), goToNextStage();
-                    }}
-                    className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-                  >
-                    select
-                  </button> */}
                   </div>
                   {/* Flascard Generation Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Flashcard Generation"),
                         goToNextStage();
@@ -356,15 +341,6 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                     <p className="text-center text-gray-700 h-1/2 mb-4">
                       Generate a set of flashcards to help you study.
                     </p>
-                    {/* <button
-                    onClick={() => {
-                      updatePreferences("mode", "Flashcard Generation"),
-                        goToNextStage();
-                    }}
-                    className="btn-primary w-full p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200 shadow-md"
-                  >
-                    select
-                  </button> */}
                   </div>
                 </div>
               </div>
@@ -386,32 +362,34 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                   value={preferences.topic}
                   onChange={(value) => updatePreferences("topic", value)}
                   placeholder="Enter the topic of interaction"
-                  maxLength={250}
+                  maxLength={500}
                 />
                 <GenericInput
                   label="Goal"
                   value={preferences.goal}
                   onChange={(value) => updatePreferences("goal", value)}
                   placeholder="Enter the goal for this interaction"
-                  maxLength={250}
+                  maxLength={500}
                 />
                 <GenericInput
                   label="Personal Info"
                   value={preferences.personalInfo}
                   onChange={(value) => updatePreferences("personalInfo", value)}
                   placeholder="Enter any personal info you feel is relevant to this interaction e.g. your experience with the topic"
-                  maxLength={250}
+                  maxLength={500}
                 />
               </div>
             )}
 
             {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
-                <div className="block text-gray-700 text-2xl text-center mb-2">
+                <h2 className="block text-gray-700 text-2xl text-center mb-2">
                   {preferences.mode === "Discussion"
-                    ? "Tutor Information"
-                    : "Note Preferences"}
-                </div>
+                    ? "tutor preferences"
+                    : preferences.mode === "Note Generation"
+                    ? "note preferences"
+                    : "flashcard preferences"}
+                </h2>
 
                 {preferences.mode === "Discussion" && (
                   <>
@@ -483,14 +461,13 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                       }
                       options={["10", "20", "30"]}
                     />
-                    <GenericInput
+                    <GenericSelect
                       label="Flashcard Difficulty"
                       value={preferences.flashcardDifficulty}
                       onChange={(value) =>
                         updatePreferences("flashcardDifficulty", value)
                       }
-                      placeholder="Easy, Medium, or Hard"
-                      maxLength={50}
+                      options={["easy", "medium", "hard"]}
                     />
                   </>
                 )}
@@ -498,7 +475,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             )}
           </form>
           {stage > 1 && (
-            <div className="flex justify-center items-start w-full md:max-w-3xl mt-4 md:mt-0">
+            <div className="md:h-1/6 flex justify-center items-start md:items-center w-full md:max-w-3xl mt-4 md:mt-0">
               <button
                 onClick={goToPreviousStage}
                 className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"

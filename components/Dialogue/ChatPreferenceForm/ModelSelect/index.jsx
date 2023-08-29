@@ -20,16 +20,16 @@ const ModelSelect = ({ value, onChange, }) => {
   return (
     <div className="flex flex-col justify-center items-center w-full mb-4 ">
       <label
-        className="block text-gray-700 text-center text-xl mb-2"
+        className="block text-center text-2xl mb-2 font-light"
         htmlFor="model-select"
       >
-        Select Model
+        select model
       </label>
       <select
         id="model-select"
         value={value}
         onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
-        className=" shadow appearance-none border rounded w-auto py-2 px-3 text-center text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className=" shadow-sm appearance-none border rounded w-auto py-2 px-3 text-center text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
         <option key={"gpt-3.5-turbo"} value={"gpt-3.5-turbo"}>
           {"gpt-3.5-turbo"}
