@@ -13,7 +13,7 @@ const Auth = () => {
           welcome to nabu
         </h1>
         <h2 className="text-lg lg:text-xl text-gray-900">
-          nabu uses OpenAI's GPT models to facilitate AI-powered interactions.
+          nabu uses OpenAI&apos;s GPT models to facilitate AI-powered interactions.
           <br />
           nabu may produce inaccurate information.
         </h2>
