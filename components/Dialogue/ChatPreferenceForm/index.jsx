@@ -340,13 +340,13 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       {loading ? (
         "loading"
       ) : (
-        <div className="h-full w-full flex flex-col md:justify-center items-center py-6 px-4">
+        <div className="w-full h-full flex flex-col md:justify-center items-center py-6 px-4">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               // goToNextStage();
             }}
-            className="w-full h-4/5 rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg overflow-y-auto"
+            className="w-full h-4/5 md:h-full rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg"
           >
             {stage === 1 && (
               <div className="h-full flex flex-col justify-center items-center">
@@ -407,8 +407,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             )}
 
             {stage === 2 && (
-              <div className="flex flex-col justify-between w-full h-full md:h-2/3">
-                <h2 className="block text-gray-700 text-2xl text-center mb-2">
+              <div className="flex flex-col md:justify-between md:justify-center w-full h-full">
+                <h2 className="block text-gray-700 text-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "what would you like to discuss?"
                     : preferences.mode === "Note Generation"
@@ -443,7 +443,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
             {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
-                <h2 className="block text-gray-700 text-2xl text-center mb-2">
+                <h2 className="block text-gray-700 text-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "tutor preferences"
                     : preferences.mode === "Note Generation"
@@ -535,7 +535,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             )}
           </form>
           {stage > 1 && (
-            <div className="md:h-1/6 flex justify-center items-start md:items-center w-full md:max-w-3xl mt-4 md:mt-0">
+            <div className="h-1/6 flex justify-center items-start  w-full md:max-w-3xl mt-4 md:mt-0">
               <button
                 onClick={goToPreviousStage}
                 className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
@@ -569,7 +569,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 export default PreferencesForm;
 // {stage === 2 && (
 //   <div className="flex flex-col md:flex-row justify-between w-full md:h-2/3 overflow-y-auto">
-//     <div className="block text-gray-700 text-2xl text-center mb-2 w-full">
+//     <div className="block text-gray-700 text-2xl text-center w-full">
 //       Topic Details
 //     </div>
 

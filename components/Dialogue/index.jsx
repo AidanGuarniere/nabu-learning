@@ -7,8 +7,6 @@ import ChatPreferenceForm from "./ChatPreferenceForm";
 
 function Dialogue({
   session,
-  userText,
-  setUserText,
   error,
   setError,
   chats,
@@ -111,8 +109,6 @@ function Dialogue({
           <PromptActions
             session={session}
             setError={setError}
-            userText={userText}
-            setUserText={setUserText}
             chats={chats}
             setChats={setChats}
             selectedChat={selectedChat}

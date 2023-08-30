@@ -7,7 +7,6 @@ function Dashboard({
   session,
   chats,
   setChats,
-  error,
   setError,
   selectedChat,
   setSelectedChat,

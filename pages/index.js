@@ -11,7 +11,6 @@ import Footer from "../components/Footer";
 export default function Home() {
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
-  const [userText, setUserText] = useState("");
   const [error, setError] = useState(null);
   const [selectedChatLoading, setSelectedChatLoading] = useState(null);
   const { data: session, status } = useSession();
@@ -99,8 +98,6 @@ export default function Home() {
         <Dashboard
           session={session}
           chats={chats}
-          userText={userText}
-          setUserText={setUserText}
           setChats={setChats}
           setError={setError}
           selectedChat={selectedChat}
@@ -111,8 +108,6 @@ export default function Home() {
             <div className="flex overflow-x-hidden items-bottom w-full h-full">
               <Dialogue
                 session={session}
-                userText={userText}
-                setUserText={setUserText}
                 error={error}
                 setError={setError}
                 chats={chats}

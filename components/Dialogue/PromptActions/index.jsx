@@ -9,16 +9,13 @@ import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 function PromptActions({
   session,
   setError,
-  userText,
-  selectedModel,
-  setUserText,
   chats,
   setChats,
   selectedChat,
-  setSelectedChat,
 }) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
+  const [userText, setUserText] = useState("");
 
   // useEffect(() => {
   //   console.log(chats)
