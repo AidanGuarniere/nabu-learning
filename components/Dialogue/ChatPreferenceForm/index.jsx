@@ -116,18 +116,21 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
               items: {
                 type: "object",
                 properties: {
+                  count: {
+                    type: "number",
+                    description: "The index number of this flashcard.",
+                  },
                   question: {
                     type: "string",
                     description: "The front of the flashcard.",
                   },
                   answer: {
-                    type: "array",
-                    items: { type: "string" },
+                    type: "string",
                     description:
                       "The answer or details at the back of the flashcard.",
                   },
                 },
-                required: ["question", "answer"],
+                required: ["count", "question", "answer"],
               },
               description: "An array of flashcard question-answer pairs.",
             },
@@ -164,6 +167,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       noteType: preferences.noteType,
       noteTitle: preferences.noteTitle,
       noteTone: preferences.noteTone,
+      flashcardCount: preferences.flashcardCount,
+      flashcardDifficulty: preferences.flashcardDifficulty
     };
 
     // setLoading(true); // Start loading
@@ -197,7 +202,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
           }.
           Utilize your expertise in ${
             userChatPreferences.topic
-          } to foster this understanding.
+          } to foster this understanding. Be sure to keep the conversation relevant to the user's topic and goal.
           ${
             userChatPreferences.personalInfo
               ? `Additional information about the user: ${userChatPreferences.personalInfo}`
@@ -226,20 +231,27 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       `;
     } else if (userChatPreferences.mode === "Flashcard Generation") {
       systemMessageContent = `
-        You are instructed to generate a set of ${
-          userChatPreferences.flashcardCount
-        } flashcards based on the topic: ${userChatPreferences.topic}.
-        Each flashcard should adhere to the selected difficulty level of ${
-          userChatPreferences.flashcardDifficulty
-        }.
-        The specific goal is to ${userChatPreferences.goal}.
-        ${
-          userChatPreferences.personalInfo
-            ? `Here's additional context about the user: ${userChatPreferences.personalInfo}`
-            : ""
-        }
-        Ensure that each flashcard directly contributes to achieving the user's specified objective.
-      `;
+      You are instructed to EXPLICITLY generate a set of flashcards NUMBERED from 1 to ${
+        userChatPreferences.flashcardCount
+      } based on the topic: ${userChatPreferences.topic}.
+      Use simple arithmetic: The first flashcard should be numbered 1, the second numbered 2, and so on until you reach flashcard number ${
+        userChatPreferences.flashcardCount
+      }.
+      Each flashcard should adhere to the selected difficulty level of ${
+        userChatPreferences.flashcardDifficulty
+      }.
+      The specific goal in creating these flashcards is to ${
+        userChatPreferences.goal
+      }.
+      ${
+        userChatPreferences.personalInfo
+          ? `Additional context about the user: ${userChatPreferences.personalInfo}`
+          : ""
+      }
+      Ensure each flashcard has a unique number, directly contributes to achieving the user's specified objective, AND that the total number of flashcards equals ${
+        userChatPreferences.flashcardCount
+      }. Ensure each flashcard has 1 verifiably accurate answer to it's associated question. 
+    `;
     }
 
     // send gpt functions based on interaction mode
@@ -379,7 +391,8 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                   <div
                     className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
-                      updatePreferences("mode", "Tutor Session"), goToNextStage();
+                      updatePreferences("mode", "Tutor Session"),
+                        goToNextStage();
                     }}
                   >
                     <h2 className="text-2xl mb-2 md:mb-4">tutoring session</h2>

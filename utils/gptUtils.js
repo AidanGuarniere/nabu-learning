@@ -8,10 +8,11 @@ export const sendMessageHistoryToGPT = async ({
   function_call,
 }) => {
   const processApiResponse = (apiResponse) => {
+    console.log(apiResponse);
     if ("function_call" in apiResponse) {
       apiResponse.content = `FUNCTION CALLED: ${JSON.stringify(
         apiResponse.function_call
-      )}`;
+      )} `;
       apiResponse.function_call = null;
     }
     return apiResponse;
@@ -28,6 +29,7 @@ export const sendMessageHistoryToGPT = async ({
       const newMessage = await processApiResponse(
         response.data.completion.choices[0].message
       );
+      console.log(newMessage)
       messageHistory.push(newMessage);
       return messageHistory;
     } else {
