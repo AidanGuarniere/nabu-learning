@@ -24,7 +24,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
     noteType: "", // For note generation (e.g., "Cornell", "Bullets")
     noteTitle: "", // For note generation (e.g., "Cornell", "Bullets")
     noteTone: "",
-    flashcardCount: null,
+    flashcardCount: 10,
     flashcardDifficulty: "",
     // For note generation (e.g., "Formal", "Casual")
     // Additional preferences as needed
