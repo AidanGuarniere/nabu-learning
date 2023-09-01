@@ -18,18 +18,23 @@ export const sendMessageHistoryToGPT = async ({
     return apiResponse;
   };
   try {
-    const response = await axios.post("/api/proxy/gpt", {
-      model,
-      messages: messageHistory,
-      functions,
-      function_call,
-    });
-
+    const response = await axios.post(
+      "/api/proxy/gpt",
+      {
+        model,
+        messages: messageHistory,
+        functions,
+        function_call,
+      },
+      {
+        timeout: 30000,
+      }
+    );
     if (response.status === 200) {
       const newMessage = await processApiResponse(
         response.data.completion.choices[0].message
       );
-      console.log(newMessage)
+      console.log(newMessage);
       messageHistory.push(newMessage);
       return messageHistory;
     } else {
