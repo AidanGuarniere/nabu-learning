@@ -6,6 +6,10 @@ import { decrypt } from "../../../utils/crypto";
 import { Configuration, OpenAIApi } from "openai";
 import rateLimiter from "../../../utils/rateLimiter";
 
+// export const config = {
+//   runtime: "edge",
+// };
+
 const fetchDataFromAPI = async (model, messages, functions, function_call, apiKey) => {
   const configuration = new Configuration({
     apiKey,
@@ -17,7 +21,9 @@ const fetchDataFromAPI = async (model, messages, functions, function_call, apiKe
       messages: messages,
       functions: functions,
       function_call: function_call,
+      // stream: true,
     });
+    console.log(completion);
     // console.log(completion.data.choices[0]);
     return completion.data;
   } catch (error) {
