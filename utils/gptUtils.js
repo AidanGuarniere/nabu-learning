@@ -27,7 +27,7 @@ export const sendMessageHistoryToGPT = async ({
         function_call,
       },
       {
-        timeout: 60000,
+        timeout: 300000,
       }
     );
     if (response.status === 200) {
