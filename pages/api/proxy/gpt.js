@@ -11,24 +11,21 @@ import rateLimiter from "../../../utils/rateLimiter";
 //   runtime: "edge",
 // };
 
-// Function to set up SSE connection and necessary headers for the response
-const initSSE = (res) => {
-  // Setting up headers required for SSE
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.flushHeaders(); // Sends the headers immediately to the client to establish an SSE connection
-};
-
-const fetchCompletionFromGptApi = async (model, messages, functions, function_call, apiKey, res) => {
-  // configure openai api interaction
+// U JUST UPDATED YOUR FETCH TO USE STREAMING FUNCTIONALITY DESCRIBED IN SO
+const fetchDataFromAPI = async (
+  model,
+  messages,
+  functions,
+  function_call,
+  apiKey
+) => {
   const configuration = new Configuration({
     apiKey,
   });
   const openai = new OpenAIApi(configuration);
 
   try {
-    // initiate chatCompletion stream from openai api
+    const streamCompletion = [];
     const completion = await openai.createChatCompletion(
       {
         model: model,
@@ -39,33 +36,28 @@ const fetchCompletionFromGptApi = async (model, messages, functions, function_ca
       },
       { responseType: "stream" }
     );
+    // console.log(completion.data, Date.now());
 
-    // stream of completion data from gpt api
     const stream = completion.data;
 
-    // Listening to 'data' event on stream. This is triggered every time a chunk of data is received.
     stream.on("data", (chunk) => {
-      // split chunk based on new line breaks, as these represent separate chunks of data
       const payloads = chunk.toString().split("\n\n");
-      // for each payload from the split chunk
       for (const payload of payloads) {
-        // If the payload indicates the stream is done, we notify the client and close the stream.
         if (payload.includes("[DONE]")) {
-          res.write('event: done\ndata: DONE\n\n');
-          res.end();
+          // Handle completion: perhaps send streamCompletion to client or log it
+          // console.log(streamCompletion.join(""));
+          // Reset for next usage
+          streamCompletion.length = 0;
           return;
         }
 
-        // if payload contains data (if stream is still active)
         if (payload.startsWith("data:")) {
-          // remove unneeded text
           const data = JSON.parse(payload.replace("data: ", ""));
           try {
-            // deconstruct content from delta field 
             const deltaContent = data.choices[0].delta?.content;
             if (deltaContent !== undefined) {
-              // Send the extracted deltaContent to the client immediately as it arrives.
-              res.write(`data: ${deltaContent}\n\n`);
+              streamCompletion.push(deltaContent);
+              console.log(streamCompletion)
             }
           } catch (error) {
             console.log(`Error with JSON.parse and ${payload}.\n${error}`);
@@ -73,6 +65,7 @@ const fetchCompletionFromGptApi = async (model, messages, functions, function_ca
         }
       }
     });
+    // console.log(streamCompletion)
 
   } catch (error) {
     console.error(error);
@@ -80,24 +73,20 @@ const fetchCompletionFromGptApi = async (model, messages, functions, function_ca
   }
 };
 
-
-const initGptRequest = async (
+const handleRequest = async (
   user,
   model,
   messages,
   functions,
-  function_call,
-  res
+  function_call
 ) => {
-  // deconstruct logged-in user's api key, pass to completions endpoint for gpt interaction
   const decryptedApiKey = await decrypt(user.apiKey);
-  return fetchCompletionFromGptApi(
+  return fetchDataFromAPI(
     model,
     messages,
     functions,
     function_call,
-    decryptedApiKey,
-    res
+    decryptedApiKey
   );
 };
 
@@ -107,34 +96,28 @@ export default async function handler(req, res) {
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  // connect to mongoose instance
   await dbConnect();
   const session = await getServerSession(req, res, authOptions);
   if (!session) {
     return res.status(401).json({ error: "Unauthorized" });
   }
+  const userId = session.user.id;
   // try {
   //   await rateLimiter(userId);
   // } catch (err) {
   //   return res.status(429).json({ error: "Too many requests" });
   // }
   try {
-    // find user w valid session
     const user = await User.findById(session.user.id);
-    // deconstruct user completion data from body
     const { model, messages, functions, function_call } = req.body;
-    // initate response headers for SSE
-    initSSE(res);
-    // initate request to gpt 
-    const completion = await initGptRequest(
+    const completion = await handleRequest(
       user,
       model,
       messages,
       functions,
-      function_call,
-      res
+      function_call
     );
-    // res.status(200).json({ completion });
+    res.status(200).json({ completion });
   } catch (error) {
     const statusCode = error.status || 500;
 
