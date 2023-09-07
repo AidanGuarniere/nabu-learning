@@ -70,43 +70,57 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (userText.length >= 1) {
       setLoading(true);
       setShowRegen(false);
       setError(null);
 
       try {
-        // create Chat based on user prompt
+        // Create Chat based on user prompt
         const messageData = await createMessageData(e);
 
         // Prepare to send Chat message data to GPT API
-        const gptRequestConfig = {
+        const gptRequestPayload = {
           model: messageData.messageModel,
-          messageHistory: messageData.messageHistory,
+          messages: messageData.messageHistory,
         };
 
         if (messageData.chatFunctions.length) {
-          gptRequestConfig.functions = messageData.chatFunctions;
-          gptRequestConfig.function_call = "auto";
+          gptRequestPayload.functions = messageData.chatFunctions;
+          gptRequestPayload.function_call = "auto";
         }
 
-        // Initiate the generator
-        const gptResponseGenerator = sendMessageHistoryToGPT(gptRequestConfig);
+        console.log(gptRequestPayload)
+        // Make POST to /proxy/gpt
+        const response = await fetch("/api/proxy/gpt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(gptRequestPayload),
+        });
 
-        // Process each chunk as it's yielded by the generator
-        let completeGPTResponse = [];
-        for await (const chunk of gptResponseGenerator) {
-          // Update the most recent message with the chunk
-          // NOTE: You might need to implement `updateMostRecentMessage` based on your requirements
-          // updateMostRecentMessage(chunk);
-
-          // Accumulate the chunk into the complete response for later use
-          completeGPTResponse.push(chunk);
-          console.log(completeGPTResponse)
+        if (!response.ok) {
+          throw new Error(response.statusText);
         }
 
-        // update Chat with the finalized GPT response
-        // await handleGPTResponse(messageData.chatId, completeGPTResponse);
+        // This data is a ReadableStream
+        const data = response.body;
+        if (data) {
+          const reader = data.getReader();
+          const decoder = new TextDecoder();
+
+          let done = false;
+          while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+            const chunkValue = decoder.decode(value);
+
+            // For simplicity, we'll just console log each chunk for now.
+            console.log(chunkValue);
+          }
+        }
 
         setLoading(false);
         setShowRegen(true);
