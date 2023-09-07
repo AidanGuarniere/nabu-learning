@@ -15,6 +15,7 @@ function Dialogue({
   setSelectedChat,
   selectedChatLoading,
 }) {
+  
   const chatRef = useRef(null);
   const [scrollHeight, setScrollHeight] = useState();
   const [prevSelectedChat, setPrevSelectedChat] = useState(null);

@@ -1,31 +1,35 @@
-import dbConnect from "../../../utils/dbConnect";
-import User from "../../../models/UserSchema";
-import { authOptions } from "../auth/[...nextauth]";
-import { getServerSession } from "next-auth/next";
-import { decrypt } from "../../../utils/crypto";
+// import { decrypt } from "../../../utils/crypto";
 import { Configuration, OpenAIApi } from "openai";
-import { Readable } from "stream";
-import rateLimiter from "../../../utils/rateLimiter";
+// import { Readable } from "stream";
+// import rateLimiter from "../../../utils/rateLimiter";
 
-// export const config = {
-//   runtime: "edge",
-// };
+// check for api key
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("Missing env var from OpenAI");
+}
 
-// U JUST UPDATED YOUR FETCH TO USE STREAMING FUNCTIONALITY DESCRIBED IN SO
+export const config = {
+  runtime: "edge",
+};
+
 const fetchDataFromAPI = async (
   model,
   messages,
   functions,
   function_call,
-  apiKey
+  apiKey,
+  res
 ) => {
+  // configure openai api interaction
   const configuration = new Configuration({
     apiKey,
   });
   const openai = new OpenAIApi(configuration);
 
   try {
+    // array for openai stream response
     const streamCompletion = [];
+    // create chat completion w user request
     const completion = await openai.createChatCompletion(
       {
         model: model,
@@ -36,28 +40,41 @@ const fetchDataFromAPI = async (
       },
       { responseType: "stream" }
     );
-    // console.log(completion.data, Date.now());
 
+    // stream = openai api response
     const stream = completion.data;
 
+    // when stream receives a new chunk of data
     stream.on("data", (chunk) => {
+      // deconstruct payloads based on newline characters
       const payloads = chunk.toString().split("\n\n");
+      // for each payload
       for (const payload of payloads) {
+        // openai stream complete, end response stream
         if (payload.includes("[DONE]")) {
           // Handle completion: perhaps send streamCompletion to client or log it
           // console.log(streamCompletion.join(""));
           // Reset for next usage
+          console.log("[DONE]");
+          res.end();
           streamCompletion.length = 0;
           return;
         }
 
+        // if payload contains data
         if (payload.startsWith("data:")) {
+          // remove unneccesary characters
           const data = JSON.parse(payload.replace("data: ", ""));
           try {
+            // deconstruct openai stream content from delta
             const deltaContent = data.choices[0].delta?.content;
             if (deltaContent !== undefined) {
+              // stream completion arr unused for now, may utilize for buffer or transform purposes later
               streamCompletion.push(deltaContent);
-              console.log(streamCompletion)
+              // write content to directly to stream
+              console.log("delta", deltaContent);
+              res.write(deltaContent);
+              // console.log(res)
             }
           } catch (error) {
             console.log(`Error with JSON.parse and ${payload}.\n${error}`);
@@ -66,7 +83,6 @@ const fetchDataFromAPI = async (
       }
     });
     // console.log(streamCompletion)
-
   } catch (error) {
     console.error(error);
     throw error;
@@ -74,50 +90,60 @@ const fetchDataFromAPI = async (
 };
 
 const handleRequest = async (
-  user,
   model,
   messages,
   functions,
-  function_call
+  function_call,
+  res
 ) => {
-  const decryptedApiKey = await decrypt(user.apiKey);
+  // get user api key from environment vars
+  const apiKey = process.env.OPENAI_API_KEY;
+  console.log("apiKey", apiKey);
+  // set streaming response headers
+  res.setHeader("Content-Type", "text/plain");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Transfer-Encoding", "chunked");
+
+  // pass request data and response object
   return fetchDataFromAPI(
     model,
     messages,
     functions,
     function_call,
-    decryptedApiKey
+    apiKey,
+    res
   );
 };
 
 export default async function handler(req, res) {
+  // check http method
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  await dbConnect();
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  const userId = session.user.id;
+  // validate user session, reject if unauthorized
+  // const session = await getServerSession(req, res, authOptions);
+  // if (!session) {
+  //   return res.status(401).json({ error: "Unauthorized" });
+  // }
+  // redis rate limiting for prod
   // try {
   //   await rateLimiter(userId);
   // } catch (err) {
   //   return res.status(429).json({ error: "Too many requests" });
   // }
   try {
-    const user = await User.findById(session.user.id);
-    const { model, messages, functions, function_call } = req.body;
-    const completion = await handleRequest(
-      user,
-      model,
-      messages,
-      functions,
-      function_call
-    );
-    res.status(200).json({ completion });
+    // find current user based on session
+    // const user = await User.findById(session.user.id);
+    // deconstruct gpt api payload from request
+    const payload = await req.json();
+    const { model, messages, functions, function_call } = payload;
+
+    // pass payload and response object to handleRequest
+    await handleRequest(model, messages, functions, function_call, res);
+    // return res;
+    // error handling
   } catch (error) {
     const statusCode = error.status || 500;
 
@@ -126,9 +152,6 @@ export default async function handler(req, res) {
       message: error.message,
       stack: error.stack,
       requestBody: req.body,
-      userId: session?.user?.id,
     });
-
-    res.status(statusCode).json({ error: error.message });
   }
 }

@@ -1,18 +1,10 @@
-// ERROR WITH CONTINUING CORNELL NOTE CONVERSATIONS, MUST INTEGRATE OPENAI FUNCTION CALLS TO MESSAGE HISTORY
-
 import React, { useState, useEffect } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import { fetchChats, createChat, updateChat } from "../../../utils/chatUtils";
 import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
-function PromptActions({
-  session,
-  setError,
-  chats,
-  setChats,
-  selectedChat,
-}) {
+function PromptActions({ session, setError, chats, setChats, selectedChat }) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
@@ -54,7 +46,6 @@ function PromptActions({
     let updatedChats = [...chats];
     updatedChats[selectedIndex] = updatedChat;
     setChats(updatedChats);
-    // issue may be here w way we are sending function based on gpt response
     messageHistory = updatedChat.messages.map((message) => ({
       role: message.role,
       content: message.content || JSON.stringify(message.function_call),
@@ -65,7 +56,6 @@ function PromptActions({
     return { chatId, messageModel, messageHistory, chatFunctions };
   };
 
-  // confusion here so problem likely
   const handleGPTResponse = async (chatId, messageData) => {
     const updatedChatData = {
       userId: session.user.id,
@@ -84,27 +74,40 @@ function PromptActions({
       setLoading(true);
       setShowRegen(false);
       setError(null);
+
       try {
         // create Chat based on user prompt
         const messageData = await createMessageData(e);
-        let gptResponse;
-        // send Chat message data to GPT API
+
+        // Prepare to send Chat message data to GPT API
+        const gptRequestConfig = {
+          model: messageData.messageModel,
+          messageHistory: messageData.messageHistory,
+        };
+
         if (messageData.chatFunctions.length) {
-          gptResponse = await sendMessageHistoryToGPT({
-            model: messageData.messageModel,
-            messageHistory: messageData.messageHistory,
-            functions: messageData.chatFunctions,
-            function_call: "auto",
-          });
-        } else {
-          gptResponse = await sendMessageHistoryToGPT({
-            model: messageData.messageModel,
-            messageHistory: messageData.messageHistory,
-          });
+          gptRequestConfig.functions = messageData.chatFunctions;
+          gptRequestConfig.function_call = "auto";
         }
 
-        // update Chat with GPT response
-        await handleGPTResponse(messageData.chatId, gptResponse);
+        // Initiate the generator
+        const gptResponseGenerator = sendMessageHistoryToGPT(gptRequestConfig);
+
+        // Process each chunk as it's yielded by the generator
+        let completeGPTResponse = [];
+        for await (const chunk of gptResponseGenerator) {
+          // Update the most recent message with the chunk
+          // NOTE: You might need to implement `updateMostRecentMessage` based on your requirements
+          // updateMostRecentMessage(chunk);
+
+          // Accumulate the chunk into the complete response for later use
+          completeGPTResponse.push(chunk);
+          console.log(completeGPTResponse)
+        }
+
+        // update Chat with the finalized GPT response
+        // await handleGPTResponse(messageData.chatId, completeGPTResponse);
+
         setLoading(false);
         setShowRegen(true);
       } catch (error) {
@@ -124,27 +127,28 @@ function PromptActions({
       try {
         const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
         let updatedChat = { ...chats[chatIndex] };
-  
+
         const messageData = updatedChat.messages
           .slice(0, -1)
           .map((message) => ({
             role: message.role,
             content: message.content || JSON.stringify(message.function_call),
           }));
-  
+
         const gptResponse = await sendMessageHistoryToGPT({
           model: updatedChat.chatPreferences.selectedModel,
           messageHistory: messageData,
           functions: updatedChat.functions,
           function_call: "auto",
         });
-  
+
         if (gptResponse && gptResponse.length > 0) {
-          messageData[messageData.length - 1] = gptResponse[gptResponse.length - 1];
+          messageData[messageData.length - 1] =
+            gptResponse[gptResponse.length - 1];
         }
-  
+
         updatedChat = { ...updatedChat, messages: messageData };
-  
+
         await updateChat(selectedChat, updatedChat);
         const updatedChats = await fetchChats();
         setChats(updatedChats);
@@ -155,7 +159,6 @@ function PromptActions({
       }
     }
   };
-  
 
   return (
     <div className="md:pl-[260px] absolute bottom-0 left-0 w-full pt-8 pb-24 md:pb-12 bg-vert-light-gradient dark:bg-gray-800 md:!bg-transparent dark:md:bg-vert-dark-gradientborder-t md:border-t-0 dark:border-white/20 md:border-transparent md:dark:border-transparent">
