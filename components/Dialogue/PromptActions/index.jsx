@@ -110,6 +110,7 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
       setLoading(true);
       setShowRegen(false);
       setError(null);
+      setStream("");
 
       try {
         // get exisitng message history from chats state + submitted user prompt via usertext to create gpt request payload
@@ -207,6 +208,8 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
     if (selectedChat) {
       setLoading(true);
       setError(null);
+      setStream(""); // Clear the stream content for a fresh start
+
       try {
         const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
         let updatedChat = { ...chats[chatIndex] };
@@ -218,23 +221,64 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
             content: message.content || JSON.stringify(message.function_call),
           }));
 
-        const gptResponse = await sendMessageHistoryToGPT({
+        let gptRequestPayload = {
           model: updatedChat.chatPreferences.selectedModel,
-          messageHistory: messageData,
-          functions: updatedChat.functions,
-          function_call: "auto",
-        });
+          messages: messageData,
+        };
 
-        if (gptResponse && gptResponse.length > 0) {
-          messageData[messageData.length - 1] =
-            gptResponse[gptResponse.length - 1];
+        if (updatedChat.functions && updatedChat.functions.length > 0) {
+          gptRequestPayload.functions = updatedChat.functions;
+          gptRequestPayload.function_call = "auto";
         }
 
-        updatedChat = { ...updatedChat, messages: messageData };
+        const response = await fetch("/api/proxy/gpt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(gptRequestPayload),
+        });
 
-        await updateChat(selectedChat, updatedChat);
-        const updatedChats = await fetchChats();
-        setChats(updatedChats);
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        const data = response.body;
+        if (data) {
+          const onParse = (event) => {
+            if (event.type === "event") {
+              const eventData = event.data;
+              try {
+                const parsedChunk = JSON.parse(eventData);
+                setStream((prev) => prev + parsedChunk.text);
+              } catch (e) {
+                console.error("Error parsing JSON: ", eventData);
+              }
+            }
+          };
+
+          const reader = data.getReader();
+          const decoder = new TextDecoder();
+
+          const parser = createParser(onParse);
+          let done = false;
+          let lastChunkProcessed = "";
+          while (!done) {
+            const { value, done: doneReading } = await reader.read();
+            done = doneReading;
+            let chunkValue = decoder.decode(value);
+
+            if (lastChunkProcessed) {
+              let overlapIndex = chunkValue.indexOf(lastChunkProcessed);
+              if (overlapIndex === 0) {
+                chunkValue = chunkValue.substring(lastChunkProcessed.length);
+              }
+            }
+            lastChunkProcessed = chunkValue;
+            parser.feed(chunkValue);
+          }
+        }
+
         setLoading(false);
       } catch (error) {
         setError(error);
