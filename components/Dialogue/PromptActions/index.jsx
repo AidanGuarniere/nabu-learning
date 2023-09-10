@@ -3,15 +3,44 @@ import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import { fetchChats, createChat, updateChat } from "../../../utils/chatUtils";
 import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
+import { createParser, ParsedEvent } from "eventsource-parser";
 
 function PromptActions({ session, setError, chats, setChats, selectedChat }) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
+  const [stream, setStream] = useState("");
 
   // useEffect(() => {
   //   console.log(chats)
   // }, [chats])
+
+  useEffect(() => {
+    if (stream.length) {
+      setChats((prevChats) =>
+        prevChats.map((chat) => {
+          if (chat._id === selectedChat) {
+            const updatedChat = { ...chat };
+            if (!updatedChat.messages) {
+              updatedChat.messages = [];
+            }
+            const lastMessage =
+              updatedChat.messages[updatedChat.messages.length - 1];
+            if (lastMessage && lastMessage.role === "assistant") {
+              lastMessage.content = stream;
+            } else {
+              updatedChat.messages.push({
+                role: "assistant",
+                content: stream,
+              });
+            }
+            return updatedChat;
+          }
+          return chat;
+        })
+      );
+    }
+  }, [stream]);
 
   useEffect(() => {
     if (selectedChat) {
@@ -68,31 +97,35 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
     );
   };
 
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // if user has typed something into promptform
     if (userText.length >= 1) {
+      // set ui states to show request is in progress
       setLoading(true);
       setShowRegen(false);
       setError(null);
 
       try {
-        // Create Chat based on user prompt
+        // get exisitng message history from chats state + submitted user prompt via usertext to create gpt request payload
         const messageData = await createMessageData(e);
-
-        // Prepare to send Chat message data to GPT API
         const gptRequestPayload = {
           model: messageData.messageModel,
           messages: messageData.messageHistory,
         };
 
+        // check if chat uses function calling
         if (messageData.chatFunctions.length) {
           gptRequestPayload.functions = messageData.chatFunctions;
           gptRequestPayload.function_call = "auto";
         }
 
-        console.log(gptRequestPayload)
-        // Make POST to /proxy/gpt
+        // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
         const response = await fetch("/api/proxy/gpt", {
           method: "POST",
           headers: {
@@ -101,27 +134,63 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
           body: JSON.stringify(gptRequestPayload),
         });
 
+        // basic error handling
         if (!response.ok) {
           throw new Error(response.statusText);
         }
 
-        // This data is a ReadableStream
+        // handle streamed response using eventsource-parser
         const data = response.body;
+        // if stream is sending data
         if (data) {
+          const onParse = (event) => {
+            // watch for data events
+            if (event.type === "event") {
+              const eventData = event.data;
+              try {
+                // parse chunk to json {"text": "value"}
+                const parsedChunk = JSON.parse(eventData);
+                console.log(parsedChunk);
+                setStream((prev) => prev + parsedChunk.text);
+              } catch (e) {
+                console.error("Error parsing JSON: ", eventData);
+              }
+            }
+          };
+
+          // eventsource-parser functions to read and decode chunks
           const reader = data.getReader();
           const decoder = new TextDecoder();
 
+          const parser = createParser(onParse);
           let done = false;
+          // track last chunk processed for coherent updates to chats state
+          let lastChunkProcessed = "";
           while (!done) {
+            // check for chunk value and done status
             const { value, done: doneReading } = await reader.read();
+            // update done status from current chunk
             done = doneReading;
-            const chunkValue = decoder.decode(value);
+            // decode chunk value to string
+            let chunkValue = decoder.decode(value);
+            // console.log("chunk",chunkValue)
+            if (lastChunkProcessed) {
+              // Check for overlap:
+              let overlapIndex = chunkValue.indexOf(lastChunkProcessed);
 
-            // For simplicity, we'll just console log each chunk for now.
-            console.log(chunkValue);
+              // If overlap found, adjust the chunk value:
+              if (overlapIndex === 0) {
+                chunkValue = chunkValue.substring(lastChunkProcessed.length);
+              }
+            }
+
+            // At the end, set lastChunkProcessed:
+            lastChunkProcessed = chunkValue;
+            parser.feed(chunkValue);
           }
         }
 
+        // update ui to show message response is completey
         setLoading(false);
         setShowRegen(true);
       } catch (error) {
