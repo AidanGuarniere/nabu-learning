@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect component
 import GenericInput from "./GenericInput";
 import GenericSelect from "./GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
-import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
+// import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
-const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
+const PreferencesForm = ({
+  session,
+  currentlyStreamedChatRef,
+  setChats,
+  selectedChat,
+  setSelectedChat,
+  setError,
+}) => {
   // State for Model Selection
   const [stage, setStage] = useState(1);
-
   const [loading, setLoading] = useState(false);
-
+  // hold chat values to update chats state until db interaction good to go, then create new chat in db with currentlyStreamedChatRef value
   const [preferences, setPreferences] = useState({
     mode: "", // "Tutor Session" or "Note Generation"
     selectedModel: "gpt-3.5-turbo",
@@ -168,14 +174,14 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       noteTitle: preferences.noteTitle,
       noteTone: preferences.noteTone,
       flashcardCount: preferences.flashcardCount,
-      flashcardDifficulty: preferences.flashcardDifficulty
+      flashcardDifficulty: preferences.flashcardDifficulty,
     };
 
     // setLoading(true); // Start loading
 
     // Call the chat creation logic
     await createNewChat(userChatPreferences);
-    // setLoading(false); // End loading
+    setLoading(false); // End loading
   };
   const createNewChat = async (userChatPreferences) => {
     setLoading(true);
@@ -269,56 +275,33 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       { role: "system", content: systemMessageContent },
       { role: "user", content: userGreetingContent },
     ];
-    let gptResponse = {};
 
+    const gptRequestPayload = {
+      model: userChatPreferences.selectedModel,
+      messages: messageHistory,
+    };
+
+    // check if chat uses function calling
     if (aiFunctionsInfo.functions.length) {
-      gptResponse = await sendMessageHistoryToGPT({
-        model: userChatPreferences.selectedModel,
-        messageHistory: messageHistory,
-        functions: aiFunctionsInfo.functions,
-        function_call: aiFunctionsInfo.function_call,
-      });
-    } else {
-      gptResponse = await sendMessageHistoryToGPT({
-        model: userChatPreferences.selectedModel,
-        messageHistory: messageHistory,
-      });
+      gptRequestPayload.functions = aiFunctionsInfo.functions;
+      gptRequestPayload.function_call = aiFunctionsInfo.function_call;
     }
 
-    if (gptResponse) {
-      const newChatData = {
-        userId: session.user.id,
-        chatPreferences: {
-          ...userChatPreferences,
-        },
-        messages: messageHistory,
-        functions: aiFunctionsInfo.functions,
-      };
-      try {
-        const newChat = await createChat(newChatData);
-        setChats((prevChats) =>
-          prevChats.length ? [...prevChats, newChat] : [newChat]
-        );
-        setSelectedChat(newChat._id);
-        setPreferences({
-          mode: "",
-          selectedModel: "gpt-3.5-turbo",
-          tutorType: "",
-          tutorName: "",
-          tutorBehavior: "",
-          topic: "",
-          goal: "",
-          personalInfo: "",
-          noteType: "",
-          noteTitle: "",
-          noteTone: "",
-        });
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    // create new chat in db with current chat data
+    const newChatPayload = {
+      userId: session.user.id,
+      chatPreferences: userChatPreferences,
+      messages: messageHistory,
+      functions: aiFunctionsInfo.functions,
+    };
+    currentlyStreamedChatRef.current = gptRequestPayload;
+
+    const newChat = await createChat(newChatPayload);
+    setChats((prevChats) =>
+      prevChats.length ? [...prevChats, newChat] : [newChat]
+    );
+    setSelectedChat(newChat._id);
+    // streamGptResponse(gptRequestPayload)
   };
 
   const checkIfStageComplete = (stage, preferences) => {

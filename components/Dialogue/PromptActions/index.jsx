@@ -96,11 +96,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
       prevChats.map((chat) => (chat._id === chatId ? updatedChat : chat))
     );
   };
-
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -151,7 +146,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
               try {
                 // parse chunk to json {"text": "value"}
                 const parsedChunk = JSON.parse(eventData);
-                console.log(parsedChunk);
                 setStream((prev) => prev + parsedChunk.text);
               } catch (e) {
                 console.error("Error parsing JSON: ", eventData);
