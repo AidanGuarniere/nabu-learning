@@ -178,6 +178,16 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
             lastChunkProcessed = chunkValue;
             parser.feed(chunkValue);
           }
+          if (done) {
+            setStream("");
+            const chatIndex = chats.findIndex(
+              (chat) => chat._id === selectedChat
+            );
+            const chatId = chats[chatIndex]._id;
+            const chatMessages = chats[chatIndex].messages;
+            updateChat(chatId, { messages: chatMessages });
+            currentlyStreamedChatRef.current = {};
+          }
         }
 
         // update ui to show message response is completey

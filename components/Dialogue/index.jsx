@@ -5,6 +5,7 @@ import ChatScrollButton from "./ChatScrollButton";
 import MessageList from "./MessageList";
 import ChatPreferenceForm from "./ChatPreferenceForm";
 import { createParser, ParsedEvent } from "eventsource-parser";
+import { updateChat } from "../../utils/chatUtils";
 
 function Dialogue({
   session,
@@ -189,7 +190,10 @@ function Dialogue({
       }
       if (done) {
         setStream("");
-        currentlyStreamedChatRef.current = {};
+        const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
+        const chatId = chats[chatIndex]._id;
+        const chatMessages = chats[chatIndex].messages;
+        updateChat(chatId, { messages: chatMessages });
       }
     }
   };
