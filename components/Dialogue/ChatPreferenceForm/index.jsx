@@ -3,7 +3,6 @@ import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect comp
 import GenericInput from "./GenericInput";
 import GenericSelect from "./GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
-// import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
 const PreferencesForm = ({
   session,

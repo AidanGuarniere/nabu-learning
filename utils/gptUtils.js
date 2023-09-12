@@ -16,13 +16,7 @@ export const sendMessageHistoryToGPT = async function* ({
   };
 
   try {
-    // const userData = await fetch("api/users/me", {
-    //   method: "GET",
-    //   headers: { "Content-Type": "application/json" },
-    // });
-    // const user = await userData.json();
-    // if (user) {
-    //   console.log(user);
+
     const payload = {
       model,
       messages: messageHistory,

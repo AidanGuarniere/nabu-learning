@@ -91,7 +91,15 @@ export async function OpenAIStream(payload: OpenAIStreamPayload) {
       }
       try {
         const json = JSON.parse(data);
-        const text = json.choices[0].delta?.content || "";
+        const extractTextFromDelta = (json) => {
+          const delta = json.choices[0].delta;
+          if (delta?.content) return delta.content;
+          if (delta?.function_call?.arguments)
+            return delta.function_call.arguments;
+          return "";
+        };
+        const text = extractTextFromDelta(json);
+
         if (counter < 2 && (text.match(/\n/) || []).length) {
           // this is a prefix character (i.e., "\n\n"), do nothing
           return;

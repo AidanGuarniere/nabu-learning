@@ -11,10 +11,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
   const [userText, setUserText] = useState("");
   const [stream, setStream] = useState("");
 
-  // useEffect(() => {
-  //   console.log(chats)
-  // }, [chats])
-
   useEffect(() => {
     if (stream.length) {
       setChats((prevChats) =>
@@ -168,7 +164,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
             done = doneReading;
             // decode chunk value to string
             let chunkValue = decoder.decode(value);
-            // console.log("chunk",chunkValue)
             if (lastChunkProcessed) {
               // Check for overlap:
               let overlapIndex = chunkValue.indexOf(lastChunkProcessed);

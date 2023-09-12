@@ -27,6 +27,12 @@ function Dialogue({
     (chat) => chat._id === selectedChat
   );
 
+  // useEffect(() => {
+  //   console.log("chats", chats);
+
+  //   console.log("selectedChat", selectedChat);
+  // }, [chats, selectedChat]);
+
   useLayoutEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -48,7 +54,7 @@ function Dialogue({
           setTimeout(() => {
             chatRef.current.scrollTo({
               top: chatRef.current.scrollHeight,
-              behavior: "auto",
+              behavior: "smooth",
             });
           }, 100);
         }
@@ -67,17 +73,14 @@ function Dialogue({
   ]);
 
   useEffect(() => {
+    setStream("");
     if (selectedChat && currentlyStreamedChatRef.current.model) {
-      setStream("");
       streamGptResponse(currentlyStreamedChatRef.current);
     }
   }, [currentlyStreamedChatRef, selectedChat]);
 
   useEffect(() => {
-    // console.log(stream);
-    // console.log("selectedChat",selectedChat)
     if (stream.length && selectedChat) {
-      // console.log(stream);
       setChats((prevChats) =>
         prevChats.map((chat) => {
           if (chat._id === selectedChat) {
@@ -102,6 +105,7 @@ function Dialogue({
       );
     }
   }, [selectedChat, stream]);
+
   const streamGptResponse = async (gptRequestPayload) => {
     const response = await fetch("/api/proxy/gpt", {
       method: "POST",
@@ -120,19 +124,36 @@ function Dialogue({
     const data = response.body;
     // if stream is sending data
     if (data) {
+      let functionDeclared = false;
       const onParse = (event) => {
         // watch for data events
         if (event.type === "event") {
           const eventData = event.data;
           try {
             // parse chunk to json {"text": "value"}
-            const parsedChunk = JSON.parse(eventData);
+            const parsedChunk = JSON.parse(eventData.trim());
             if (parsedChunk.text) {
-              console.log(parsedChunk);
-              setStream((prev) => prev + parsedChunk.text);
+              if (currentlyStreamedChatRef.current.function_call) {
+                const chatFunction =
+                  currentlyStreamedChatRef.current.function_call.name;
+                if (
+                  chatFunction === "generateFlashcards" &&
+                  !functionDeclared
+                ) {
+                  setStream(
+                    (prev) =>
+                      `FUNCTION CALLED: "function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
+                  );
+                  functionDeclared = true;
+                } else {
+                  setStream((prev) => prev + parsedChunk.text);
+                }
+              } else {
+                setStream((prev) => prev + parsedChunk.text);
+              }
             }
           } catch (e) {
-            console.error("Error parsing JSON: ", eventData);
+            console.error("Error parsing JSON: ", e);
           }
         }
       };
@@ -167,6 +188,7 @@ function Dialogue({
         parser.feed(chunkValue);
       }
       if (done) {
+        setStream("");
         currentlyStreamedChatRef.current = {};
       }
     }
