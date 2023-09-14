@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
-import { fetchChats, createChat, updateChat } from "../../../utils/chatUtils";
-import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
-import { createParser, ParsedEvent } from "eventsource-parser";
+import streamGptResponse from "../../../utils/streamGptResponse";
 
-function PromptActions({ session, setError, chats, setChats, selectedChat }) {
+function PromptActions({ session, setError, chats, setChats, selectedChat, currentlyStreamedChatRef }) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
@@ -81,17 +79,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
     return { chatId, messageModel, messageHistory, chatFunctions };
   };
 
-  const handleGPTResponse = async (chatId, messageData) => {
-    const updatedChatData = {
-      userId: session.user.id,
-      messages: messageData,
-    };
-    const updatedChat = await updateChat(chatId, updatedChatData);
-    //updated selectedChat.messages with gpt response
-    setChats((prevChats) =>
-      prevChats.map((chat) => (chat._id === chatId ? updatedChat : chat))
-    );
-  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -118,82 +105,7 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
         }
 
         // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
-        const response = await fetch("/api/proxy/gpt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(gptRequestPayload),
-        });
-
-        // basic error handling
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
-
-        // handle streamed response using eventsource-parser
-        const data = response.body;
-        // if stream is sending data
-        if (data) {
-          const onParse = (event) => {
-            // watch for data events
-            if (event.type === "event") {
-              const eventData = event.data;
-              try {
-                // parse chunk to json {"text": "value"}
-                const parsedChunk = JSON.parse(eventData);
-                setStream((prev) => prev + parsedChunk.text);
-              } catch (e) {
-                console.error("Error parsing JSON: ", eventData);
-              }
-            }
-          };
-
-          // eventsource-parser functions to read and decode chunks
-          const reader = data.getReader();
-          const decoder = new TextDecoder();
-
-          const parser = createParser(onParse);
-          let done = false;
-          // track last chunk processed for coherent updates to chats state
-          let lastChunkProcessed = "";
-          while (!done) {
-            // check for chunk value and done status
-            const { value, done: doneReading } = await reader.read();
-            // update done status from current chunk
-            done = doneReading;
-            // decode chunk value to string
-            let chunkValue = decoder.decode(value);
-            if (lastChunkProcessed) {
-              // Check for overlap:
-              let overlapIndex = chunkValue.indexOf(lastChunkProcessed);
-
-              // If overlap found, adjust the chunk value:
-              if (overlapIndex === 0) {
-                chunkValue = chunkValue.substring(lastChunkProcessed.length);
-              }
-            }
-
-            // At the end, set lastChunkProcessed:
-            lastChunkProcessed = chunkValue;
-            parser.feed(chunkValue);
-          }
-          if (done) {
-            setStream("");
-            const chatIndex = chats.findIndex(
-              (chat) => chat._id === selectedChat
-            );
-            const chatId = chats[chatIndex]._id;
-            const chatMessages = chats[chatIndex].messages;
-            updateChat(chatId, { messages: chatMessages });
-            currentlyStreamedChatRef.current = {};
-            setLoading(false);
-            setShowRegen(true);
-          }
-        }
-
-        // update ui to show message response is completey
-
+        streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
       } catch (error) {
         setShowRegen(true);
         setError(error);
@@ -221,7 +133,7 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
             content: message.content || JSON.stringify(message.function_call),
           }));
 
-        let gptRequestPayload = {
+        const gptRequestPayload = {
           model: updatedChat.chatPreferences.selectedModel,
           messages: messageData,
         };
@@ -231,54 +143,8 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
           gptRequestPayload.function_call = "auto";
         }
 
-        const response = await fetch("/api/proxy/gpt", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(gptRequestPayload),
-        });
-        if (!response.ok) {
-          throw new Error(response.statusText);
-        }
+        streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
 
-        const data = response.body;
-        if (data) {
-          const onParse = (event) => {
-            if (event.type === "event") {
-              const eventData = event.data;
-              try {
-                const parsedChunk = JSON.parse(eventData);
-                setStream((prev) => prev + parsedChunk.text);
-              } catch (e) {
-                console.error("Error parsing JSON: ", eventData);
-              }
-            }
-          };
-
-          const reader = data.getReader();
-          const decoder = new TextDecoder();
-
-          const parser = createParser(onParse);
-          let done = false;
-          let lastChunkProcessed = "";
-          while (!done) {
-            const { value, done: doneReading } = await reader.read();
-            done = doneReading;
-            let chunkValue = decoder.decode(value);
-
-            if (lastChunkProcessed) {
-              let overlapIndex = chunkValue.indexOf(lastChunkProcessed);
-              if (overlapIndex === 0) {
-                chunkValue = chunkValue.substring(lastChunkProcessed.length);
-              }
-            }
-            lastChunkProcessed = chunkValue;
-            parser.feed(chunkValue);
-          }
-        }
-
-        setLoading(false);
       } catch (error) {
         setError(error);
         setLoading(false);

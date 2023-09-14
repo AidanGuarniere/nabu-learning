@@ -31,7 +31,7 @@ function PromptForm({ userText, setUserText, handleSubmit, loading }) {
           <textarea
             ref={textareaRef}
             className="resize-none h-full w-full m-0 border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 
-                     focus-visible:ring-0 focus:outline-none focus:border-0 dark:bg-transparent md:pl-1 font-mendium align-top placeholder-gray-500"
+                     focus-visible:ring-0 focus:outline-none focus:border-0 dark:bg-transparent md:pl-1 font-mendium align-top placeholder-gray-500 text-gray-700"
             tabIndex="0"
             placeholder="Send a message."
             data-id="root"

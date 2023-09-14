@@ -293,6 +293,7 @@ const PreferencesForm = ({
       messages: messageHistory,
       functions: aiFunctionsInfo.functions,
     };
+    
     currentlyStreamedChatRef.current = gptRequestPayload;
 
     const newChat = await createChat(newChatPayload);
