@@ -12,12 +12,6 @@ function MessageItem({ message, chats, selectedChat, session, setChats }) {
   const [flashcardData, setFlashcardData] = useState('');
   const [isCornellNoteFunction, setIsCornellNoteFunction] = useState(false);
   const [isFlashcardFunction, setIsFlashcardFunction] = useState(false);
-  //TEMP
-  // useEffect(() => {
-  //  console.log(message.content)
-  //  console.log(isFlashcardFunction)
-  // }, [selectedChat])
-  
 
   useEffect(() => {
     const checkCornellNoteFunction =

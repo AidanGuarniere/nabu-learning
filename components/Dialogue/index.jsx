@@ -76,14 +76,13 @@ function Dialogue({
     // trigger for new gpt interaction & stream update
     setStream("");
     if (selectedChat && currentlyStreamedChatRef.current.model) {
-      console.log(currentlyStreamedChatRef.current.messages)
       const gptRequestPayload = currentlyStreamedChatRef.current;
       streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
     }
   }, [currentlyStreamedChatRef, selectedChat]);
 
   useEffect(() => {
-    // trigger for chat update post gpt request
+    // update chats state as stream occurs
     if (stream.length && selectedChat) {
       setChats((prevChats) =>
         prevChats.map((chat) => {

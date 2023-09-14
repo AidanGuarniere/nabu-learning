@@ -1,24 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
 const Flashcards = ({ flashcardData }) => {
   const [cardPairs, setCardPairs] = useState([]);
-  const [bufferCount, setBufferCount] = useState(0);  // Initialize bufferCount state
+  const [bufferCount, setBufferCount] = useState(0); // Initialize bufferCount state
   const bufferRef = useRef(new Set());
 
   useEffect(() => {
     if (flashcardData.length) {
+      // chunk complete objects (question answer pairs) from flashcardData
       const regex = /{[^}]+}/g;
       const chunks = flashcardData.match(regex) || [];
+      // if chunks are present
       if (chunks.length) {
-        const lastIndex = chunks[chunks.length - 1];
-        try {
-          JSON.parse(lastIndex);
-          if (!bufferRef.current.has(lastIndex)) {
-            bufferRef.current.add(lastIndex);
-            if (bufferCount !== bufferRef.current.size)
-            setBufferCount(bufferRef.current.size);  // Increment bufferCount every time a new entry is added
-          }
-        } catch (e) {
-          // Do nothing if parsing fails
+        // while not all chunks are present in bufferRef
+        while (bufferRef.current.size < chunks.length) {
+          // for each chunk at an index greater than or equal to the size of bufferRef
+          chunks.forEach((chunk, index) => {
+            console.log(index, bufferRef.current.size)
+            if (index >= bufferRef.current.size) {
+              try {
+                // try to parse the chunk
+                JSON.parse(chunk);
+                // if chunk has not been added to buffer and is parseable, add it and increase the count
+                if (!bufferRef.current.has(chunk)) {
+                  bufferRef.current.add(chunk);
+                  if (bufferCount !== bufferRef.current.size)
+                    setBufferCount(bufferRef.current.size); // Increment bufferCount every time a new entry is added
+                }
+              } catch (e) {
+                // Do nothing if parsing fails
+              }
+            }
+          });
         }
       }
     }
@@ -27,12 +39,17 @@ const Flashcards = ({ flashcardData }) => {
   useEffect(() => {
     // This will run every time bufferCount updates
     // Convert bufferRef Set to an array and parse each entry, then update cardPairs
-    const parsedArray = Array.from(bufferRef.current).map(item => JSON.parse(item));
+
+    const parsedArray = Array.from(bufferRef.current).map((item) =>
+      JSON.parse(item)
+    );
+    console.log("parsedArr", parsedArray);
     setCardPairs(parsedArray);
   }, [bufferCount]);
 
-
-  // const parsedData = JSON.parse(flashcardData.arguments);
+  // useEffect(() => {
+  //   console.log(cardPairs)
+  // }, [cardPairs])
 
   return (
     <div className="flex flex-wrap justify-center w-full">
