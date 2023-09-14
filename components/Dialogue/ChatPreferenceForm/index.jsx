@@ -346,7 +346,7 @@ const PreferencesForm = ({
               <div className="h-full flex flex-col justify-center items-center">
                 {" "}
                 <div className="flex items-center mb-2 md:mb-4 py-2 px-4">
-                  <h1 className="text-center font-light text-3xl md:text-[2.4rem]">
+                  <h1 className="text-center text-gray-700 font-light text-3xl md:text-[2.4rem]">
                     choose your interaction
                   </h1>
                 </div>
@@ -364,9 +364,9 @@ const PreferencesForm = ({
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">note generation</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">note generation</h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Generate notes in various formats.
+                      generate notes in various formats.
                     </p>
                   </div>
                   {/* Tutor Session Selection */}
@@ -377,9 +377,9 @@ const PreferencesForm = ({
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">tutoring session</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">tutoring session</h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Engage in an academic dialogue with a virtual tutor.
+                      engage in an academic dialogue with a virtual tutor.
                     </p>
                   </div>
                   {/* Flascard Generation Selection */}
@@ -390,11 +390,11 @@ const PreferencesForm = ({
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
                       flashcard generation
                     </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Generate a set of flashcards to help you study.
+                      generate a set of flashcards to help you study.
                     </p>
                   </div>
                 </div>
@@ -403,7 +403,7 @@ const PreferencesForm = ({
 
             {stage === 2 && (
               <div className="flex flex-col md:justify-between md:justify-center w-full h-full">
-                <h2 className="block text-gray-700 text-2xl text-center">
+                <h2 className="block text-gray-700 text-gray-700 font-lightext-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "what would you like to discuss?"
                     : preferences.mode === "Note Generation"
@@ -438,7 +438,7 @@ const PreferencesForm = ({
 
             {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
-                <h2 className="block text-gray-700 text-2xl text-center">
+                <h2 className="block text-gray-700 t text-gray-700 font-lightext-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "tutor preferences"
                     : preferences.mode === "Note Generation"
@@ -533,7 +533,7 @@ const PreferencesForm = ({
             <div className="h-1/6 flex justify-center items-start  w-full md:max-w-3xl mt-4 md:mt-0">
               <button
                 onClick={goToPreviousStage}
-                className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
               >
                 back
               </button>

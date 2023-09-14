@@ -38,20 +38,20 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
     }
   }, [stream]);
 
-  useEffect(() => {
-    if (selectedChat) {
-      //  change to selectedChat.messages
-      const selectedIndex = chats.findIndex(
-        (chat) => chat._id === selectedChat
-      );
-      const chat = { ...chats[selectedIndex] };
-      if (chat && chat.messages) {
-        setShowRegen(true);
-      }
-    } else {
-      setShowRegen(false);
-    }
-  }, [selectedChat, chats]);
+  // useEffect(() => {
+  //   if (selectedChat) {
+  //     //  change to selectedChat.messages
+  //     const selectedIndex = chats.findIndex(
+  //       (chat) => chat._id === selectedChat
+  //     );
+  //     const chat = { ...chats[selectedIndex] };
+  //     if (chat && chat.messages) {
+  //       setShowRegen(true);
+  //     }
+  //   } else {
+  //     setShowRegen(false);
+  //   }
+  // }, [selectedChat, chats]);
 
   const createMessageData = async (e) => {
     let messageHistory = [];
@@ -187,12 +187,13 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
             const chatMessages = chats[chatIndex].messages;
             updateChat(chatId, { messages: chatMessages });
             currentlyStreamedChatRef.current = {};
+            setLoading(false);
+            setShowRegen(true);
           }
         }
 
         // update ui to show message response is completey
-        setLoading(false);
-        setShowRegen(true);
+
       } catch (error) {
         setShowRegen(true);
         setError(error);
@@ -237,7 +238,6 @@ function PromptActions({ session, setError, chats, setChats, selectedChat }) {
           },
           body: JSON.stringify(gptRequestPayload),
         });
-
         if (!response.ok) {
           throw new Error(response.statusText);
         }

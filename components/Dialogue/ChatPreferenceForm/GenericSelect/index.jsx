@@ -10,7 +10,7 @@ const GenericSelect = ({ label, value, onChange, options }) => {
         id={label}
         value={value}
         onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
-        className="appearance-none border rounded w-full p-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className="appearance-none border rounded w-full p-3 bg-gray-100 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
         <option value="" disabled hidden>
           Select an option
