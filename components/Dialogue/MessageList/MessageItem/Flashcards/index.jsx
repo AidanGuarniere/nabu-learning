@@ -6,6 +6,7 @@ const Flashcards = ({ flashcardData }) => {
 
   useEffect(() => {
     if (flashcardData.length) {
+      console.log(flashcardData)
       // chunk complete objects (question answer pairs) from flashcardData
       const regex = /{[^}]+}/g;
       const chunks = flashcardData.match(regex) || [];

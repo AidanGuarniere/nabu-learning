@@ -6,7 +6,7 @@ import CornellNotes from "./CornellNotes";
 import Flashcards from "./Flashcards";
 import UserMessage from "./UserMessage";
 
-function MessageItem({ message, chats, selectedChat, session, setChats }) {
+function MessageItem({ message, chats, selectedChat, session, setChats, currentlyStreamedChatRef, setStream}) {
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [noteData, setNoteData] = useState("");
   const [flashcardData, setFlashcardData] = useState("");
@@ -95,6 +95,8 @@ function MessageItem({ message, chats, selectedChat, session, setChats }) {
               selectedChat={selectedChat}
               session={session}
               setChats={setChats}
+              currentlyStreamedChatRef={currentlyStreamedChatRef}
+              setStream={setStream}
             />
           )}
         </div>

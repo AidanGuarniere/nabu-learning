@@ -1,19 +1,22 @@
-import React, { useState } from "react";
-import { sendMessageHistoryToGPT } from "../../../../../utils/gptUtils";
+import React, { useState, useEffect } from "react";
+import streamGptResponse from "../../../../../utils/streamGptResponse";
 import { updateChat, fetchChats } from "../../../../../utils/chatUtils";
 
-function  UserMessage({
+function UserMessage({
   message,
   selectedMessageId,
   chats,
   selectedChat,
   session,
   setChats,
+  currentlyStreamedChatRef,
+  setStream
 }) {
   const [editMessageId, setEditMessageId] = useState(null);
   const [editedMessage, setEditedMessage] = useState("");
 
   const handleEditToggle = (messageId) => {
+    console.log("messageId",messageId)
     if (editMessageId === messageId) {
       setEditMessageId(null);
     } else {
@@ -21,42 +24,61 @@ function  UserMessage({
     }
   };
 
-  const handleMessageEdit = async () => {
-    // remove
-    const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
-    //  change to selectedChat
-    const messageIndex = chats[chatIndex].messages.findIndex(
+  useEffect(() => {
+    console.log(editMessageId)
+  }, [editMessageId])
+  
+
+  const createEditedMessageData = async (e) => {
+    // find selected chat and selected message
+    const chatId = selectedChat;
+    const selectedChatIndex = chats.findIndex(
+      (chat) => chat._id === selectedChat
+    );
+    const updatedChat = { ...chats[selectedChatIndex] };
+    const messageIndex = updatedChat.messages.findIndex(
       (msg) => msg._id === editMessageId
     );
-    //  change to selectedChat
-    const updatedMessageHistory = chats[chatIndex].messages.slice(
-      0,
-      messageIndex
-    );
+    // get data from chats for gpt request
+    const messageModel = updatedChat.chatPreferences.selectedModel;
+    const chatFunctions = updatedChat.functions;
 
-    updatedMessageHistory.push({
+    // remove old message, push new edited message
+    const updatedMessageData = updatedChat.messages.slice(0, messageIndex);
+    updatedMessageData.push({
       role: "user",
       content: editedMessage,
     });
-
-    const messageHistoryForGPT = updatedMessageHistory.map(
-      ({ role, content }) => ({
-        role,
-        content,
-      })
-    );
-    const gptResponse = await sendMessageHistoryToGPT(messageHistoryForGPT);
-    const updatedChatData = {
-      //  change to selectedChat
-      ...chats[chatIndex],
-      messages: gptResponse,
-    };
-    // setSelectedChat(updatedChatData)
-    await updateChat(selectedChat, updatedChatData);
-    //remove
-    const updatedChats = await fetchChats();
-    //  remove
+    // create messageHistory from the role and content data of each messaeg
+    const messageHistory = updatedMessageData.map((message) => ({
+      role: message.role,
+      content: message.content || JSON.stringify(message.function_call),
+    }));
+    updatedChat.messages = messageHistory
+    const updatedChats = [...chats];
+    updatedChats[selectedChatIndex] = updatedChat;
     setChats(updatedChats);
+    e.target.style.height = "auto";
+    return { chatId, messageModel, messageHistory, chatFunctions };
+  };
+
+  const handleMessageEdit = async (e) => {
+    e.preventDefault();
+
+    const messageData = await createEditedMessageData(e);
+    const gptRequestPayload = {
+      model: messageData.messageModel,
+      messages: messageData.messageHistory,
+    };
+
+    // check if chat uses function calling
+    if (messageData.chatFunctions.length) {
+      gptRequestPayload.functions = messageData.chatFunctions;
+      gptRequestPayload.function_call = "auto";
+    }
+
+    // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
+    streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
 
     setEditMessageId(null);
     setEditedMessage("");

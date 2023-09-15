@@ -3,11 +3,11 @@ import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import streamGptResponse from "../../../utils/streamGptResponse";
 
-function PromptActions({ session, setError, chats, setChats, selectedChat, currentlyStreamedChatRef }) {
+function PromptActions({ session, setError, chats, setChats, selectedChat, currentlyStreamedChatRef, stream, setStream }) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
-  const [stream, setStream] = useState("");
+  // const [stream, setStream] = useState("");
 
   useEffect(() => {
     if (stream.length) {
@@ -54,12 +54,12 @@ function PromptActions({ session, setError, chats, setChats, selectedChat, curre
   const createMessageData = async (e) => {
     let messageHistory = [];
     //  change to selectedChat.id
-    let chatId = selectedChat;
+    let chatId = {...selectedChat};
     //  change to selectedChat.model
     //change to selectedChat
-    const selectedIndex = chats.findIndex((chat) => chat._id === selectedChat);
+    const selectedChatIndex = chats.findIndex((chat) => chat._id === selectedChat);
     //change to selectedChat
-    const updatedChat = { ...chats[selectedIndex] };
+    const updatedChat = { ...chats[selectedChatIndex] };
     const messageModel = updatedChat.chatPreferences.selectedModel;
     updatedChat.messages.push({
       role: "user",
@@ -67,7 +67,7 @@ function PromptActions({ session, setError, chats, setChats, selectedChat, curre
     });
     //  change to setSelectedChat(updatedChat), filter extra message properties
     let updatedChats = [...chats];
-    updatedChats[selectedIndex] = updatedChat;
+    updatedChats[selectedChatIndex] = updatedChat;
     setChats(updatedChats);
     messageHistory = updatedChat.messages.map((message) => ({
       role: message.role,

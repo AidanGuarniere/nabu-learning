@@ -77,7 +77,13 @@ function Dialogue({
     setStream("");
     if (selectedChat && currentlyStreamedChatRef.current.model) {
       const gptRequestPayload = currentlyStreamedChatRef.current;
-      streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
+      streamGptResponse(
+        gptRequestPayload,
+        chats,
+        selectedChat,
+        currentlyStreamedChatRef,
+        setStream
+      );
     }
   }, [currentlyStreamedChatRef, selectedChat]);
 
@@ -127,12 +133,12 @@ function Dialogue({
               <span className="text-center md:text-left text-gray-500">
                 {chats[selectedChatIndex].chatPreferences.topic},{" "}
                 {chats[selectedChatIndex].chatPreferences.mode ===
-                  "Tutor Session"
+                "Tutor Session"
                   ? chats[selectedChatIndex].chatPreferences.tutorName
                   : chats[selectedChatIndex].chatPreferences.mode ===
                     "Note Generation"
-                    ? `${chats[selectedChatIndex].chatPreferences.noteType} Notes`
-                    : "Flashcards"}{" "}
+                  ? `${chats[selectedChatIndex].chatPreferences.noteType} Notes`
+                  : "Flashcards"}{" "}
               </span>
             </div>
             <MessageList
@@ -140,6 +146,8 @@ function Dialogue({
               selectedChat={selectedChat}
               session={session}
               setChats={setChats}
+              currentlyStreamedChatRef={currentlyStreamedChatRef}
+              setStream={setStream}
             />
             <ChatScrollButton chatRef={chatRef} scrollHeight={scrollHeight} />
           </div>
@@ -165,6 +173,8 @@ function Dialogue({
             setSelectedChat={setSelectedChat}
             chatRef={chatRef}
             currentlyStreamedChatRef={currentlyStreamedChatRef}
+            stream={stream}
+            setStream={setStream}
           />
         )}
       </div>
