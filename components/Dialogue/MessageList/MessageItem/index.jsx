@@ -8,40 +8,43 @@ import UserMessage from "./UserMessage";
 
 function MessageItem({ message, chats, selectedChat, session, setChats }) {
   const [selectedMessageId, setSelectedMessageId] = useState(null);
-  const [noteData, setNoteData] = useState('');
-  const [flashcardData, setFlashcardData] = useState('');
+  const [noteData, setNoteData] = useState("");
+  const [flashcardData, setFlashcardData] = useState("");
   const [isCornellNoteFunction, setIsCornellNoteFunction] = useState(false);
   const [isFlashcardFunction, setIsFlashcardFunction] = useState(false);
 
   useEffect(() => {
     const checkCornellNoteFunction =
       message.content &&
-      message.content.startsWith("FUNCTION CALLED") &&
-      message.content.includes("createCornellNotes");
+      message.content.startsWith('"function_called":"generateCornellNotes"');
 
-      if(checkCornellNoteFunction){setIsCornellNoteFunction(true)}
+    if (checkCornellNoteFunction) {
+      setIsCornellNoteFunction(true);
+    }
 
     const checkFlashcardFunction =
       message.content &&
-      message.content.startsWith("FUNCTION CALLED") &&
-      message.content.includes("generateFlashcards");
+      message.content.startsWith('"function_called":"generateFlashcards"');
 
-      if(checkFlashcardFunction){setIsFlashcardFunction(true)}
+    if (checkFlashcardFunction) {
+      setIsFlashcardFunction(true);
+    }
   }, [chats]);
 
   useEffect(() => {
     if (isCornellNoteFunction) {
       const noteObject = isCornellNoteFunction
-        ? JSON.parse(message.content.replace("FUNCTION CALLED: ", ""))
+        ? JSON.parse(message.content)
         : null;
       setNoteData(noteObject);
     }
-  }, [isCornellNoteFunction ]);
+  }, [isCornellNoteFunction]);
 
   useEffect(() => {
+    console.log("flashcard?", isFlashcardFunction);
+    console.log("mesage", message.content);
     if (isFlashcardFunction) {
-
-      const flashcardObject = message.content.replace("FUNCTION CALLED: ", "")
+      const flashcardObject = message.content;
       setFlashcardData(flashcardObject);
     }
   }, [chats, isFlashcardFunction]);

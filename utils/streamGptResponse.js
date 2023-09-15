@@ -37,7 +37,7 @@ const streamGptResponse = async (gptRequestPayload, chats, selectedChat, current
                             ) {
                                 setStream(
                                     (prev) =>
-                                        `FUNCTION CALLED: "function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
+                                        `"function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
                                 );
                                 functionDeclared = true;
                             } else {
