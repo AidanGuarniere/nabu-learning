@@ -16,17 +16,12 @@ function UserMessage({
   const [editedMessage, setEditedMessage] = useState("");
 
   const handleEditToggle = (messageId) => {
-    console.log("messageId",messageId)
     if (editMessageId === messageId) {
       setEditMessageId(null);
     } else {
       setEditMessageId(messageId);
     }
   };
-
-  useEffect(() => {
-    console.log(editMessageId)
-  }, [editMessageId])
   
 
   const createEditedMessageData = async (e) => {
@@ -74,7 +69,7 @@ function UserMessage({
     // check if chat uses function calling
     if (messageData.chatFunctions.length) {
       gptRequestPayload.functions = messageData.chatFunctions;
-      gptRequestPayload.function_call = "auto";
+      gptRequestPayload.function_call = {name: messageData.chatFunctions[0].name};
     }
 
     // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client

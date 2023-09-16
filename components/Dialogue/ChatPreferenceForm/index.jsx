@@ -61,6 +61,10 @@ const PreferencesForm = ({
           parameters: {
             type: "object",
             properties: {
+              functionName: {
+                type: "string",
+                description: "The name of the function, createCornellNotes",
+              },
               subject: {
                 type: "string",
                 description:
@@ -94,7 +98,12 @@ const PreferencesForm = ({
                   "A synthesized summary capturing key insights and implications.",
               },
             },
-            required: ["subject", "cuesAndResponses", "summary"],
+            required: [
+              "functionName",
+              "subject",
+              "cuesAndResponses",
+              "summary",
+            ],
           },
         };
 
@@ -112,6 +121,10 @@ const PreferencesForm = ({
         parameters: {
           type: "object",
           properties: {
+            functionName: {
+              type: "string",
+              description: "The name of the function, generateFlashcards",
+            },
             subject: {
               type: "string",
               description: "The topic for the flashcards.",
@@ -145,7 +158,7 @@ const PreferencesForm = ({
                 "Difficulty level for sorting or categorizing flashcards.",
             },
           },
-          required: ["subject", "cardPairs"],
+          required: ["functionName", "subject", "cardPairs"],
         },
       };
       aiFunctionsInfo.functions.push(generateFlashcards);
@@ -293,7 +306,7 @@ const PreferencesForm = ({
       messages: messageHistory,
       functions: aiFunctionsInfo.functions,
     };
-    
+
     currentlyStreamedChatRef.current = gptRequestPayload;
 
     const newChat = await createChat(newChatPayload);
@@ -365,7 +378,9 @@ const PreferencesForm = ({
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">note generation</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                      note generation
+                    </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
                       generate notes in various formats.
                     </p>
@@ -378,7 +393,9 @@ const PreferencesForm = ({
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">tutoring session</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                      tutoring session
+                    </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
                       engage in an academic dialogue with a virtual tutor.
                     </p>

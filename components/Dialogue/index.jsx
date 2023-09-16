@@ -39,38 +39,39 @@ function Dialogue({
     }
   }, [chats]);
 
-  useEffect(() => {
-    if (selectedChatLoading === false && selectedChat !== null) {
-      const currentChat =
-        //chande to .id
-        chats[chats.findIndex((chat) => chat._id === selectedChat)];
-      if (
-        chatRef.current &&
-        (prevSelectedChat !== selectedChat ||
-          currentChat.messages.length !== prevMessageCount)
-      ) {
-        // L solution for attempted scroll before message render
-        if (chatRef.current) {
-          setTimeout(() => {
-            chatRef.current.scrollTo({
-              top: chatRef.current.scrollHeight,
-              behavior: "smooth",
-            });
-          }, 100);
-        }
-        if (currentChat.messages) {
-          setPrevMessageCount(currentChat.messages.length);
-        }
-      }
-    }
-    setPrevSelectedChat(selectedChat);
-  }, [
-    chats,
-    selectedChat,
-    selectedChatLoading,
-    prevMessageCount,
-    prevSelectedChat,
-  ]);
+  // useEffect(() => {
+  //   if (selectedChatLoading === false && selectedChat !== null) {
+  //     const currentChat =
+  //       //chande to .id
+  //       chats[chats.findIndex((chat) => chat._id === selectedChat)];
+  //     if (
+  //       chatRef.current &&
+  //       (prevSelectedChat !== selectedChat ||
+  //         currentChat.messages.length !== prevMessageCount)
+  //     ) {
+  //       // L solution for attempted scroll before message render
+  //       if (chatRef.current) {
+  //         console.log(chatRef.current)
+  //         setTimeout(() => {
+  //           chatRef.current.scrollTo({
+  //             top: chatRef.current.scrollHeight,
+  //             behavior: "smooth",
+  //           });
+  //         }, 100);
+  //       }
+  //       if (currentChat.messages) {
+  //         setPrevMessageCount(currentChat.messages.length);
+  //       }
+  //     }
+  //   }
+  //   setPrevSelectedChat(selectedChat);
+  // }, [
+  //   chats,
+  //   selectedChat,
+  //   selectedChatLoading,
+  //   prevMessageCount,
+  //   prevSelectedChat,
+  // ]);
 
   useEffect(() => {
     // trigger for new gpt interaction & stream update

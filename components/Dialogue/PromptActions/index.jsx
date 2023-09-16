@@ -3,38 +3,19 @@ import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import streamGptResponse from "../../../utils/streamGptResponse";
 
-function PromptActions({ session, setError, chats, setChats, selectedChat, currentlyStreamedChatRef, stream, setStream }) {
+function PromptActions({
+  session,
+  setError,
+  chats,
+  setChats,
+  selectedChat,
+  currentlyStreamedChatRef,
+  stream,
+  setStream,
+}) {
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
-  // const [stream, setStream] = useState("");
-
-  useEffect(() => {
-    if (stream.length) {
-      setChats((prevChats) =>
-        prevChats.map((chat) => {
-          if (chat._id === selectedChat) {
-            const updatedChat = { ...chat };
-            if (!updatedChat.messages) {
-              updatedChat.messages = [];
-            }
-            const lastMessage =
-              updatedChat.messages[updatedChat.messages.length - 1];
-            if (lastMessage && lastMessage.role === "assistant") {
-              lastMessage.content = stream;
-            } else {
-              updatedChat.messages.push({
-                role: "assistant",
-                content: stream,
-              });
-            }
-            return updatedChat;
-          }
-          return chat;
-        })
-      );
-    }
-  }, [stream]);
 
   // useEffect(() => {
   //   if (selectedChat) {
@@ -54,10 +35,12 @@ function PromptActions({ session, setError, chats, setChats, selectedChat, curre
   const createMessageData = async (e) => {
     let messageHistory = [];
     //  change to selectedChat.id
-    let chatId = {...selectedChat};
+    let chatId = { ...selectedChat };
     //  change to selectedChat.model
     //change to selectedChat
-    const selectedChatIndex = chats.findIndex((chat) => chat._id === selectedChat);
+    const selectedChatIndex = chats.findIndex(
+      (chat) => chat._id === selectedChat
+    );
     //change to selectedChat
     const updatedChat = { ...chats[selectedChatIndex] };
     const messageModel = updatedChat.chatPreferences.selectedModel;
@@ -101,11 +84,18 @@ function PromptActions({ session, setError, chats, setChats, selectedChat, curre
         // check if chat uses function calling
         if (messageData.chatFunctions.length) {
           gptRequestPayload.functions = messageData.chatFunctions;
-          gptRequestPayload.function_call = "auto";
+          gptRequestPayload.function_call = {name: messageData.chatFunctions[0].name};
         }
 
         // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
-        streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
+        streamGptResponse(
+          gptRequestPayload,
+          chats,
+          selectedChat,
+          currentlyStreamedChatRef,
+          setStream
+        );
+        setLoading(false);
       } catch (error) {
         setShowRegen(true);
         setError(error);
@@ -140,11 +130,17 @@ function PromptActions({ session, setError, chats, setChats, selectedChat, curre
 
         if (updatedChat.functions && updatedChat.functions.length > 0) {
           gptRequestPayload.functions = updatedChat.functions;
-          gptRequestPayload.function_call = "auto";
+          console.log(updatedChat.functions[0].name);
+          gptRequestPayload.function_call = {name: messageData.chatFunctions[0].name};
         }
 
-        streamGptResponse(gptRequestPayload, chats, selectedChat, currentlyStreamedChatRef, setStream);
-
+        streamGptResponse(
+          gptRequestPayload,
+          chats,
+          selectedChat,
+          currentlyStreamedChatRef,
+          setStream
+        );
       } catch (error) {
         setError(error);
         setLoading(false);

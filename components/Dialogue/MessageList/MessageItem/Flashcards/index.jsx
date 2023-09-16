@@ -6,7 +6,7 @@ const Flashcards = ({ flashcardData }) => {
 
   useEffect(() => {
     if (flashcardData.length) {
-      console.log(flashcardData)
+      // console.log("flashcardData",flashcardData)
       // chunk complete objects (question answer pairs) from flashcardData
       const regex = /{[^}]+}/g;
       const chunks = flashcardData.match(regex) || [];
@@ -16,7 +16,6 @@ const Flashcards = ({ flashcardData }) => {
         while (bufferRef.current.size < chunks.length) {
           // for each chunk at an index greater than or equal to the size of bufferRef
           chunks.forEach((chunk, index) => {
-            console.log(index, bufferRef.current.size)
             if (index >= bufferRef.current.size) {
               try {
                 // try to parse the chunk
@@ -44,7 +43,6 @@ const Flashcards = ({ flashcardData }) => {
     const parsedArray = Array.from(bufferRef.current).map((item) =>
       JSON.parse(item)
     );
-    console.log("parsedArr", parsedArray);
     setCardPairs(parsedArray);
   }, [bufferCount]);
 

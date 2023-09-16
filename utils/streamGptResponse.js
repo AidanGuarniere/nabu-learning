@@ -28,24 +28,24 @@ const streamGptResponse = async (gptRequestPayload, chats, selectedChat, current
                     // parse chunk to json {"text": "value"}
                     const parsedChunk = JSON.parse(eventData.trim());
                     if (parsedChunk.text) {
-                        if (currentlyStreamedChatRef.current.function_call) {
-                            const chatFunction =
-                                currentlyStreamedChatRef.current.function_call.name;
-                            if (
-                                chatFunction === "generateFlashcards" &&
-                                !functionDeclared
-                            ) {
-                                setStream(
-                                    (prev) =>
-                                        `"function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
-                                );
-                                functionDeclared = true;
-                            } else {
-                                setStream((prev) => prev + parsedChunk.text);
-                            }
-                        } else {
-                            setStream((prev) => prev + parsedChunk.text);
-                        }
+                        // if (currentlyStreamedChatRef.current.function_call) {
+                        //     const chatFunction =
+                        //         currentlyStreamedChatRef.current.function_call.name;
+                        //     if (
+                        //         chatFunction === "generateFlashcards" &&
+                        //         !functionDeclared
+                        //     ) {
+                        //         setStream(
+                        //             (prev) =>
+                        //                 `"function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
+                        //         );
+                        //         functionDeclared = true;
+                        //     } else {
+                        //         setStream((prev) => prev + parsedChunk.text);
+                        //     }
+                        // } else {
+                            setStream((prev) => `${prev}${parsedChunk.text}`);
+                        // }
                     }
                 } catch (e) {
                     console.error("Error parsing JSON: ", e);

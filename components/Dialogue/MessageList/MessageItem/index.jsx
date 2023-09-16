@@ -16,7 +16,7 @@ function MessageItem({ message, chats, selectedChat, session, setChats, currentl
   useEffect(() => {
     const checkCornellNoteFunction =
       message.content &&
-      message.content.startsWith('"function_called":"generateCornellNotes"');
+      message.content.startsWith('"functionName": "createCornellNotes"');
 
     if (checkCornellNoteFunction) {
       setIsCornellNoteFunction(true);
@@ -24,8 +24,9 @@ function MessageItem({ message, chats, selectedChat, session, setChats, currentl
 
     const checkFlashcardFunction =
       message.content &&
-      message.content.startsWith('"function_called":"generateFlashcards"');
-
+      message.content.includes('"functionName": "generateFlashcards"');
+      // console.log(message.content)
+      // console.log(checkFlashcardFunction)
     if (checkFlashcardFunction) {
       setIsFlashcardFunction(true);
     }
@@ -41,8 +42,6 @@ function MessageItem({ message, chats, selectedChat, session, setChats, currentl
   }, [isCornellNoteFunction]);
 
   useEffect(() => {
-    console.log("flashcard?", isFlashcardFunction);
-    console.log("mesage", message.content);
     if (isFlashcardFunction) {
       const flashcardObject = message.content;
       setFlashcardData(flashcardObject);
