@@ -29,7 +29,7 @@ const ModelSelect = ({ value, onChange, }) => {
         id="model-select"
         value={value}
         onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
-        className=" shadow-sm appearance-none border rounded w-auto py-2 px-3 text-center text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className=" shadow-sm appearance-none border rounded w-auto py-2 px-3 text-center bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
         <option key={"gpt-3.5-turbo"} value={"gpt-3.5-turbo"}>
           {"gpt-3.5-turbo"}

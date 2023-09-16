@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MessageItem from "./MessageItem";
 
-function MessageList({ chats, selectedChat, session, setChats }) {
+function MessageList({ chats, selectedChat, session, setChats, currentlyStreamedChatRef, setStream }) {
   //replace with selectedChat state
   const [messages, setMessages] = useState([]);
   useEffect(() => {
@@ -9,6 +9,7 @@ function MessageList({ chats, selectedChat, session, setChats }) {
       (chat) => chat._id === selectedChat
     );
     const currentMessages = chats[selectedChatIndex]?.messages;
+    // console.log("messages",currentMessages)
     if (messages !== currentMessages) {
       setMessages(currentMessages);
     }
@@ -26,6 +27,8 @@ function MessageList({ chats, selectedChat, session, setChats }) {
             selectedChat={selectedChat}
             session={session}
             setChats={setChats}
+            currentlyStreamedChatRef={currentlyStreamedChatRef}
+            setStream={setStream}
           />
         )
       )}

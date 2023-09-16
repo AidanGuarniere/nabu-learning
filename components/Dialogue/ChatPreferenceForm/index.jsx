@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect component
 import GenericInput from "./GenericInput";
 import GenericSelect from "./GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
-import { sendMessageHistoryToGPT } from "../../../utils/gptUtils";
 
-const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
+const PreferencesForm = ({
+  session,
+  currentlyStreamedChatRef,
+  setChats,
+  selectedChat,
+  setSelectedChat,
+  setError,
+}) => {
   // State for Model Selection
   const [stage, setStage] = useState(1);
-
   const [loading, setLoading] = useState(false);
-
+  // hold chat values to update chats state until db interaction good to go, then create new chat in db with currentlyStreamedChatRef value
   const [preferences, setPreferences] = useState({
     mode: "", // "Tutor Session" or "Note Generation"
     selectedModel: "gpt-3.5-turbo",
@@ -56,6 +61,10 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
           parameters: {
             type: "object",
             properties: {
+              functionName: {
+                type: "string",
+                description: "The name of the function, createCornellNotes",
+              },
               subject: {
                 type: "string",
                 description:
@@ -89,7 +98,12 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                   "A synthesized summary capturing key insights and implications.",
               },
             },
-            required: ["subject", "cuesAndResponses", "summary"],
+            required: [
+              "functionName",
+              "subject",
+              "cuesAndResponses",
+              "summary",
+            ],
           },
         };
 
@@ -107,6 +121,10 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
         parameters: {
           type: "object",
           properties: {
+            functionName: {
+              type: "string",
+              description: "The name of the function, generateFlashcards",
+            },
             subject: {
               type: "string",
               description: "The topic for the flashcards.",
@@ -140,7 +158,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                 "Difficulty level for sorting or categorizing flashcards.",
             },
           },
-          required: ["subject", "cardPairs"],
+          required: ["functionName", "subject", "cardPairs"],
         },
       };
       aiFunctionsInfo.functions.push(generateFlashcards);
@@ -168,14 +186,14 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       noteTitle: preferences.noteTitle,
       noteTone: preferences.noteTone,
       flashcardCount: preferences.flashcardCount,
-      flashcardDifficulty: preferences.flashcardDifficulty
+      flashcardDifficulty: preferences.flashcardDifficulty,
     };
 
     // setLoading(true); // Start loading
 
     // Call the chat creation logic
     await createNewChat(userChatPreferences);
-    // setLoading(false); // End loading
+    setLoading(false); // End loading
   };
   const createNewChat = async (userChatPreferences) => {
     setLoading(true);
@@ -269,56 +287,34 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
       { role: "system", content: systemMessageContent },
       { role: "user", content: userGreetingContent },
     ];
-    let gptResponse = {};
 
+    const gptRequestPayload = {
+      model: userChatPreferences.selectedModel,
+      messages: messageHistory,
+    };
+
+    // check if chat uses function calling
     if (aiFunctionsInfo.functions.length) {
-      gptResponse = await sendMessageHistoryToGPT({
-        model: userChatPreferences.selectedModel,
-        messageHistory: messageHistory,
-        functions: aiFunctionsInfo.functions,
-        function_call: aiFunctionsInfo.function_call,
-      });
-    } else {
-      gptResponse = await sendMessageHistoryToGPT({
-        model: userChatPreferences.selectedModel,
-        messageHistory: messageHistory,
-      });
+      gptRequestPayload.functions = aiFunctionsInfo.functions;
+      gptRequestPayload.function_call = aiFunctionsInfo.function_call;
     }
 
-    if (gptResponse) {
-      const newChatData = {
-        userId: session.user.id,
-        chatPreferences: {
-          ...userChatPreferences,
-        },
-        messages: messageHistory,
-        functions: aiFunctionsInfo.functions,
-      };
-      try {
-        const newChat = await createChat(newChatData);
-        setChats((prevChats) =>
-          prevChats.length ? [...prevChats, newChat] : [newChat]
-        );
-        setSelectedChat(newChat._id);
-        setPreferences({
-          mode: "",
-          selectedModel: "gpt-3.5-turbo",
-          tutorType: "",
-          tutorName: "",
-          tutorBehavior: "",
-          topic: "",
-          goal: "",
-          personalInfo: "",
-          noteType: "",
-          noteTitle: "",
-          noteTone: "",
-        });
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    }
+    // create new chat in db with current chat data
+    const newChatPayload = {
+      userId: session.user.id,
+      chatPreferences: userChatPreferences,
+      messages: messageHistory,
+      functions: aiFunctionsInfo.functions,
+    };
+
+    currentlyStreamedChatRef.current = gptRequestPayload;
+
+    const newChat = await createChat(newChatPayload);
+    setChats((prevChats) =>
+      prevChats.length ? [...prevChats, newChat] : [newChat]
+    );
+    setSelectedChat(newChat._id);
+    // streamGptResponse(gptRequestPayload)
   };
 
   const checkIfStageComplete = (stage, preferences) => {
@@ -364,7 +360,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
               <div className="h-full flex flex-col justify-center items-center">
                 {" "}
                 <div className="flex items-center mb-2 md:mb-4 py-2 px-4">
-                  <h1 className="text-center font-light text-3xl md:text-[2.4rem]">
+                  <h1 className="text-center text-gray-700 font-light text-3xl md:text-[2.4rem]">
                     choose your interaction
                   </h1>
                 </div>
@@ -382,9 +378,11 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">note generation</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                      note generation
+                    </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Generate notes in various formats.
+                      generate notes in various formats.
                     </p>
                   </div>
                   {/* Tutor Session Selection */}
@@ -395,9 +393,11 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">tutoring session</h2>
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                      tutoring session
+                    </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Engage in an academic dialogue with a virtual tutor.
+                      engage in an academic dialogue with a virtual tutor.
                     </p>
                   </div>
                   {/* Flascard Generation Selection */}
@@ -408,11 +408,11 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
                         goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4">
+                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
                       flashcard generation
                     </h2>
                     <p className="text-center text-gray-700 h-1/2 mb-4">
-                      Generate a set of flashcards to help you study.
+                      generate a set of flashcards to help you study.
                     </p>
                   </div>
                 </div>
@@ -421,7 +421,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
             {stage === 2 && (
               <div className="flex flex-col md:justify-between md:justify-center w-full h-full">
-                <h2 className="block text-gray-700 text-2xl text-center">
+                <h2 className="block text-gray-700 text-gray-700 font-lightext-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "what would you like to discuss?"
                     : preferences.mode === "Note Generation"
@@ -456,7 +456,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
 
             {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
-                <h2 className="block text-gray-700 text-2xl text-center">
+                <h2 className="block text-gray-700 t text-gray-700 font-lightext-2xl text-center">
                   {preferences.mode === "Tutor Session"
                     ? "tutor preferences"
                     : preferences.mode === "Note Generation"
@@ -551,7 +551,7 @@ const PreferencesForm = ({ session, setChats, setSelectedChat, setError }) => {
             <div className="h-1/6 flex justify-center items-start  w-full md:max-w-3xl mt-4 md:mt-0">
               <button
                 onClick={goToPreviousStage}
-                className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
               >
                 back
               </button>
