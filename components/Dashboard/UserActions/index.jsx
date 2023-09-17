@@ -10,7 +10,7 @@ function UserActions({ chats, session, setError, handleDeleteChats }) {
       <div className="border-t border-white/20 w-full pt-3 ">
         {session && (
           <>
-            <ApiKeyInput session={session} setError={setError} />
+            {/* <ApiKeyInput session={session} setError={setError} /> */}
             {/* <DarkModeToggle /> */}
             <LogoutButton />
           </>
