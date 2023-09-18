@@ -3,7 +3,7 @@ import User from "../../../models/UserSchema";
 // import rateLimiter from "../../../utils/rateLimiter";
 
 async function handlePostRequest(req, res) {
-  const { username, password, openAIAPIKey } = req.body;
+  const { username, password } = req.body;
   // try {
   //   await rateLimiter(req, res);
   // } catch (err) {
@@ -18,7 +18,6 @@ async function handlePostRequest(req, res) {
   const newUser = new User({
     username,
     password,
-    apiKey: openAIAPIKey,
   });
 
   await newUser.save();

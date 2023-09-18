@@ -1,7 +1,7 @@
 // utils/authUtils.js
 import { signIn, getCsrfToken } from "next-auth/react";
 
-export async function handleSignUp(username, password, openAIAPIKey) {
+export async function handleSignUp(username, password) {
   try {
     const csrfToken = await getCsrfToken();
 
@@ -12,7 +12,7 @@ export async function handleSignUp(username, password, openAIAPIKey) {
         "CSRF-Token": csrfToken,
       },
 
-      body: JSON.stringify({ username, password, openAIAPIKey }),
+      body: JSON.stringify({ username, password }),
     });
     if (response.ok) {
       const data = await response.json();

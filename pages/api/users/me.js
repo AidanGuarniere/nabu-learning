@@ -11,7 +11,7 @@ async function handleGetRequest(req, res, userId) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.status(200).json({ username: user.username, apiKey: user.apiKey } );
+  res.status(200).json({ username: user.username } );
 }
 
 async function handlePutRequest(req, res, userId) {
@@ -19,7 +19,7 @@ async function handlePutRequest(req, res, userId) {
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
-  const whitelist = ["apiKey"];
+  const whitelist = ["username"];
   for (let field in req.body) {
     if (whitelist.includes(field)) {
       user[field] = req.body[field];

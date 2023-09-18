@@ -5,10 +5,10 @@ import { getServerSession } from "next-auth/next";
 import { decrypt } from "../../../utils/crypto";
 import axios from "axios";
 
-const fetchModelsFromAPI = async (apiKey) => {
+const fetchModelsFromAPI = async (openAIAPIKey) => {
   const config = {
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${openAIAPIKey}`,
       "Content-Type": "application/json",
     },
   };
@@ -22,9 +22,10 @@ const fetchModelsFromAPI = async (apiKey) => {
   }
 };
 
-const handleRequest = async (user) => {
-  const decryptedApiKey = await decrypt(user.apiKey);
-  return fetchModelsFromAPI(decryptedApiKey);
+const handleRequest = async () => {
+  const openAIAPIKey = process.env.OPENAI_API_KEY;
+  ;
+  return fetchModelsFromAPI(openAIAPIKey);
 };
 
 export default async function handler(req, res) {
@@ -40,8 +41,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await User.findById(session.user.id);
-    const models = await handleRequest(user);
+    const models = await handleRequest();
     res.status(200).json({ models });
   } catch (error) {
     const statusCode = error.status || 500;

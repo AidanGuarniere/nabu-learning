@@ -13,22 +13,19 @@ const AuthForm = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [openAIAPIKey, setOpenAIAPIKey] = useState("");
   const [passwordFocused, setPasswordFocused] = useState(false);
-  const [apiKeyFocused, setApiKeyFocused] = useState(false);
   const isLogin = authAction === "login";
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (isLogin) {
-      handleLogin(username, password, openAIAPIKey);
+      handleLogin(username, password);
     } else {
-      handleSignUp(username, password, openAIAPIKey);
+      handleSignUp(username, password);
     }
 
     setUsername("");
     setPassword("");
-    setOpenAIAPIKey("");
   };
   useRedirectIfAuthenticated();
 
@@ -41,18 +38,12 @@ const AuthForm = () => {
         ? "border-green-200"
         : "border-red-600";
     }
-    if (field === "apiKey") {
-      return openAIAPIKey.match(/^sk-[\w]+$/)
-        ? "border-green-200"
-        : "border-red-600";
-    }
   }
 
   const checkField = (fields) => {
     const results = {
       username: null,
       password: null,
-      apiKey: null,
     };
 
     if (fields.password) {
@@ -61,9 +52,6 @@ const AuthForm = () => {
     if (fields.username) {
       results.username = /^[a-zA-Z0-9_]{1,}$/.test(fields.username);
     }
-    if (fields.apiKey) {
-      results.apiKey = /^sk-[\w]+$/.test(fields.apiKey);
-    }
     return results;
   };
 
@@ -71,9 +59,8 @@ const AuthForm = () => {
     return checkField({
       username: isLogin ? "" : username, // we pass an empty string for username in login mode
       password: isLogin ? "" : password,
-      apiKey: isLogin ? "" : openAIAPIKey, // we pass an empty string for apiKey in login mode
     });
-  }, [username, password, openAIAPIKey, isLogin]);
+  }, [username, password, isLogin]);
 
   const toggleSubmitButton = () => {
     let disabled;
@@ -87,9 +74,8 @@ const AuthForm = () => {
       const results = checkField({
         username: username,
         password: password,
-        apiKey: openAIAPIKey,
       });
-      if (results.username && results.password && results.apiKey) {
+      if (results.username && results.password ) {
         disabled = false;
       } else {
         disabled = true;
@@ -142,51 +128,6 @@ const AuthForm = () => {
             >
               {fieldValidity.password ? <CheckmarkIcon /> : <XIcon />}
               <span>Password must contain at least 8 characters</span>
-            </div>
-          )}
-        {!isLogin && (
-          <input
-            type="text"
-            placeholder="OpenAI API Key"
-            value={openAIAPIKey}
-            onChange={(event) => setOpenAIAPIKey(event.target.value)}
-            onFocus={() => setApiKeyFocused(true)}
-            onBlur={() => setApiKeyFocused(false)}
-            required
-            pattern="^sk-[\w]+$"
-            className={`w-full p-2 mb-4 rounded-md text-gray-900 bg-gray-100 placeholder-gray-500 focus:border ${getBorder(
-              "apiKey"
-            )} focus:outline-none`}
-          />
-        )}
-
-        {(apiKeyFocused ||
-          (openAIAPIKey.length > 0 && !fieldValidity.apiKey)) &&
-          !isLogin && (
-            <div
-              className={`flex flex-col items-start pl-2 text-xs ${
-                fieldValidity.apiKey ? "text-green-200" : "text-red-600"
-              }`}
-            >
-              {" "}
-              <span>
-                {fieldValidity.apiKey ?<CheckmarkIcon />:<XIcon />}A valid
-                OpenAI API key is required for this application to work.
-              </span>
-              <span className="text-gray-500">
-                <div className="inline-flex text-xl w-[1.25rem] justify-center">
-                  -
-                </div>
-                You can generate an OpenAI API key{" "}
-                <Link
-                  className="underline text-green-200 hover:text-blue-800 transition-colors duration-200"
-                  href="https://platform.openai.com/account/api-keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  here
-                </Link>
-              </span>
             </div>
           )}
         <button
