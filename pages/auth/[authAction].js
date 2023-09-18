@@ -88,7 +88,7 @@ const AuthForm = () => {
     <div className="relative flex flex-col items-center justify-center h-screen bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-center p-3 overflow-hidden">
       <form
         onSubmit={handleSubmit}
-        className="z-10 bg-gray-100 bg-opacity-90 px-6 py-4 w-5/6 md:w-1/2 xl:w-1/3 mx-auto rounded-xl border border-gray-300 shadow-lg space-y-4 mb-4"
+        className="z-10 bg-gray-200 bg-opacity-90 px-6 py-4 w-5/6 md:w-1/2 xl:w-1/3 mx-auto rounded-xl border border-gray-300 shadow-lg space-y-4 mb-4"
       >
         <h1 className="text-3xl font-bold text-gray-800">
           {isLogin ? "Login" : "Sign Up"}
