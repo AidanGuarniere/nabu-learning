@@ -3,91 +3,106 @@ import AssistantMessage from "../AssistantMessage";
 import CopyButton from "../AssistantMessage/CopyButton"; // Remove if unused
 
 const CornellNotes = ({ cornellNoteData }) => {
+  // Assuming this is within your React functional component
   const [cues, setCues] = useState([]);
   const [responses, setResponses] = useState([]);
   const [summary, setSummary] = useState("");
-  // Initial states
-  let cuesArray = [];
-  let responsesArray = [];
-  let summaryString = "";
+  
+  let lastProcessedPosition = 0; 
+  
 
-  let lastProcessedPosition = 0; // This will mark the end of the last processed stream.
+function processData(stream) {
+  // If the stream's length is not greater than the last processed position, we return to avoid reprocessing.
+  if (stream.length <= lastProcessedPosition) return;
 
-  function processData(stream) {
-    if (stream.length <= lastProcessedPosition) return;
+  // Set the current position to the last processed position.
+  let currentPosition = lastProcessedPosition;
 
-    let currentPosition = lastProcessedPosition;
+  // Create temporary arrays for cues and responses, initialized with any previous values.
+  let tempCues = [...cues];
+  let tempResponses = [...responses];
 
-    if (stream.includes('"cuesAndResponses": [', currentPosition)) {
-      currentPosition =
-        stream.indexOf('"cuesAndResponses": [', currentPosition) + 21;
+  // Check if the stream contains the 'cuesAndResponses' key, starting from the current position.
+  if (stream.includes('"cuesAndResponses": [', currentPosition)) {
+      // Update the current position to the start of the cuesAndResponses array.
+      currentPosition = stream.indexOf('"cuesAndResponses": [', currentPosition) + 21;
 
-      // Loop through objects within "cuesAndResponses" until we reach the end bracket or end of stream.
+      // Process each cue-response object in the array until the end of the stream.
       while (currentPosition < stream.length) {
-        let objectEnd = stream.indexOf("}", currentPosition);
-        if (objectEnd === -1) {
-          break; // If no closing bracket is found for the object, we break out and wait for more stream.
-        }
-
-        let cueStart = stream.indexOf('"cue": "', currentPosition);
-        let cueEnd = stream.indexOf('"', cueStart + 8);
-
-        if (cueStart !== -1 && cueEnd !== -1 && cueStart < objectEnd) {
-          let cue = stream.substring(cueStart + 8, cueEnd);
-          cuesArray.push(cue);
-          console.log("cues",cuesArray)
-          currentPosition = cueEnd + 1;
-        }
-
-        let responsesStart = stream.indexOf('"responses": [', currentPosition);
-        if (responsesStart !== -1 && responsesStart < objectEnd) {
-          responsesStart += 14;
-          let responsesEnd = stream.indexOf("]", responsesStart);
-
-          if (responsesEnd !== -1 && responsesEnd < objectEnd) {
-            let responses = stream
-              .substring(responsesStart, responsesEnd)
-              .split(",")
-              .map((s) => s.trim().replace(/"/g, ""));
-            responsesArray.push(...responses);
-            console.log("responses",responsesArray)
+          // Find the end of the current cue-response object.
+          let objectEnd = stream.indexOf("}", currentPosition);
+          if (objectEnd === -1) {
+              break;
           }
-        }
 
-        currentPosition = objectEnd + 1; // Move the position after the current object's closing bracket.
+          // Identify the start and end of the 'cue' value.
+          let cueStart = stream.indexOf('"cue": "', currentPosition);
+          let cueEnd = stream.indexOf('"', cueStart + 8);
+
+          // If a cue is found and it's within the current object, extract it.
+          if (cueStart !== -1 && cueEnd !== -1 && cueStart < objectEnd) {
+              let cue = stream.substring(cueStart + 8, cueEnd);
+              tempCues.push(cue);
+              currentPosition = cueEnd + 1;
+          }
+
+          // Identify the start of the 'responses' array.
+          let responsesStart = stream.indexOf('"responses": [', currentPosition);
+          if (responsesStart !== -1 && responsesStart < objectEnd) {
+              responsesStart += 14;
+              // Find the end of the 'responses' array.
+              let responsesEnd = stream.indexOf("]", responsesStart);
+
+              // If responses are found and they are within the current object, extract them.
+              if (responsesEnd !== -1 && responsesEnd < objectEnd) {
+                  let temp = stream.substring(responsesStart, responsesEnd).split(",").map(s => s.trim().replace(/"/g, ""));
+                  tempResponses.push(...temp);
+              }
+          }
+
+          // Update the current position to after the current cue-response object.
+          currentPosition = objectEnd + 1;
       }
-    }
-
-    let summaryStart = stream.indexOf('"summary": "', currentPosition);
-    console.log("start",summaryStart)
-    if (summaryStart !== -1) {
-      summaryStart += 12;
-      let summaryEnd = stream.length;
-      console.log("end", summaryEnd)
-      if (summaryEnd !== -1 && summaryStart >= lastProcessedPosition) {
-        summaryString = stream.substring(summaryStart, summaryEnd);
-        console.log("summary",summaryString)
-        currentPosition = summaryEnd + 1;
-      }
-    }
-
-    lastProcessedPosition = currentPosition;
   }
+
+  // Identify the start of the 'summary' key.
+  let summaryStart = stream.indexOf('"summary": "');
+  if (summaryStart !== -1) {
+      summaryStart += 12;
+      // Find the end of the summary value.
+      let summaryEnd = stream.indexOf('"', summaryStart);
+
+      // If a summary is found and hasn't been processed before, extract it.
+      if (summaryEnd !== -1 && summaryStart >= lastProcessedPosition) {
+          let tempSummary = stream.substring(summaryStart, summaryEnd);
+          setSummary(tempSummary);
+          currentPosition = summaryEnd + 1;
+      }
+  }
+
+  // Update React states with the extracted cues, responses, and update the last processed position.
+  setCues(tempCues);
+  setResponses(tempResponses);
+  lastProcessedPosition = currentPosition;
+}
+
+  
   useEffect(() => {
-    processData(cornellNoteData);
+      processData(cornellNoteData);
   }, [cornellNoteData]);
+  
 
-  // useEffect(() => {
-  //   console.log(cues);
-  // }, [cues]);
+  useEffect(() => {
+    console.log("cues",cues);
+  }, [cues]);
 
-  // useEffect(() => {
-  //   console.log(responses);
-  // }, [responses]);
+  useEffect(() => {
+    console.log("responses",responses);
+  }, [responses]);
 
-  // useEffect(() => {
-  //   console.log(summary);
-  // }, [summary]);
+  useEffect(() => {
+    console.log("summary",summary);
+  }, [summary]);
 
   return (
     <p>{cornellNoteData}</p>
