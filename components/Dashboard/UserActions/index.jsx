@@ -1,5 +1,4 @@
 import React from "react";
-import ApiKeyInput from "./ApiKeyInput";
 import LogoutButton from "./LogoutButton";
 import DeleteAllChatsButton from "./DeleteAllChatsButton";
 import DarkModeToggle from "./DarkModeToggle";
@@ -10,7 +9,6 @@ function UserActions({ chats, session, setError, handleDeleteChats }) {
       <div className="border-t border-white/20 w-full pt-3 ">
         {session && (
           <>
-            {/* <ApiKeyInput session={session} setError={setError} /> */}
             {/* <DarkModeToggle /> */}
             <LogoutButton />
           </>

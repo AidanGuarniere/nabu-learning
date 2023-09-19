@@ -130,7 +130,6 @@ function PromptActions({
 
         if (updatedChat.functions && updatedChat.functions.length > 0) {
           gptRequestPayload.functions = updatedChat.functions;
-          console.log(updatedChat.functions[0].name);
           gptRequestPayload.function_call = {name: messageData.chatFunctions[0].name};
         }
 

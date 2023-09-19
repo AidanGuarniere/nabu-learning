@@ -6,45 +6,49 @@ import CornellNotes from "./CornellNotes";
 import Flashcards from "./Flashcards";
 import UserMessage from "./UserMessage";
 
-function MessageItem({ message, chats, selectedChat, session, setChats, currentlyStreamedChatRef, setStream}) {
+function MessageItem({
+  message,
+  chats,
+  selectedChat,
+  session,
+  setChats,
+  currentlyStreamedChatRef,
+  setStream,
+}) {
   const [selectedMessageId, setSelectedMessageId] = useState(null);
-  const [noteData, setNoteData] = useState("");
+  const [cornellNoteData, setCornellNoteData] = useState("");
   const [flashcardData, setFlashcardData] = useState("");
   const [isCornellNoteFunction, setIsCornellNoteFunction] = useState(false);
   const [isFlashcardFunction, setIsFlashcardFunction] = useState(false);
 
   useEffect(() => {
-    const checkCornellNoteFunction =
-      message.content &&
-      message.content.startsWith('"functionName": "createCornellNotes"');
+    // check for function calling in gpt responses
+    if (message.role === "assistant") {
+      const checkCornellNoteFunction =
+        message.content &&
+        message.content.includes('"functionName": "createCornellNotes"');
+      if (checkCornellNoteFunction) {
+        setIsCornellNoteFunction(true);
+      }
 
-    if (checkCornellNoteFunction) {
-      setIsCornellNoteFunction(true);
-    }
-
-    const checkFlashcardFunction =
-      message.content &&
-      message.content.includes('"functionName": "generateFlashcards"');
-      // console.log(message.content)
-      // console.log(checkFlashcardFunction)
-    if (checkFlashcardFunction) {
-      setIsFlashcardFunction(true);
+      const checkFlashcardFunction =
+        message.content &&
+        message.content.includes('"functionName": "generateFlashcards"');
+      if (checkFlashcardFunction) {
+        setIsFlashcardFunction(true);
+      }
     }
   }, [chats]);
 
   useEffect(() => {
     if (isCornellNoteFunction) {
-      const noteObject = isCornellNoteFunction
-        ? JSON.parse(message.content)
-        : null;
-      setNoteData(noteObject);
+      setCornellNoteData(message.content);
     }
-  }, [isCornellNoteFunction]);
+  }, [chats, isCornellNoteFunction]);
 
   useEffect(() => {
     if (isFlashcardFunction) {
-      const flashcardObject = message.content;
-      setFlashcardData(flashcardObject);
+      setFlashcardData(message.content);
     }
   }, [chats, isFlashcardFunction]);
 
@@ -80,7 +84,7 @@ function MessageItem({ message, chats, selectedChat, session, setChats, currentl
         <div className="relative flex w-[calc(100%-50px)] flex-col gap-1 md:gap-3 lg:w-[calc(100%-115px)]">
           {message.role === "assistant" ? (
             isCornellNoteFunction ? (
-              <CornellNotes noteData={noteData} />
+              <CornellNotes cornellNoteData={cornellNoteData} />
             ) : isFlashcardFunction ? (
               <Flashcards flashcardData={flashcardData} />
             ) : (
