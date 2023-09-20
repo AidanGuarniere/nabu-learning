@@ -4,22 +4,20 @@ import CopyButton from "../AssistantMessage/CopyButton"; // Remove if unused
 
 const CornellNotes = ({ cornellNoteData }) => {
   // Assuming this is within your React functional component
-  const [cues, setCues] = useState([]);
-  const [responses, setResponses] = useState([]);
+  const [cuesAndResponsesState, setCuesAndResponsesState] = useState([]);
   const [summary, setSummary] = useState("");
 
   let lastProcessedPosition = 0;
 
-  function processData(stream) {
+  function processCornellNoteData(stream) {
     // If the stream's length is not greater than the last processed position, we return to avoid reprocessing.
     if (stream.length <= lastProcessedPosition) return;
 
     // Set the current position to the last processed position.
     let currentPosition = lastProcessedPosition;
 
-    // Create temporary arrays for cues and responses, initialized with any previous values.
-    let tempCues = [...cues];
-    let tempResponses = [...responses];
+    // Create a temporary array to store cue-response objects.
+    let tempCuesAndResponses = [];
 
     // Check if the stream contains the 'cuesAndResponses' key, starting from the current position.
     if (stream.includes('"cuesAndResponses": [', currentPosition)) {
@@ -35,14 +33,15 @@ const CornellNotes = ({ cornellNoteData }) => {
           break;
         }
 
+        let cueResponseObj = {};
+
         // Identify the start and end of the 'cue' value.
         let cueStart = stream.indexOf('"cue": "', currentPosition);
         let cueEnd = stream.indexOf('"', cueStart + 8);
 
         // If a cue is found and it's within the current object, extract it.
         if (cueStart !== -1 && cueEnd !== -1 && cueStart < objectEnd) {
-          let cue = stream.substring(cueStart + 8, cueEnd);
-          tempCues.push(cue);
+          cueResponseObj.cue = stream.substring(cueStart + 8, cueEnd);
           currentPosition = cueEnd + 1;
         }
 
@@ -55,13 +54,15 @@ const CornellNotes = ({ cornellNoteData }) => {
 
           // If responses are found and they are within the current object, extract them.
           if (responsesEnd !== -1 && responsesEnd < objectEnd) {
-            let temp = stream
+            cueResponseObj.responses = stream
               .substring(responsesStart, responsesEnd)
               .split(",")
               .map((s) => s.trim().replace(/"/g, ""));
-            tempResponses.push(...temp);
           }
         }
+
+        // Push the constructed cueResponse object to the temp array.
+        if(cueResponseObj.cue){tempCuesAndResponses.push(cueResponseObj);}
 
         // Update the current position to after the current cue-response object.
         currentPosition = objectEnd + 1;
@@ -83,23 +84,18 @@ const CornellNotes = ({ cornellNoteData }) => {
       }
     }
 
-    // Update React states with the extracted cues, responses, and update the last processed position.
-    setCues(tempCues);
-    setResponses(tempResponses);
+    // Update React state with the extracted cuesAndResponses object array and update the last processed position.
+    setCuesAndResponsesState(tempCuesAndResponses);
     lastProcessedPosition = currentPosition;
   }
 
   useEffect(() => {
-    processData(cornellNoteData);
+    processCornellNoteData(cornellNoteData);
   }, [cornellNoteData]);
 
   useEffect(() => {
-    console.log("cues", cues);
-  }, [cues]);
-
-  useEffect(() => {
-    console.log("responses", responses);
-  }, [responses]);
+    console.log("c&r", cuesAndResponsesState);
+  }, [cuesAndResponsesState]);
 
   useEffect(() => {
     console.log("summary", summary);
@@ -108,28 +104,36 @@ const CornellNotes = ({ cornellNoteData }) => {
   return (
     <div className="border border-gray-400 p-4 w-full">
       <div className="flex flex-wrap">
-        <div className="w-full flex border-b border-gray-200">
-          <div className="w-1/3 border-r border-gray-200 flex justify-center md:justify-start items-center">
-            {cues.map((cue, i) => (
-              <span
-                className="text-center md:text-left text-lg text-gray-900"
-                key={i}
-              >
-                {cue}
-              </span>
-            ))}
-          </div>
-          <ul
-            className="w-2/3 py-2 text-gray-900"
-            style={{ listStyleType: "disc" }}
-          >
-            {responses.map((response, j) => (
-              <li className="mx-[1.6rem] md:px-[-1.6rem] px-0" key={j}>
-                <AssistantMessage message={response} isNote={true} key={j} />
-              </li>
-            ))}
-          </ul>
-        </div>
+        {cuesAndResponsesState.length
+          ? cuesAndResponsesState.map((item, i) => (
+              <div className="w-full flex border-b border-gray-200" key={i}>
+                <div className="w-1/3 border-r border-gray-200 flex justify-center md:justify-start">
+                  <span className="py-2 text-center md:text-left text-xl font-semibold text-gray-900">
+                    {item.cue}
+                  </span>
+                </div>
+                <ul
+                  className="w-2/3 py-2 text-gray-900"
+                  style={{ listStyleType: "disc" }}
+                >
+                  {item.responses
+                    ? item.responses.map((response, j) => (
+                        <li
+                          className="mx-[1.6rem] md:px-[-1.6rem] px-0"
+                          key={j}
+                        >
+                          <AssistantMessage
+                            message={response}
+                            isNote={true}
+                            key={j}
+                          />
+                        </li>
+                      ))
+                    : null}
+                </ul>
+              </div>
+            ))
+          : null}
       </div>
       <div className="w-full p-2">
         <AssistantMessage message={summary} isNote={true} />
