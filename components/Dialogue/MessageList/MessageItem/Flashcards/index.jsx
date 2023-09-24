@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
+const FlashCard = ({ pair, index }) => {
+  const [showFront, setShowFront] = useState(true);
+  const toggleCard = () => setShowFront(!showFront);
+
+  return (
+    <div className={`w-80 h-48 m-1 p-4 rounded-lg border border-black ${showFront ? 'bg-black text-white' : 'bg-white text-gray-800'}`} onClick={toggleCard}>
+      <h3>{`Card ${pair.count || index + 1}`} {showFront ? 'front' : 'back'}</h3>
+      <div className="flex items-center justify-center h-full pt-6">
+        <span>{showFront ? pair.question : pair.answer}</span>
+      </div>
+    </div>
+  );
+};
+
 const Flashcards = ({ flashcardData }) => {
   const [cardPairs, setCardPairs] = useState([]);
   const [bufferCount, setBufferCount] = useState(0); // Initialize bufferCount state
+  const [flip, setFlip] = useState(false)
   const bufferRef = useRef(new Set());
 
   useEffect(() => {
@@ -50,31 +65,16 @@ const Flashcards = ({ flashcardData }) => {
   //   console.log(cardPairs)
   // }, [cardPairs])
 
+  const handleFlip = () => {
+
+  }
+
   return (
-    <div className="flex flex-wrap justify-center w-full">
-      {cardPairs.map((pair, index) => (
-        <div className="flex flex-col md:flex-row p-2 md:p-4" key={index}>
-          <div className="relative w-80 h-48 m-1 p-4 text-white bg-black rounded-lg">
-            <h3 className="absolute top-0 left-0 ml-2 mt-2">
-              {`Front - Card ${pair.count || index + 1}`}{" "}
-              {/* Using count or fallback to index */}
-            </h3>
-            <div className="flex items-center justify-center h-full pt-6 text-center text-lg">
-              <span className="text-center">{pair.question}</span>
-            </div>
-          </div>
-          <div className="relative w-80 h-48 m-1 p-2 text-black bg-white border border-black rounded-lg">
-            <h3 className="absolute top-0 left-0 ml-2 mt-2">
-              {`Back - Card ${pair.count || index + 1}`}{" "}
-              {/* Using count or fallback to index */}
-            </h3>
-            <div className="flex items-center justify-center h-full pt-6">
-              <p className="text-center">{pair.answer}</p>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
+      <div className="flex flex-wrap justify-center w-full">
+        {cardPairs.map((pair, index) => (
+          <FlashCard pair={pair} index={index} key={index} />
+        ))}
+      </div>
   );
 };
 

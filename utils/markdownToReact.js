@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
@@ -12,9 +12,6 @@ import CopyButton from "../components/Dialogue/MessageList/MessageItem/Assistant
 const CodeBlock = ({ children }) => {
   const codeBlock = children[0].props.children;
   const codeString = codeBlock.join("");
-  // let language;
-  // if(highlight.highlightAuto(codeString).language){language=highlight.highlightAuto(codeString).language}else{}
-  // const value = highlight.highlight(codeString, { language: language }).value;
   const value = highlight.highlightAuto(codeString).value;
   const language = highlight.highlightAuto(codeString).secondBest.language
   return (
