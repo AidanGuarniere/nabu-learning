@@ -1,13 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
+
 const FlashCard = ({ pair, index }) => {
   const [showFront, setShowFront] = useState(true);
   const toggleCard = () => setShowFront(!showFront);
 
   return (
-    <div className={`w-80 h-48 m-1 p-4 rounded-lg border border-black ${showFront ? 'bg-black text-white' : 'bg-white text-gray-800'}`} onClick={toggleCard}>
-      <h3>{`Card ${pair.count || index + 1}`} {showFront ? 'front' : 'back'}</h3>
-      <div className="flex items-center justify-center h-full pt-6">
-        <span>{showFront ? pair.question : pair.answer}</span>
+    <div
+      className={`w-80 h-48 m-1 p-4 rounded-lg border border-black bg-white card ${
+        showFront ? "" : "card-flipped"
+      }`}
+      onClick={toggleCard}
+    >
+      <div className="card" >
+        <div className="bg-black text-gray-800 card-front">
+          <h3>{`Card ${pair.count || index + 1}`} Front</h3>
+          <div className="flex items-center justify-center h-full pt-6">
+            <span>{pair.question}</span>
+          </div>
+        </div>
+        <div className="bg-white text-gray-800 card-back">
+          <h3>{`Card ${pair.count || index + 1}`} Back</h3>
+          <div className="flex items-center justify-center h-full pt-6">
+            <span>{pair.answer}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -16,7 +32,6 @@ const FlashCard = ({ pair, index }) => {
 const Flashcards = ({ flashcardData }) => {
   const [cardPairs, setCardPairs] = useState([]);
   const [bufferCount, setBufferCount] = useState(0); // Initialize bufferCount state
-  const [flip, setFlip] = useState(false)
   const bufferRef = useRef(new Set());
 
   useEffect(() => {
@@ -65,16 +80,14 @@ const Flashcards = ({ flashcardData }) => {
   //   console.log(cardPairs)
   // }, [cardPairs])
 
-  const handleFlip = () => {
-
-  }
+  const handleFlip = () => {};
 
   return (
-      <div className="flex flex-wrap justify-center w-full">
-        {cardPairs.map((pair, index) => (
-          <FlashCard pair={pair} index={index} key={index} />
-        ))}
-      </div>
+    <div className="flex flex-wrap justify-center w-full">
+      {cardPairs.map((pair, index) => (
+        <FlashCard pair={pair} index={index} key={index} />
+      ))}
+    </div>
   );
 };
 
