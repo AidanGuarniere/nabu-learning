@@ -76,11 +76,6 @@ const Flashcards = ({ flashcardData }) => {
     setCardPairs(parsedArray);
   }, [bufferCount]);
 
-  // useEffect(() => {
-  //   console.log(cardPairs)
-  // }, [cardPairs])
-
-  const handleFlip = () => {};
 
   return (
     <div className="flex flex-wrap justify-center w-full">
