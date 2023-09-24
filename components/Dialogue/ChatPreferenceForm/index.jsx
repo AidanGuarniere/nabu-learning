@@ -526,7 +526,7 @@ const PreferencesForm = ({
 
                 {preferences.mode === "Flashcard Generation" && (
                   <>
-                    <GenericSelect
+                    <GenericInput
                       label="Flashcard Count"
                       value={preferences.flashcardCount}
                       onChange={(value) =>

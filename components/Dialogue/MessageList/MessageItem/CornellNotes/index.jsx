@@ -56,13 +56,15 @@ const CornellNotes = ({ cornellNoteData }) => {
           if (responsesEnd !== -1 && responsesEnd < objectEnd) {
             cueResponseObj.responses = stream
               .substring(responsesStart, responsesEnd)
-              .split(",")
+              .split(".")
               .map((s) => s.trim().replace(/"/g, ""));
           }
         }
 
         // Push the constructed cueResponse object to the temp array.
-        if(cueResponseObj.cue){tempCuesAndResponses.push(cueResponseObj);}
+        if (cueResponseObj.cue) {
+          tempCuesAndResponses.push(cueResponseObj);
+        }
 
         // Update the current position to after the current cue-response object.
         currentPosition = objectEnd + 1;
@@ -93,7 +95,7 @@ const CornellNotes = ({ cornellNoteData }) => {
     processCornellNoteData(cornellNoteData);
   }, [cornellNoteData]);
 
-  return (
+  return cornellNoteData === '"functionName": "createCornellNotes"' ? null : (
     <div className="border border-gray-400 p-4 w-full">
       <div className="flex flex-wrap">
         {cuesAndResponsesState.length
@@ -109,18 +111,24 @@ const CornellNotes = ({ cornellNoteData }) => {
                   style={{ listStyleType: "disc" }}
                 >
                   {item.responses
-                    ? item.responses.map((response, j) => (
-                        <li
-                          className="mx-[1.6rem] md:px-[-1.6rem] px-0"
-                          key={j}
-                        >
-                          <AssistantMessage
-                            message={response}
-                            isNote={true}
+                    ? item.responses.map((response, j) =>
+                        response.length ? (
+                          <li
+                            className="mx-[1.6rem] md:px-[-1.6rem] px-0"
                             key={j}
-                          />
-                        </li>
-                      ))
+                          >
+                            <AssistantMessage
+                              message={
+                                j > 0
+                                  ? response.substring(1, response.length)
+                                  : response
+                              }
+                              isNote={true}
+                              key={j}
+                            />
+                          </li>
+                        ) : null
+                      )
                     : null}
                 </ul>
               </div>

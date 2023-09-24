@@ -91,7 +91,7 @@ function MessageItem({
               <CornellNotes cornellNoteData={cornellNoteData} />
             ) : isFlashcardFunction ? (
               <Flashcards flashcardData={flashcardData} />
-            ) : message.content.includes('"function') &&
+            ) : message.content.substring(0, 40).includes('"funct') &&
               !message.content.includes(
                 '"functionName": "createCornellNotes"'
               ) &&

@@ -7,19 +7,19 @@ const FlashCard = ({ pair, index }) => {
   return (
     <div
       className={`w-80 h-48 m-1 p-4 rounded-lg border border-black bg-white card ${
-        showFront ? "" : "card-flipped"
+        showFront ? " " : "card-flipped"
       }`}
       onClick={toggleCard}
     >
       <div className="card" >
-        <div className="bg-black text-gray-800 card-front">
-          <h3>{`Card ${pair.count || index + 1}`} Front</h3>
+        <div className="text-gray-800 card-front">
+          <h3>{`${pair.count || index + 1}`} Front</h3>
           <div className="flex items-center justify-center h-full pt-6">
             <span>{pair.question}</span>
           </div>
         </div>
         <div className="bg-white text-gray-800 card-back">
-          <h3>{`Card ${pair.count || index + 1}`} Back</h3>
+          <h3>{`${pair.count || index + 1}`} Back</h3>
           <div className="flex items-center justify-center h-full pt-6">
             <span>{pair.answer}</span>
           </div>
@@ -78,6 +78,7 @@ const Flashcards = ({ flashcardData }) => {
 
 
   return (
+    flashcardData === '"functionName": "generateFlashcards"' ? null :
     <div className="flex flex-wrap justify-center w-full">
       {cardPairs.map((pair, index) => (
         <FlashCard pair={pair} index={index} key={index} />
