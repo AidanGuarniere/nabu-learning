@@ -3,7 +3,6 @@ import markdownToReact from "../../../../../utils/markdownToReact";
 import CopyButton from "./CopyButton";
 
 function AssistantMessage({ message, isNote }) {
-  console.log(message)
   const renderedMarkdown = markdownToReact(message);
   return (
     <div className="w-full min-h-[20px] flex flex-col items-start gap-4">

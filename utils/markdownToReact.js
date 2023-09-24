@@ -16,17 +16,18 @@ const CodeBlock = ({ children }) => {
   // if(highlight.highlightAuto(codeString).language){language=highlight.highlightAuto(codeString).language}else{}
   // const value = highlight.highlight(codeString, { language: language }).value;
   const value = highlight.highlightAuto(codeString).value;
+  const language = highlight.highlightAuto(codeString).secondBest.language
   return (
     <pre className="font-sans code-container">
       <div className="bg-black rounded-md mb-4 ">
         <div className="code-header flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md not-prose">
-          <span>js</span>
+          <span>{language}</span>
           <CopyButton
             text={codeBlock}
             copyMessage={{ preCopy: "Copy code", postCopy: "Copied!" }}
           />
         </div>
-        <div className="bg-black overflow-y-auto ">
+        <div className="bg-black overflow-y-auto">
           <code
             // className={`!whitespace-pre hljs ${language} bg-black `}
             className={`!whitespace-pre hljs bg-black `}

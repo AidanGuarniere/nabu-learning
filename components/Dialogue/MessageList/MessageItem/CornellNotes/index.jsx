@@ -93,14 +93,6 @@ const CornellNotes = ({ cornellNoteData }) => {
     processCornellNoteData(cornellNoteData);
   }, [cornellNoteData]);
 
-  useEffect(() => {
-    console.log("c&r", cuesAndResponsesState);
-  }, [cuesAndResponsesState]);
-
-  useEffect(() => {
-    console.log("summary", summary);
-  }, [summary]);
-
   return (
     <div className="border border-gray-400 p-4 w-full">
       <div className="flex flex-wrap">
