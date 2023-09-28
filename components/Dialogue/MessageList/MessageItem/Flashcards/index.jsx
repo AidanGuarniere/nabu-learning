@@ -6,7 +6,7 @@ const FlashCard = ({ pair, index }) => {
 
   return (
     <div
-      className={`w-80 h-48 m-1 p-4 rounded-lg border border-black bg-white card ${
+      className={`w-80 h-48 m-1 p-4 rounded-lg border border-black bg-white card cursor-pointer ${
         showFront ? " " : "card-flipped"
       }`}
       onClick={toggleCard}
