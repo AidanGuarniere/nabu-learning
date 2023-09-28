@@ -52,10 +52,10 @@ function PromptActions({
   }
 
   useEffect(() => {
-    setSuggestionStream("")
-    setSuggestedResponses([])
-  }, [selectedChat])
-  
+    setSuggestionStream("");
+    setSuggestedResponses([]);
+  }, [selectedChat]);
+
   // React useEffect
   useEffect(() => {
     processSuggestedResponses(suggestionStream);
@@ -196,6 +196,7 @@ function PromptActions({
   };
 
   const suggestResponses = async (e) => {
+    setSuggestedResponses([])
     e.preventDefault;
     let chatId = { ...selectedChat };
     const selectedChatIndex = chats.findIndex(
@@ -262,36 +263,38 @@ function PromptActions({
         />
       )}
       <div
-        className="flex flex-row gap-3 h-12  w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 relative
+        className="overflow-hidden flex flex-row gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 relative
                  rounded-[.4325rem] dark:text-white dark:bg-gray-700 sm:min-h-[1rem]"
       >
         <button
           onClick={(e) => {
             suggestResponses(e);
           }}
-          className="w-1/5 py-2 px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-sm"
+          className="w-auto md:w-1/6 h-12 py-2 px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-sm"
         >
-          suggest response
+          suggestions
         </button>
         {suggestedResponses.length
           ? suggestedResponses.map((response, i) =>
               i < 2 ? (
-                <span
-                  onClick={(e) => {
-                    setUserText(e.target.textContent);
-                  }}
-                  className="w-2/5 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer truncate"
-                  key={i}
-                  title={response}
-                  style={{
-                    maxWidth: "100%",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {response}
-                </span>
+                <div className="flex items-center w-1/3 md:w-2/5 h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer ">
+                  <span
+                    onClick={(e) => {
+                      setUserText(e.target.textContent);
+                    }}
+                    className="text-center text-sm truncate"
+                    key={i}
+                    title={response}
+                    style={{
+                      maxWidth: "100%",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {response}
+                  </span>
+                </div>
               ) : null
             )
           : null}
