@@ -33,7 +33,7 @@ function MessageList({ chats, selectedChat, session, setChats, currentlyStreamed
         )
       )}
 
-      <div className="bg-white h-[33.75%] dark:bg-gray-800" />
+      <div className="bg-white h-[37.5%] dark:bg-gray-800" />
     </>
   );
 }
