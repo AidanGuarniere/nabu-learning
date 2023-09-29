@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
-import streamGptSuggestions from "../../../utils/streamGptSuggestions";
 import streamGptResponse from "../../../utils/streamGptResponse";
+import SuggestedResponseButtons from "./SuggestedResponseButtons";
 
 function PromptActions({
   session,
@@ -17,49 +17,6 @@ function PromptActions({
   const [loading, setLoading] = useState(false);
   const [showRegen, setShowRegen] = useState(false);
   const [userText, setUserText] = useState("");
-  const [suggestedResponses, setSuggestedResponses] = useState([]);
-  const [suggestionStream, setSuggestionStream] = useState("");
-
-  let lastProcessedPosition = 0;
-  let suggestedUserResponsesOutput = [];
-
-  function processSuggestedResponses(stream) {
-    if (stream.length <= lastProcessedPosition) return;
-
-    let currentPosition = lastProcessedPosition;
-
-    if (stream.includes('"suggestedUserResponses": [', currentPosition)) {
-      currentPosition =
-        stream.indexOf('"suggestedUserResponses": [', currentPosition) + 26;
-
-      while (currentPosition < stream.length) {
-        let stringStart = stream.indexOf('"', currentPosition);
-        let stringEnd = stream.indexOf('"', stringStart + 1);
-
-        if (stringStart === -1 || stringEnd === -1) {
-          break;
-        }
-
-        let suggestion = stream.substring(stringStart + 1, stringEnd);
-        suggestedUserResponsesOutput.push(suggestion);
-        setSuggestedResponses(suggestedUserResponsesOutput);
-
-        currentPosition = stringEnd + 1;
-      }
-    }
-
-    lastProcessedPosition = currentPosition;
-  }
-
-  useEffect(() => {
-    setSuggestionStream("");
-    setSuggestedResponses([]);
-  }, [selectedChat]);
-
-  // React useEffect
-  useEffect(() => {
-    processSuggestedResponses(suggestionStream);
-  }, [suggestionStream, processSuggestedResponses]);
 
   // useEffect(() => {
   //   if (selectedChat) {
@@ -196,7 +153,7 @@ function PromptActions({
   };
 
   const suggestResponses = async (e) => {
-    setSuggestedResponses([])
+    setSuggestedResponses([]);
     e.preventDefault;
     let chatId = { ...selectedChat };
     const selectedChatIndex = chats.findIndex(
@@ -262,43 +219,7 @@ function PromptActions({
           showRegen={showRegen}
         />
       )}
-      <div
-        className="overflow-hidden flex flex-row gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 relative
-                 rounded-[.4325rem] dark:text-white dark:bg-gray-700 sm:min-h-[1rem]"
-      >
-        <button
-          onClick={(e) => {
-            suggestResponses(e);
-          }}
-          className="w-auto md:w-1/6 h-12 py-2 px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-sm"
-        >
-          suggestions
-        </button>
-        {suggestedResponses.length
-          ? suggestedResponses.map((response, i) =>
-              i < 2 ? (
-                <div className="flex items-center w-1/3 md:w-2/5 h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer "  key={i}>
-                  <span
-                    onClick={(e) => {
-                      setUserText(e.target.textContent);
-                    }}
-                    className="text-center text-sm truncate"
-                   
-                    title={response}
-                    style={{
-                      maxWidth: "100%",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {response}
-                  </span>
-                </div>
-              ) : null
-            )
-          : null}
-      </div>
+      <SuggestedResponseButtons chats={chats} selectedChat={selectedChat} setUserText={setUserText} />
       <PromptForm
         userText={userText}
         setUserText={setUserText}

@@ -3,6 +3,7 @@ import { createParser, ParsedEvent } from "eventsource-parser";
 const streamGptSuggestions = async (
   gptRequestPayload,
   setSuggestionStream,
+  setLoadingSuggestions
 ) => {
   const response = await fetch("/api/proxy/gpt", {
     method: "POST",
@@ -70,6 +71,7 @@ const streamGptSuggestions = async (
     if (done) {
       // reset stream
       setSuggestionStream("");
+      setLoadingSuggestions(false);
       // reset currentlyStreamedChatRef
     }
   }
