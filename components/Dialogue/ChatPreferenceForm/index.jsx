@@ -63,7 +63,8 @@ const PreferencesForm = ({
             properties: {
               functionName: {
                 type: "string",
-                description: "The name of this function, createCornellNotes. the value of functionName MUST be createCornellNotes.",
+                description:
+                  "The name of this function, createCornellNotes. the value of functionName MUST be createCornellNotes.",
               },
               subject: {
                 type: "string",

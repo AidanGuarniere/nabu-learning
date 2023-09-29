@@ -59,7 +59,7 @@ function PromptActions({
   // React useEffect
   useEffect(() => {
     processSuggestedResponses(suggestionStream);
-  }, [suggestionStream]);
+  }, [suggestionStream, processSuggestedResponses]);
 
   // useEffect(() => {
   //   if (selectedChat) {
@@ -277,13 +277,13 @@ function PromptActions({
         {suggestedResponses.length
           ? suggestedResponses.map((response, i) =>
               i < 2 ? (
-                <div className="flex items-center w-1/3 md:w-2/5 h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer ">
+                <div className="flex items-center w-1/3 md:w-2/5 h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer "  key={i}>
                   <span
                     onClick={(e) => {
                       setUserText(e.target.textContent);
                     }}
                     className="text-center text-sm truncate"
-                    key={i}
+                   
                     title={response}
                     style={{
                       maxWidth: "100%",

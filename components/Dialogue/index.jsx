@@ -114,7 +114,7 @@ function Dialogue({
         })
       );
     }
-  }, [selectedChat, stream]);
+  }, [selectedChat, stream, setChats]);
 
   return (
     <div className="md:pl-[260px] w-full h-full p-0 m-0 overflow-hidden bg-white dark:bg-gray-800">

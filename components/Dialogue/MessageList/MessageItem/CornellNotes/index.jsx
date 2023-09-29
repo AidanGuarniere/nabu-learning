@@ -93,7 +93,7 @@ const CornellNotes = ({ cornellNoteData }) => {
 
   useEffect(() => {
     processCornellNoteData(cornellNoteData);
-  }, [cornellNoteData]);
+  }, [cornellNoteData, processCornellNoteData]);
 
   return cornellNoteData === '"functionName": "createCornellNotes"' ? null : (
     <div className="border border-gray-400 p-4 w-full">

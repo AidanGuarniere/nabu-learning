@@ -11,17 +11,19 @@ const FlashCard = ({ pair, index }) => {
       }`}
       onClick={toggleCard}
     >
-      <div className="card" >
-        <div className="text-gray-800 card-front">
-          <h3>{`${pair.count || index + 1}`} Front</h3>
-          <div className="flex items-center justify-center h-full pt-6">
+      <div className="card h-full">
+        <div className="text-gray-800 card-front flex flex-col">
+          <h3 className="self-start">{`${pair.count || index + 1}`} Front</h3>
+          <div className="flex-grow flex items-center justify-center overflow-y-auto text-center">
             <span>{pair.question}</span>
           </div>
         </div>
-        <div className="bg-white text-gray-800 card-back">
-          <h3>{`${pair.count || index + 1}`} Back</h3>
-          <div className="flex items-center justify-center h-full pt-6">
-            <span>{pair.answer}</span>
+        <div className="bg-white text-gray-800 card-back flex flex-col">
+          <h3 className="self-start pb-2">
+            {`${pair.count || index + 1}`} Back
+          </h3>
+          <div className="flex-grow flex items-center justify-center h-3/5 overflow-y-auto">
+            <span className="h-full">{pair.answer}</span>
           </div>
         </div>
       </div>
@@ -76,9 +78,7 @@ const Flashcards = ({ flashcardData }) => {
     setCardPairs(parsedArray);
   }, [bufferCount]);
 
-
-  return (
-    flashcardData === '"functionName": "generateFlashcards"' ? null :
+  return flashcardData === '"functionName": "generateFlashcards"' ? null : (
     <div className="flex flex-wrap justify-center w-full">
       {cardPairs.map((pair, index) => (
         <FlashCard pair={pair} index={index} key={index} />

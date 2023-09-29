@@ -42,19 +42,19 @@ function MessageItem({
         setIsFlashcardFunction(true);
       }
     }
-  }, [chats]);
+  }, [chats, message]);
 
   useEffect(() => {
     if (isCornellNoteFunction) {
       setCornellNoteData(message.content);
     }
-  }, [chats, isCornellNoteFunction]);
+  }, [message.content, isCornellNoteFunction]);
 
   useEffect(() => {
     if (isFlashcardFunction) {
       setFlashcardData(message.content);
     }
-  }, [chats, isFlashcardFunction]);
+  }, [message.content, isFlashcardFunction]);
 
   // check if the message to be displayed is a function call
   // if so, identify which function was called
