@@ -20,7 +20,7 @@ const GenericInput = ({
 
   return (
     <div className="mb-[25%] md:mb-0  xl:mb-6 md:h-auto">
-      <label className="text-gray-700 text-xl " htmlFor={label}>
+      <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>
       <textarea
