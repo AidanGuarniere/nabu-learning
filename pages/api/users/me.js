@@ -4,14 +4,19 @@ import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 import rateLimiter from "../../../utils/rateLimiter";
 
-
 async function handleGetRequest(req, res, userId) {
   const user = await User.findById(userId);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.status(200).json({ username: user.username } );
+  res
+    .status(200)
+    .json({
+      username: user.username,
+      name: user.name,
+      personalInfo: user.personalInfo,
+    });
 }
 
 async function handlePutRequest(req, res, userId) {
@@ -19,13 +24,12 @@ async function handlePutRequest(req, res, userId) {
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
-  const whitelist = ["username"];
+  const whitelist = ["username", "name", "personalInfo"];
   for (let field in req.body) {
     if (whitelist.includes(field)) {
       user[field] = req.body[field];
     }
   }
-
   await user.save();
 
   res.status(200).json({ user: { username: user.username } });
@@ -55,7 +59,7 @@ export default async function handler(req, res) {
   // } catch (err) {
   //   return res.status(429).json({ error: "Too many requests" });
   // }
-  
+
   try {
     switch (method) {
       case "GET":

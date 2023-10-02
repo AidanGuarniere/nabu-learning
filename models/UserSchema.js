@@ -13,12 +13,26 @@ const userSchema = new mongoose.Schema({
       validator: (username) => /^[a-zA-Z0-9_]+$/.test(username),
     },
   },
+  name: {
+    type: String,
+    minlength: 1,
+    maxlength: 80,
+    validate: {
+      validator: (name) => /^[a-zA-Z0-9_]+$/.test(name),
+    },
+  },
+  personalInfo: {
+    type: String,
+    minlength: 1,
+    maxlength: 500,
+  },
   password: {
     type: String,
     required: true,
     minlength: 8,
     maxlength: 60,
-  }
+  },
+
 });
 
 userSchema.pre("save", async function (next) {

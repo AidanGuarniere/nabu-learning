@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import GenericInput from "../../../UtilityComponents/GenericInput";
+import { updateUser } from "../../../../utils/userUtils";
 
 function UserProfileForm({ setShowUserProfileForm }) {
   const formRef = useRef();
@@ -30,6 +31,12 @@ function UserProfileForm({ setShowUserProfileForm }) {
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [setShowUserProfileForm]);
+
+  const submitUserProfileForm = () => {
+    const userProfilePayload = {...userProfile};
+    updateUser(userProfilePayload);
+    setUserProfile({name:"", personalInfo:""})
+  }
 
   return (
     <div className="fixed inset-0 bg-opacity-50 backdrop-blur-md flex justify-center items-center ml-[260px]">
@@ -62,7 +69,7 @@ function UserProfileForm({ setShowUserProfileForm }) {
           <button className="bg-red-700 h-10 py-2 px-4 rounded-md" onClick={()=>{setShowUserProfileForm(false)}}>
             Cancel
           </button>
-          <button className="bg-green-200 h-10 py-2 px-4 rounded-md" onClick={()=>{console.log(userProfile)}}>
+          <button className="bg-green-200 h-10 py-2 px-4 rounded-md" onClick={()=>{submitUserProfileForm()}}>
             Save
           </button>
         </div>
