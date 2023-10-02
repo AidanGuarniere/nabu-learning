@@ -1,28 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import GenericInput from "../../../UtilityComponents/GenericInput";
-import { updateUser } from "../../../../utils/userUtils";
+import { updateUser, getUser } from "../../../../utils/userUtils";
 
-function UserProfileForm({ setShowUserProfileForm }) {
+const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
   const formRef = useRef();
   const [userProfile, setUserProfile] = useState({
     name: "",
     personalInfo: "",
   });
 
-  const updateUserProfileInputs = (key, value) => {
-    setUserProfile((prevUserProfile) => ({
-      ...prevUserProfile,
-      [key]: value,
-    }));
-  };
-
   useEffect(() => {
-    function handleClickOutside(event) {
+    const handleClickOutside = (event) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
         setShowUserProfileForm(false);
       }
-    }
-
+    };
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
 
@@ -32,11 +24,26 @@ function UserProfileForm({ setShowUserProfileForm }) {
     };
   }, [setShowUserProfileForm]);
 
+  useEffect(() => {
+    //TODO add caching
+    const getUserInfo = async () => {
+      const { name, personalInfo } = await getUser();
+      setUserProfile({ name, personalInfo });
+    };
+    getUserInfo();
+  }, [showUserProfileForm]);
+
+  const updateUserProfileInputs = (key, value) => {
+    setUserProfile((prevUserProfile) => ({
+      ...prevUserProfile,
+      [key]: value,
+    }));
+  };
+
   const submitUserProfileForm = () => {
-    const userProfilePayload = {...userProfile};
+    const userProfilePayload = { ...userProfile };
     updateUser(userProfilePayload);
-    setUserProfile({name:"", personalInfo:""})
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-opacity-50 backdrop-blur-md flex justify-center items-center ml-[260px]">
@@ -66,16 +73,26 @@ function UserProfileForm({ setShowUserProfileForm }) {
           maxLength={500}
         />
         <div className="flex justify-center mt-4 space-x-4">
-          <button className="bg-red-700 h-10 py-2 px-4 rounded-md" onClick={()=>{setShowUserProfileForm(false)}}>
+          <button
+            className="bg-red-700 h-10 py-2 px-4 rounded-md"
+            onClick={() => {
+              setShowUserProfileForm(false);
+            }}
+          >
             Cancel
           </button>
-          <button className="bg-green-200 h-10 py-2 px-4 rounded-md" onClick={()=>{submitUserProfileForm()}}>
+          <button
+            className="bg-green-200 h-10 py-2 px-4 rounded-md"
+            onClick={() => {
+              submitUserProfileForm();
+            }}
+          >
             Save
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default UserProfileForm;

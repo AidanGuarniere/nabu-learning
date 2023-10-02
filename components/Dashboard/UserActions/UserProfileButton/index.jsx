@@ -1,6 +1,6 @@
 import React from "react";
 
-function UserProfileButton({showUserProfileForm, setShowUserProfileForm}) {
+const UserProfileButton = ({showUserProfileForm, setShowUserProfileForm})=> {
   return (
     <button
       className="flex w-full p-3 items-center gap-3 rounded-md hover:bg-gray-500/10 transition-colors duration-200 text-white cursor-pointer"
