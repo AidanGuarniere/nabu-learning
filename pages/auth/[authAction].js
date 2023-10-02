@@ -161,7 +161,6 @@ const AuthForm = () => {
               </span>
             </>
           )}
-          <span>Or use as a guest</span>
         </div>
       </form>
     </div>

@@ -6,7 +6,6 @@ const GenericInput = ({
   onChange,
   placeholder,
   maxLength,
-  keyToUpdate,
 }) => {
   const [characterCount, setCharacterCount] = useState(0);
 

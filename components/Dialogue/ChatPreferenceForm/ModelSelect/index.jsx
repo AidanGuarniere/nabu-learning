@@ -8,6 +8,7 @@ const ModelSelect = ({ value, onChange, }) => {
     axios
       .get("/api/proxy/models")
       .then((response) => {
+        console.log(response)
         response.data.models.data.forEach((model) => {
           if (model.id === "gpt-4") {
             setHasGPT4(true);

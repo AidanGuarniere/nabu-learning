@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect component
-import GenericInput from "./GenericInput";
-import GenericSelect from "./GenericSelect";
+import GenericInput from "../../UtilityComponents/GenericInput";
+import GenericSelect from "../../UtilityComponents/GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
 
 const PreferencesForm = ({
