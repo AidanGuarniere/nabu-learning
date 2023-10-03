@@ -37,7 +37,7 @@ const GenericInput = ({
         className={` bg-gray-100 resize-none w-full h-${height}  appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
       />
       <div className="text-right text-gray-600 text-sm">
-        {characterCount}/{maxLength}
+        {characterCount}/{maxLength} 
       </div>
     </div>
   );

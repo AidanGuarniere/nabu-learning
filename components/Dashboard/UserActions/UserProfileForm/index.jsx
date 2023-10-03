@@ -63,7 +63,7 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
           value={userProfile.name}
           onChange={(value) => updateUserProfileInputs("name", value)}
           placeholder="Your desired name"
-          maxLength={80}
+          maxLength={50}
           height={"auto"}
         />
         <GenericInput
@@ -71,8 +71,8 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
           value={userProfile.personalInfo}
           onChange={(value) => updateUserProfileInputs("personalInfo", value)}
           placeholder="Any information you think would be relevant to your interactions with Nabu. Interests, occupations, goals, education level, etc."
-          maxLength={500}
-          height={"36"}
+          maxLength={2000}
+          height={"48"}
         />
         <div className="flex justify-center mt-4 space-x-4">
           <button

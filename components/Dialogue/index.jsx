@@ -5,8 +5,9 @@ import ChatScrollButton from "./ChatScrollButton";
 import MessageList from "./MessageList";
 import ChatPreferenceForm from "./ChatPreferenceForm";
 import streamGptResponse from "../../utils/streamGptResponse";
+import DialogueHeader from "./DialogueHeader";
 
-function Dialogue({
+const Dialogue = ({
   session,
   error,
   setError,
@@ -15,7 +16,7 @@ function Dialogue({
   selectedChat,
   setSelectedChat,
   selectedChatLoading,
-}) {
+}) => {
   const chatRef = useRef(null);
   const [scrollHeight, setScrollHeight] = useState();
   const [prevSelectedChat, setPrevSelectedChat] = useState(null);
@@ -124,18 +125,7 @@ function Dialogue({
               setScrollHeight(chatRef.current.scrollTop);
             }}
           >
-            <div className="flex justify-center items-center h-10 w-full border-b border-gray-500/20">
-              <span className="text-center md:text-left text-gray-500">
-                {chats[selectedChatIndex].chatPreferences.topic},{" "}
-                {chats[selectedChatIndex].chatPreferences.mode ===
-                "Tutor Session"
-                  ? chats[selectedChatIndex].chatPreferences.tutorName
-                  : chats[selectedChatIndex].chatPreferences.mode ===
-                    "Note Generation"
-                  ? `${chats[selectedChatIndex].chatPreferences.noteType} Notes`
-                  : "Flashcards"}{" "}
-              </span>
-            </div>
+            <DialogueHeader chats={chats} selectedChatIndex={selectedChatIndex}/>
             <MessageList
               chats={chats}
               selectedChat={selectedChat}
