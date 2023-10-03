@@ -27,12 +27,6 @@ function Dialogue({
     (chat) => chat._id === selectedChat
   );
 
-  // useEffect(() => {
-  //   console.log("chats", chats);
-
-  //   console.log("selectedChat", selectedChat);
-  // }, [chats, selectedChat]);
-
   useLayoutEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;

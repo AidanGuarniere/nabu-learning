@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const GenericInput = ({
   label,
@@ -17,6 +17,10 @@ const GenericInput = ({
       setCharacterCount(inputValue.length);
     }
   };
+  useEffect(() => {
+    setCharacterCount(value.length)
+  }, [])
+  
 
   return (
     <div className="mb-[25%] md:mb-0  xl:mb-6 md:h-auto">

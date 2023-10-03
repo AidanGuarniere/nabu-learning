@@ -22,10 +22,6 @@ function MessageItem({
   const [isFlashcardFunction, setIsFlashcardFunction] = useState(false);
 
   useEffect(() => {
-    console.log("ref", message);
-  }, [chats]);
-
-  useEffect(() => {
     // check for function calling in gpt responses
     if (message.role === "assistant") {
       const checkCornellNoteFunction =

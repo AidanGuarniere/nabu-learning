@@ -3,6 +3,7 @@ import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect comp
 import GenericInput from "../../UtilityComponents/GenericInput";
 import GenericSelect from "../../UtilityComponents/GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
+import { getUser } from "../../../utils/userUtils";
 
 const PreferencesForm = ({
   session,
@@ -193,10 +194,11 @@ const PreferencesForm = ({
     // setLoading(true); // Start loading
 
     // Call the chat creation logic
-    await createNewChat(userChatPreferences);
+    const { name, personalInfo } = await getUser();
+    await createNewChat(name, personalInfo, userChatPreferences);
     setLoading(false); // End loading
   };
-  const createNewChat = async (userChatPreferences) => {
+  const createNewChat = async (name, personalInfo, userChatPreferences) => {
     setLoading(true);
 
     // system message logic
@@ -204,7 +206,7 @@ const PreferencesForm = ({
     if (userChatPreferences.mode === "Tutor Session") {
       const socraticAddition = (tutorType) =>
         tutorType === "Socratic"
-          ? "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions."
+          ? "The user seeks a Socratic dialogue. Ask probing questions to foster critical thinking and explore underlying assumptions, but continue the momentum of the conversation."
           : "";
 
       systemMessageContent = `
@@ -223,9 +225,12 @@ const PreferencesForm = ({
             userChatPreferences.topic
           } to foster this understanding. Be sure to keep the conversation relevant to the user's topic and goal.
           ${
-            userChatPreferences.personalInfo
-              ? `Additional information about the user: ${userChatPreferences.personalInfo}`
-              : ""
+            name &&
+            `The user you are interacting with is named ${name} and must be referred to as ${name} unless requested otherwise`
+          }
+          ${
+            personalInfo &&
+            `Additional information about the user, from the user: ${personalInfo}`
           }
         `;
     } else if (userChatPreferences.mode === "Note Generation") {
@@ -242,9 +247,12 @@ const PreferencesForm = ({
           userChatPreferences.goal
         }, and the information provided must directly relate to this objective.
         ${
-          userChatPreferences.personalInfo
-            ? `Here is some additional information on the user, from the user: ${userChatPreferences.personalInfo}`
-            : ""
+          name &&
+          `The user you are interacting with is named ${name} and must be referred to as ${name} unless requested otherwise`
+        }
+        ${
+          personalInfo &&
+          `Additional information about the user, from the user: ${personalInfo}`
         }
         Please ensure that the content is in-depth and directly related to the main subject and user's goal.
       `;
@@ -263,9 +271,12 @@ const PreferencesForm = ({
         userChatPreferences.goal
       }.
       ${
-        userChatPreferences.personalInfo
-          ? `Additional context about the user: ${userChatPreferences.personalInfo}`
-          : ""
+        name &&
+        `The user you are interacting with is named ${name} and must be referred to as ${name} unless requested otherwise`
+      }
+      ${
+        personalInfo &&
+        `Additional information about the user, from the user: ${personalInfo}`
       }
       Ensure each flashcard has a unique number, directly contributes to achieving the user's specified objective, AND that the total number of flashcards equals ${
         userChatPreferences.flashcardCount
