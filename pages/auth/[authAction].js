@@ -2,8 +2,8 @@ import { useRouter } from "next/router";
 import { useState, useMemo } from "react";
 import { handleSignUp, handleLogin } from "../../utils/authUtils";
 import useRedirectIfAuthenticated from "../../hooks/useRedirectIfAuthenticated";
-import CheckmarkIcon from "../../components/Utils/CheckmarkIcon";
-import XIcon from "../../components/Utils/XIcon";
+import CheckmarkIcon from "../../components/UtilityComponents/CheckmarkIcon";
+import XIcon from "../../components/UtilityComponents/XIcon";
 
 import Link from "next/link";
 

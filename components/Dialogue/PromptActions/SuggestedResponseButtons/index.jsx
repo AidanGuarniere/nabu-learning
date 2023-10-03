@@ -9,7 +9,7 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
   let lastProcessedPosition = 0;
   let suggestedUserResponsesOutput = [];
 
-  function processSuggestedResponses(stream) {
+  const processSuggestedResponses = (stream) => {
     if (stream.length <= lastProcessedPosition) return;
 
     let currentPosition = lastProcessedPosition;
@@ -35,13 +35,19 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
     }
 
     lastProcessedPosition = currentPosition;
-  }
+  };
 
   useEffect(() => {
     setSuggestionStream("");
     setSuggestedResponses([]);
     setLoadingSuggestions(false);
-  }, [chats, selectedChat]);
+  }, [
+    chats,
+    selectedChat,
+    setSuggestionStream,
+    setSuggestedResponses,
+    setLoadingSuggestions,
+  ]);
 
   useEffect(() => {
     processSuggestedResponses(suggestionStream);
@@ -49,6 +55,8 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
 
   const suggestResponses = async (e) => {
     setSuggestedResponses([]);
+    setSuggestionStream("");
+    setLoadingSuggestions(true);
     e.preventDefault;
     const selectedChatIndex = chats.findIndex(
       (chat) => chat._id === selectedChat
@@ -100,8 +108,6 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
       function_call: { name: "suggestUserResponses" },
     };
 
-    setSuggestionStream("");
-    setLoadingSuggestions(true);
     streamGptSuggestions(
       gptRequestPayload,
       setSuggestionStream,
@@ -110,49 +116,48 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
   };
   return (
     <div
-    className="grid grid-cols-11  gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 relative
+      className="grid grid-cols-11  gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 relative
                rounded-[.4325rem] dark:text-white dark:bg-gray-700 sm:min-h-[1rem]"
-  >
-    <button
-      onClick={(e) => {
-        if (!loadingSuggestions) {
-          suggestResponses(e);
-        }
-      }}
-      className={`col-span-3  h-12 py-2 px-2 md:px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-xs md:text-sm text-centered${
-        loadingSuggestions ? " disabled" : ""
-      }`}
     >
-      suggestions
-    </button>
-    {suggestedResponses.length
-      ? suggestedResponses.map((response, i) =>
-          i < 2 ? (
-            <div
-              className="col-span-4  flex items-center h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer"
-              key={i}
-            >
-              <span
-                onClick={(e) => {
-                  setUserText(e.target.textContent);
-                }}
-                className="text-center text-sm truncate"
-                title={response}
-                style={{
-                  maxWidth: "100%",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
+      <button
+        onClick={(e) => {
+          if (!loadingSuggestions) {
+            suggestResponses(e);
+          }
+        }}
+        className={`col-span-3  h-12 py-2 px-2 md:px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-xs md:text-sm text-centered${
+          loadingSuggestions ? " disabled" : ""
+        }`}
+      >
+        suggestions
+      </button>
+      {suggestedResponses.length
+        ? suggestedResponses.map((response, i) =>
+            i < 2 ? (
+              <div
+                className="col-span-4  flex items-center h-12 py-2 px-4 border border-gray-200 rounded-md bg-gray-100 text-gray-800 cursor-pointer"
+                key={i}
               >
-                {response}
-              </span>
-            </div>
-          ) : null
-        )
-      : null}
-  </div>
-  
+                <span
+                  onClick={(e) => {
+                    setUserText(e.target.textContent);
+                  }}
+                  className="text-center text-sm truncate"
+                  title={response}
+                  style={{
+                    maxWidth: "100%",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {response}
+                </span>
+              </div>
+            ) : null
+          )
+        : null}
+    </div>
   );
 };
 

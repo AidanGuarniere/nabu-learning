@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import streamGptResponse from "../../../utils/streamGptResponse";
@@ -150,64 +150,6 @@ function PromptActions({
         setLoading(false);
       }
     }
-  };
-
-  const suggestResponses = async (e) => {
-    setSuggestedResponses([]);
-    e.preventDefault;
-    let chatId = { ...selectedChat };
-    const selectedChatIndex = chats.findIndex(
-      (chat) => chat._id === selectedChat
-    );
-    const updatedChat = { ...chats[selectedChatIndex] };
-    const messageModel = "gpt-3.5-turbo";
-    const firstAndLastThree = (arr) => {
-      if (arr.length <= 4) return arr;
-      return [...arr.slice(-3)];
-    };
-
-    const suggestUserResponsesFunctionDescription = {
-      name: "suggestUserResponses",
-      description:
-        "Template for generating 2 user response suggestions for an existing chat.",
-      parameters: {
-        type: "object",
-        properties: {
-          suggestedUserResponses: {
-            type: "array",
-            items: { type: "string" },
-            maxItems: 2,
-            description:
-              "Array of suggested user responses for chat interaction.",
-          },
-        },
-        required: ["suggestedUserResponses"],
-      },
-    };
-
-    const initialMessage = {
-      role: "system",
-      content:
-        "This message is to take priority over all following messages. Your role is to interpret the follow messages and suggest two useful user responses to the most recent message that would assist the user's learning experience based on the following Messages. You are suggesting content for the user's next message, not continuing the conversation as an assistant. You are not actually participating in the provided conversation, just suggesting 2 responses for the user. Responses should be written as if they are coming from the user, not the assistant.",
-    };
-
-    const messageHistory = [
-      initialMessage,
-      ...firstAndLastThree(updatedChat.messages).map((message) => ({
-        role: message.role === "system" ? "user" : message.role,
-        content: message.content || JSON.stringify(message.function_call),
-      })),
-    ];
-
-    const gptRequestPayload = {
-      model: messageModel,
-      messages: messageHistory,
-      functions: [suggestUserResponsesFunctionDescription],
-      function_call: { name: "suggestUserResponses" },
-    };
-
-    setSuggestionStream("");
-    streamGptSuggestions(gptRequestPayload, setSuggestionStream);
   };
 
   return (

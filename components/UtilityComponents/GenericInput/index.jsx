@@ -6,6 +6,7 @@ const GenericInput = ({
   onChange,
   placeholder,
   maxLength,
+  height,
 }) => {
   const [characterCount, setCharacterCount] = useState(0);
 
@@ -18,12 +19,11 @@ const GenericInput = ({
     }
   };
   useEffect(() => {
-    setCharacterCount(value.length)
-  }, [])
-  
+    setCharacterCount(value.length);
+  }, []);
 
   return (
-    <div className="mb-[25%] md:mb-0  xl:mb-6 md:h-auto">
+    <div className="md:mb-0 xl:mb-6">
       <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>
@@ -34,7 +34,7 @@ const GenericInput = ({
         placeholder={placeholder}
         rows="2"
         maxLength={maxLength}
-        className=" bg-gray-100 resize-none h-full md:h-auto xl:h-2/3 appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className={` bg-gray-100 resize-none w-full h-${height}  appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
       />
       <div className="text-right text-gray-600 text-sm">
         {characterCount}/{maxLength}
