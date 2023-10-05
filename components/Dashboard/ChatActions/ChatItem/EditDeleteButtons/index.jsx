@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { updateChat } from "../../../../../utils/chatUtils";
 import ConfirmAction from "../../../ConfirmAction";
-import TitleInput from "../TitleInput";
+import { updateChat } from "../../../../../utils/chatUtils";
+
 
 export default function EditDeleteButtons({
   session,

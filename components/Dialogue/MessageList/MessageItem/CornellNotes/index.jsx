@@ -11,7 +11,7 @@ const CornellNotes = ({ cornellNoteData }) => {
 
   function processCornellNoteData(stream) {
     // If the stream's length is not greater than the last processed position, we return to avoid reprocessing.
-    if (stream.length <= lastProcessedPosition) return;
+    if (stream.length <= lastProcessedPosition) console.log("H");
 
     // Set the current position to the last processed position.
     let currentPosition = lastProcessedPosition;

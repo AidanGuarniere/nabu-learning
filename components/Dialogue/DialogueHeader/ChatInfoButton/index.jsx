@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 
-const ChatInfoButton = ({  }) => {
+const ChatInfoButton = ({ showChatInfoForm, setShowChatInfoForm }) => {
   return (
-    <div className="m-2 md:m-[.55rem] bg-gray-900 rounded-[.425rem] absolute right-0">
+    <div className="absolute right-0 m-2 md:m-[.55rem] ">
       <button
-        className="dashboard-text w-full flex md:mb-0 p-[.775rem] items-center gap-3   hover:bg-gray-500/10 transition-colors duration-200 text-white font-semibold cursor-pointer flex-shrink-0 border border-white/20"
-
+        className="dashboard-text w-full flex md:mb-0 p-2.5 items-center gap-3 hover:bg-green-200 transition-colors duration-200 text-white font-light cursor-pointer flex-shrink-0 bg-green-400 rounded-[.425rem]"
+        onClick={() => {
+          setShowChatInfoForm(!showChatInfoForm);
+        }}
       >
-        <svg
+        {/* <svg
           stroke="currentColor"
           fill="none"
           strokeWidth="2.5"
@@ -21,11 +23,11 @@ const ChatInfoButton = ({  }) => {
         >
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
+        </svg> */}
         Chat info
       </button>
     </div>
   );
-}
+};
 
 export default ChatInfoButton;

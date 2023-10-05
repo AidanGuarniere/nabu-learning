@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: 1,
-    maxlength: 80,
+    maxlength: 50,
     validate: {
       validator: (name) => /^[a-zA-Z0-9_]+$/.test(name),
     },
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
   personalInfo: {
     type: String,
     minlength: 1,
-    maxlength: 500,
+    maxlength: 2000,
   },
   password: {
     type: String,

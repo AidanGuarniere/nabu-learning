@@ -6,6 +6,7 @@ function ChatIcon() {
       className="relative h-full w-full rounded-sm text-white flex items-center justify-center text-xs"
       // TODO: model-based icons. if model is _ backgroundColor:_ 
       style={{ backgroundColor: "rgb(16, 163, 127)" }}
+      // style={{ backgroundColor: "#FF4F00" }}
     >
       nabu
       {/* <svg

@@ -72,11 +72,11 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
           onChange={(value) => updateUserProfileInputs("personalInfo", value)}
           placeholder="Any information you think would be relevant to your interactions with Nabu. Interests, occupations, goals, education level, etc."
           maxLength={2000}
-          height={"48"}
+          height={"12rem"}
         />
         <div className="flex justify-center mt-4 space-x-4">
           <button
-            className="bg-red-700 h-10 py-2 px-4 rounded-md"
+            className="bg-red-700 hover:bg-red-600 h-10 py-2 px-4 rounded-md"
             onClick={() => {
               setShowUserProfileForm(false);
             }}
@@ -84,7 +84,7 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
             Cancel
           </button>
           <button
-            className="bg-green-200 h-10 py-2 px-4 rounded-md"
+            className="bg-green-400 hover:bg-green-200 h-10 py-2 px-4 rounded-md"
             onClick={() => {
               submitUserProfileForm();
             }}

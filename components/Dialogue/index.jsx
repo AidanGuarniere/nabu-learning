@@ -125,7 +125,12 @@ const Dialogue = ({
               setScrollHeight(chatRef.current.scrollTop);
             }}
           >
-            <DialogueHeader chats={chats} selectedChatIndex={selectedChatIndex}/>
+            <DialogueHeader
+              chats={chats}
+              setChats={setChats}
+              selectedChatIndex={selectedChatIndex}
+              session={session}
+            />
             <MessageList
               chats={chats}
               selectedChat={selectedChat}
@@ -165,5 +170,5 @@ const Dialogue = ({
       </div>
     </div>
   );
-}
+};
 export default Dialogue;
