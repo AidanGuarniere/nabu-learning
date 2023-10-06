@@ -5,10 +5,14 @@ import { getUser } from "../../../../utils/userUtils";
 
 const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
   const chatInfoFormRef = useRef();
+  useEffect(() => {
+    console.log(chat.chatPreferences);
+  }, [chat]);
+
   const [chatInfo, setChatInfo] = useState({
     topic: chat.chatPreferences.topic,
     goal: chat.chatPreferences.goal,
-    additionalInfo: "",
+    additionalInfo: chat.chatPreferences.additionalInfo,
   });
 
   useEffect(() => {
@@ -56,9 +60,10 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
         chatPreferences.tutorType
       } style tutor.
           ${socraticAddition(chatPreferences.tutorType)}
-          Your instructions are to guide the conversation towards understanding and achieving the user's goal: ${
-            chatInfoPayload.goal
-          }.
+          ${
+            goal &&
+            `Your instructions are to guide the conversation towards understanding and achieving the user's goal: ${chatInfoPayload.goal}`
+          }
           ${
             chatInfoPayload.additionalInfo &&
             `Here is some additional context for the interaction, provided by the user: '${chatInfoPayload.additionalInfo}'`
@@ -89,9 +94,11 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
         chatInfoPayload.additionalInfo &&
         `Here is some additional context for the interaction, provided by the user: '${chatInfoPayload.additionalInfo}'`
       }
-        The specific goal is to ${
-          chatInfoPayload.goal
-        }, and the information provided must directly relate to this objective.
+
+        ${
+          goal &&
+          ` The user's goal in generating these notes is to ${chatInfoPayload.goal}, and the information provided must directly relate to this objective. `
+        }
         ${
           name &&
           `The user you are interacting with is named ${name} and must be referred to as ${name} unless requested otherwise`
@@ -117,9 +124,10 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
         chatInfoPayload.additionalInfo &&
         `Here is some additional context for the interaction, provided by the user: '${chatInfoPayload.additionalInfo}'`
       }
-      The specific goal in creating these flashcards is to ${
-        chatInfoPayload.goal
-      }.
+      ${
+        goal &&
+        ` The user's goal in generating these flashcards is to ${chatInfoPayload.goal}, and the information provided must directly relate to this objective. `
+      }
       ${
         name &&
         `The user you are interacting with is named ${name} and must be referred to as ${name} unless requested otherwise`
@@ -138,7 +146,7 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
 
   const submitChatInfoForm = async () => {
     const chatInfoPayload = { ...chatInfo };
-    const currentChat = {...chat};
+    const currentChat = { ...chat };
     // TODO replace w cache/global state
     const { name, personalInfo } = await getUser();
     const newSystemMessage = {
@@ -151,8 +159,9 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
       ),
     };
     currentChat.messages[0] = newSystemMessage;
-    const updatedMessages = currentChat.messages
+    const updatedMessages = currentChat.messages;
     const updatedChat = await updateChat(chat._id, {
+      chatPreferences: currentChat.chatPreferences,
       messages: updatedMessages,
     });
     setChats((prevChats) =>
@@ -160,7 +169,7 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
         prevChat._id === chat._id ? updatedChat : prevChat
       )
     );
-    setShowChatInfoForm(false)
+    setShowChatInfoForm(false);
   };
 
   return (

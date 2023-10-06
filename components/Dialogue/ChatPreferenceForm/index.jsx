@@ -432,41 +432,6 @@ const PreferencesForm = ({
             )}
 
             {stage === 2 && (
-              <div className="flex flex-col md:justify-between md:justify-center w-full h-full">
-                <h2 className="block text-gray-700 text-gray-700 font-lightext-2xl text-center">
-                  {preferences.mode === "Tutor Session"
-                    ? "what would you like to discuss?"
-                    : preferences.mode === "Note Generation"
-                    ? "what topic should the notes cover?"
-                    : preferences.mode === "Flashcard Generation"
-                    ? "what subject are the flashcards for?"
-                    : "what are we talking about?"}
-                </h2>
-                <GenericInput
-                  label="Topic"
-                  value={preferences.topic}
-                  onChange={(value) => updatePreferences("topic", value)}
-                  placeholder="Enter the topic of interaction"
-                  maxLength={500}
-                />
-                <GenericInput
-                  label="Goal"
-                  value={preferences.goal}
-                  onChange={(value) => updatePreferences("goal", value)}
-                  placeholder="Enter the goal for this interaction"
-                  maxLength={500}
-                />
-                <GenericInput
-                  label="Personal Info"
-                  value={preferences.personalInfo}
-                  onChange={(value) => updatePreferences("personalInfo", value)}
-                  placeholder="Enter any personal info you feel is relevant to this interaction e.g. your experience with the topic"
-                  maxLength={500}
-                />
-              </div>
-            )}
-
-            {stage === 3 && (
               <div className="flex flex-col justify-between w-full h-full md:h-2/3">
                 <h2 className="block text-gray-700 t text-gray-700 font-lightext-2xl text-center">
                   {preferences.mode === "Tutor Session"
@@ -567,10 +532,10 @@ const PreferencesForm = ({
               >
                 back
               </button>
-              {stage < 3 ? (
+              {stage < 2 ? (
                 <button
                   className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
-                  disabled={!checkIfStageComplete(stage, preferences)}
+                  // disabled={!checkIfStageComplete(stage, preferences)}
                   onClick={goToNextStage} // Logic to check if all options are filled
                 >
                   next

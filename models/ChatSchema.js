@@ -13,7 +13,6 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   topic: {
     type: String,
-    required: [true, "Topic is required"],
   },
   keyConcepts: {
     type: [String],
@@ -32,7 +31,6 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   goal: {
     type: String,
-    required: [true, "Specific goal is required"],
   },
   personalInfo: {
     type: String, 
@@ -61,6 +59,9 @@ const chatPreferencesSchema = new mongoose.Schema({
   flashcardDifficulty: {
     type: String,
   },
+  additionalInfo:{
+    type: String,
+  }
 });
 
 const messageSchema = new mongoose.Schema({
