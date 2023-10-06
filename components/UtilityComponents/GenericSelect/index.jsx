@@ -1,9 +1,9 @@
 import React from "react";
 
-const GenericSelect = ({ label, value, onChange, options }) => {
+const GenericSelect = ({ label, value, onChange, options,height }) => {
   return (
     <div className="mb-8 md:mb-0 xl:mb-8 h-1/3 md:h-auto">
-      <label className="text-gray-700 text-xl  " htmlFor={label}>
+      <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>
       <select
@@ -11,6 +11,7 @@ const GenericSelect = ({ label, value, onChange, options }) => {
         value={value}
         onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
         className="appearance-none border rounded w-full p-3 bg-gray-100 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        style={{ height: `${height}` }}
       >
         <option value="" disabled hidden>
           Select an option

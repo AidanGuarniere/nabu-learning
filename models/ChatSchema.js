@@ -3,66 +3,80 @@ const mongoose = require("mongoose");
 const chatPreferencesSchema = new mongoose.Schema({
   mode: {
     type: String,
-    required: [true, "Mode selection is required"],
+    required: true,
     enum: ["Tutor Session", "Note Generation", "Flashcard Generation"],
   },
   selectedModel: {
     type: String,
-    required: [true, "Model selection is required"],
-    enum: ["gpt-3.5-turbo", "gpt-4"], 
+    required: true,
+    enum: ["gpt-3.5-turbo", "gpt-4"],
   },
   topic: {
     type: String,
+    maxlength: 500,
   },
   keyConcepts: {
     type: [String],
+    validate: [arrayLimit, "{PATH} exceeds the limit of 10 items"],
   },
   priorKnowledge: {
     type: String,
+    enum: ["Beginner", "Intermediate", "Advanced"],
   },
   learningStyle: {
     type: String,
+    enum: ["Visual", "Auditory", "Kinesthetic", "Reading/Writing"],
   },
-  // challenges: {
-  //   type: [String],
-  // },
+  challenges: {
+    type: [String],
+    validate: [arrayLimit, "{PATH} exceeds the limit of 5 items"],
+  },
   timeFrame: {
     type: String,
+    required: true,
   },
   goal: {
     type: String,
-  },
-  personalInfo: {
-    type: String, 
+    maxlength: 500,
+    required: true,
   },
   tutorType: {
     type: String,
+    enum: ["Traditional", "Socratic"],
   },
   tutorName: {
     type: String,
+    maxlength: 50,
   },
   tutorBehavior: {
     type: String,
+    maxlength: 50,
   },
   noteType: {
     type: String,
+    enum: ["Summary", "Cornell", "Outline"],
   },
   noteTitle: {
     type: String,
+    maxlength: 100,
   },
   noteTone: {
     type: String,
-  },
-  flashcardCount: {
-    type: String,
+    maxlength: 100,
   },
   flashcardDifficulty: {
     type: String,
+    enum: ["Easy", "Medium", "Hard"],
   },
-  additionalInfo:{
+  additionalInfo: {
     type: String,
-  }
+    maxlength: 1500,
+  },
 });
+
+function arrayLimit(val) {
+  return val.length <= 10;
+}
 
 const messageSchema = new mongoose.Schema({
   role: {
@@ -78,7 +92,7 @@ const messageSchema = new mongoose.Schema({
       name: { type: String, required: true },
       arguments: { type: Object, required: true }, // Change this line
     },
-  },  
+  },
   createdAt: {
     type: Date,
     default: Date.now,

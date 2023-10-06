@@ -18,12 +18,13 @@ const GenericInput = ({
       setCharacterCount(inputValue.length);
     }
   };
-  // useEffect(() => {
-  //   setCharacterCount(value.length);
-  // }, []);
+  useEffect(() => {
+    if(value){
+    setCharacterCount(value.length)};
+  }, []);
 
   return (
-    <div className="md:mb-0">
+    <div className="m-0 p-0">
       <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>
@@ -37,7 +38,7 @@ const GenericInput = ({
         className={` bg-gray-100 resize-none w-full appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         style={{ height: `${height}` }}
       />
-      <div className="text-right text-gray-600 text-sm">
+      <div className="text-right text-gray-600 text-sm m-0 p-0">
         {characterCount}/{maxLength}
       </div>
     </div>
