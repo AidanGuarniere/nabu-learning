@@ -6,9 +6,9 @@ import { getUser } from "../../../../utils/userUtils";
 
 const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
   const chatInfoFormRef = useRef();
-  useEffect(() => {
-    console.log(chat.chatPreferences);
-  }, [chat]);
+  // useEffect(() => {
+  //   console.log(chat.chatPreferences);
+  // }, [chat]);
 
   const [chatInfo, setChatInfo] = useState({
     mode: chat.chatPreferences.mode,
@@ -167,7 +167,7 @@ const ChatInfoForm = ({ setShowChatInfoForm, chat, setChats }) => {
     currentChat.messages[0] = newSystemMessage;
     const updatedMessages = currentChat.messages;
     const updatedChat = await updateChat(chat._id, {
-      chatPreferences: currentChat.chatPreferences,
+      chatPreferences: chatInfo,
       messages: updatedMessages,
     });
     setChats((prevChats) =>

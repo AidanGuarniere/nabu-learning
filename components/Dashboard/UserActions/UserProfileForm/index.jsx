@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import GenericInput from "../../../UtilityComponents/GenericInput";
-import { updateUser, getUser } from "../../../../utils/userUtils";
+import { updateUser } from "../../../../utils/userUtils";
 
-const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
+const UserProfileForm = ({
+  showUserProfileForm,
+  setShowUserProfileForm,
+  userProfile,
+  setUserProfile,
+}) => {
   const formRef = useRef();
-  const [userProfile, setUserProfile] = useState({
-    name: "",
-    personalInfo: "",
-  });
+  const userProfileRef = useRef();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (formRef.current && !formRef.current.contains(event.target)) {
+        if (userProfileRef.current !== userProfile) {
+          setUserProfile(userProfileRef.current);
+        }
         setShowUserProfileForm(false);
       }
     };
@@ -22,16 +27,7 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [setShowUserProfileForm]);
-
-  useEffect(() => {
-    //TODO add caching
-    const getUserInfo = async () => {
-      const { name, personalInfo } = await getUser();
-      setUserProfile({ name, personalInfo });
-    };
-    getUserInfo();
-  }, [showUserProfileForm]);
+  }, [userProfile, setUserProfile, setShowUserProfileForm]);
 
   const updateUserProfileInputs = (key, value) => {
     setUserProfile((prevUserProfile) => ({
@@ -40,9 +36,16 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
     }));
   };
 
+  useEffect(() => {
+    userProfileRef.current = userProfile;
+  }, []);
+
   const submitUserProfileForm = () => {
     const userProfilePayload = { ...userProfile };
-    updateUser(userProfilePayload);
+    if (userProfileRef !== userProfilePayload) {
+      updateUser(userProfilePayload);
+    }
+    setShowUserProfileForm(false);
   };
 
   return (
@@ -78,6 +81,9 @@ const UserProfileForm = ({ showUserProfileForm, setShowUserProfileForm }) => {
           <button
             className="bg-red-700 hover:bg-red-600 h-10 py-2 px-4 rounded-md"
             onClick={() => {
+              if (userProfileRef.current !== userProfile) {
+                setUserProfile(userProfileRef.current);
+              }
               setShowUserProfileForm(false);
             }}
           >

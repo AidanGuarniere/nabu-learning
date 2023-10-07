@@ -21,11 +21,11 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   priorKnowledge: {
     type: String,
-    enum: ["Beginner", "Intermediate", "Advanced"],
+    enum: ["", "Beginner", "Intermediate", "Advanced"],
   },
   learningStyle: {
     type: String,
-    enum: ["Visual", "Auditory", "Kinesthetic", "Reading/Writing"],
+    enum: ["", "Visual", "Auditory", "Kinesthetic", "Reading/Writing"],
   },
   challenges: {
     type: [String],
@@ -33,16 +33,14 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   timeFrame: {
     type: String,
-    required: true,
   },
   goal: {
     type: String,
     maxlength: 500,
-    required: true,
   },
   tutorType: {
     type: String,
-    enum: ["Traditional", "Socratic"],
+    enum: ["", "Traditional", "Socratic"],
   },
   tutorName: {
     type: String,
@@ -54,7 +52,7 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   noteType: {
     type: String,
-    enum: ["Summary", "Cornell", "Outline"],
+    enum: ["", "Summary", "Cornell", "Outline"],
   },
   noteTitle: {
     type: String,
@@ -66,7 +64,7 @@ const chatPreferencesSchema = new mongoose.Schema({
   },
   flashcardDifficulty: {
     type: String,
-    enum: ["Easy", "Medium", "Hard"],
+    enum: ["", "Easy", "Medium", "Hard"],
   },
   additionalInfo: {
     type: String,
