@@ -422,7 +422,13 @@ const PreferencesForm = ({
                   label="Topic"
                   value={preferences.topic}
                   onChange={(value) => updatePreferences("topic", value)}
-                  placeholder="What is the topic of the interaction?"
+                  placeholder={`What is the topic of ${
+                    preferences.mode === "Tutor Session"
+                      ? "this tutoring session"
+                      : preferences.mode === "Note Generation"
+                      ? "these notes"
+                      : "these flashcards"
+                  }?`}
                   maxLength={500}
                   height={"auto"}
                 />
@@ -437,7 +443,13 @@ const PreferencesForm = ({
                   label="Goal"
                   value={preferences.goal}
                   onChange={(value) => updatePreferences("goal", value)}
-                  placeholder="What is the goal for this interaction?"
+                  placeholder={`What is the goal ${
+                    preferences.mode === "Tutor Session"
+                      ? "for this tutoring session"
+                      : preferences.mode === "Note Generation"
+                      ? "in writing these notes"
+                      : "in making these flashcards"
+                  }?`}
                   maxLength={500}
                   height={"auto"}
                 />
@@ -463,7 +475,7 @@ const PreferencesForm = ({
                           onChange={(value) =>
                             updatePreferences("tutorName", value)
                           }
-                          placeholder="Socrates"
+                          placeholder="What name would you like your tutor to have? E.g. Socrates"
                           maxLength={50}
                         />
                       </div>
@@ -535,7 +547,13 @@ const PreferencesForm = ({
                   onChange={(value) =>
                     updatePreferences("additionalInfo", value)
                   }
-                  placeholder="Any other information you feel would be relevant."
+                  placeholder={`Any other information you feel would be relevant to${
+                    preferences.mode === "Tutor Session"
+                      ? "this tutoring session"
+                      : preferences.mode === "Note Generation"
+                      ? "these notes"
+                      : "these flashcards"
+                  }.`}
                   maxLength={1500}
                   height={"5rem"}
                 />
