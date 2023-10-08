@@ -307,12 +307,11 @@ const PreferencesForm = ({
     currentlyStreamedChatRef.current = gptRequestPayload;
 
     const newChat = await createChat(newChatPayload);
-    console.log(newChat);
     setChats((prevChats) =>
       prevChats.length ? [...prevChats, newChat] : [newChat]
     );
     setSelectedChat(newChat._id);
-    // streamGptResponse(gptRequestPayload);
+    // streamGptResponse(gptRequestPayload)
   };
 
   const checkIfStageComplete = (stage, preferences) => {
@@ -576,9 +575,8 @@ const PreferencesForm = ({
                   ) : (
                     <button
                       className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
-                      onClick={(e) => {
-                        const userChatPreferences = { ...preferences };
-                        handleChatPreferencesFormSubmit(e, userChatPreferences);
+                      onClick={() => {
+                        handleChatPreferencesFormSubmit({ ...preferences });
                       }}
                     >
                       submit
