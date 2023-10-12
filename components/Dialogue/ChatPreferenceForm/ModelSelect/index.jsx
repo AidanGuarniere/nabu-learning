@@ -18,18 +18,18 @@ const ModelSelect = ({ value, onChange, }) => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full mb-4 ">
+    <div className="flex flex-col justify-center md:justify-start items-center w-full mb-8 ">
       <label
-        className="block text-center text-xl mb-2 font-light text-gray-800"
+        className="block text-center text-xl md:text-3xl mb-2 font-light text-gray-800"
         htmlFor="model-select"
       >
-        select model
+        select AI model
       </label>
       <select
         id="model-select"
         value={value}
         onChange={(e) => onChange(e.target.value)} // Call onChange with the value only
-        className=" shadow-sm appearance-none border rounded w-auto py-2 px-3 text-center bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        className=" shadow-sm appearance-none border rounded w-auto py-2 px-3 text-center md:text-xl bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       >
         <option key={"gpt-3.5-turbo"} value={"gpt-3.5-turbo"}>
           {"gpt-3.5-turbo"}

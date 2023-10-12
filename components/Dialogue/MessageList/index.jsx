@@ -9,14 +9,15 @@ function MessageList({ chats, selectedChat, session, setChats, currentlyStreamed
       (chat) => chat._id === selectedChat
     );
     const currentMessages = chats[selectedChatIndex]?.messages;
-    // console.log("messages",currentMessages)
+    console.log("messages",currentMessages)
     if (messages !== currentMessages) {
       setMessages(currentMessages);
     }
+
   }, [selectedChat, chats, messages]);
 
   return (
-    <div className="h-full pt-[3.5rem]">
+    <div className="h-full pt-[1rem] md:pt-[3.5rem]">
       {/* change to setSelectedChat*/}
       {messages.map((message, index) =>
         index < 2 || message.role === "system" ? null : (

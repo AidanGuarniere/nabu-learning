@@ -58,6 +58,7 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
     setSuggestionStream("");
     setLoadingSuggestions(true);
     e.preventDefault;
+    // find relevent messages in chat to suggest responses to
     const selectedChatIndex = chats.findIndex(
       (chat) => chat._id === selectedChat
     );
@@ -68,6 +69,7 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
       return [...arr.slice(-3)];
     };
 
+    // suggestion function description
     const suggestUserResponsesFunctionDescription = {
       name: "suggestUserResponses",
       description:

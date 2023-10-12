@@ -24,7 +24,7 @@ const GenericInput = ({
   }, []);
 
   return (
-    <div className="m-0 p-0">
+    <div className="mb-[-1rem] md:m-0 p-0">
       <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>

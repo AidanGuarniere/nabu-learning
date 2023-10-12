@@ -49,13 +49,13 @@ function Dashboard({
         setChatTitle(selectedChatTitle.title);
       }
     } else {
-      setChatTitle("New chat");
+      setChatTitle("New interaction");
     }
   }, [chats, chatTitle, selectedChat]);
 
   return (
     <>
-      <div className="hidden md:fixed md:inset-y-0 md:flex md:w-[260px] max-w-xs md:flex-col bg-gray-900 dark z-50">
+      <div className="hidden md:fixed md:inset-y-0 md:flex md:w-[260px] max-w-xs md:flex-col bg-gray-900 dark z-[100]">
         <div className="flex w-full h-full min-h-0 flex-col">
           <div className="scrollbar-trigger flex h-full w-full flex-1 items-start border-white/20">
             <nav className="flex w-full h-full flex-1 flex-col space-y-1 text-sm font-normal ">
@@ -78,10 +78,12 @@ function Dashboard({
           </div>
         </div>
       </div>
-      <div className="md:hidden w-full flex items-center bg-gray-900 text-gray-200 p-[.625rem] border-b border-white/20 ">
+      {/* <div className="md:hidden w-full flex items-center bg-gray-900 text-gray-200 p-[.625rem] border-b border-white/20 z-[90] "> */}
+      <div className="md:hidden w-full flex items-center bg-gray-900 text-gray-400 p-[.625rem] z-[90] ">
         <button
           onClick={toggleSidebar}
-          className=" inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white"
+          // className=" inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white z-[80]"
+          className=" mt-2 ml-2 inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none dark:hover:text-white z-[80]"
         >
           <svg
             stroke="currentColor"
@@ -99,7 +101,7 @@ function Dashboard({
           </svg>
         </button>
         <h1 className="text-base whitespace-nowrap overflow-hidden relative text-center px-4 w-[calc(100%-3rem)]">
-          {chatTitle ? chatTitle : "New chat"}
+          {chatTitle ? chatTitle : "New interaction"}
           <div className="absolute inset-y-0 right-0 w-8 z-10 md:bg-gradient-to-l from-gray-800"></div>
         </h1>
       </div>

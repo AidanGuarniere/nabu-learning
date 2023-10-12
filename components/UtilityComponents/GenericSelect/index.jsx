@@ -2,7 +2,7 @@ import React from "react";
 
 const GenericSelect = ({ label, value, onChange, options,height }) => {
   return (
-    <div className="mb-8 md:mb-0 xl:mb-8 h-1/3 md:h-auto">
+    <div className="mb-[-1rem] md:m-0 h-1/3 md:h-auto">
       <label className="text-gray-700 text-xl font-light" htmlFor={label}>
         {label}
       </label>
