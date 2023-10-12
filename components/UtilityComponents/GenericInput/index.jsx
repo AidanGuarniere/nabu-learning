@@ -25,7 +25,7 @@ const GenericInput = ({
 
   return (
     <div className="mb-[-1rem] md:m-0 p-0">
-      <label className="text-gray-700 text-xl font-light" htmlFor={label}>
+      <label className="text-gray-700 text-lg md:text-xl font-light" htmlFor={label}>
         {label}
       </label>
       <textarea
@@ -33,12 +33,12 @@ const GenericInput = ({
         value={value}
         onChange={handleInputChange}
         placeholder={placeholder}
-        rows="2"
+        rows={window.innerWidth >= 768 ? "2" : "1"}
         maxLength={maxLength}
         className={` bg-gray-100 resize-none w-full appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline`}
         style={{ height: `${height}` }}
       />
-      <div className="text-right text-gray-600 text-sm m-0 p-0">
+      <div className="text-right text-gray-600 text-xs md:text-sm m-0 p-0">
         {characterCount}/{maxLength}
       </div>
     </div>

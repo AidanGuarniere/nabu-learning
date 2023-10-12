@@ -18,7 +18,7 @@ const ModelSelect = ({ value, onChange, }) => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center md:justify-start items-center w-full mb-8 ">
+    <div className="flex flex-col justify-center md:justify-start items-center w-full mb-2 md:mb-8 ">
       <label
         className="block text-center text-xl md:text-3xl mb-2 font-light text-gray-800"
         htmlFor="model-select"

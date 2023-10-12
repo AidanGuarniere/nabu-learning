@@ -17,7 +17,7 @@ function MessageList({ chats, selectedChat, session, setChats, currentlyStreamed
   }, [selectedChat, chats, messages]);
 
   return (
-    <div className="h-full pt-[1rem] md:pt-[3.5rem]">
+    <div className="h-full pt-0 md:pt-[3.5rem]">
       {/* change to setSelectedChat*/}
       {messages.map((message, index) =>
         index < 2 || message.role === "system" ? null : (

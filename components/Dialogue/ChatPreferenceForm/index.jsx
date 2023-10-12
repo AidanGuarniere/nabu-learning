@@ -8,7 +8,7 @@ import DescribeContextForm from "./DescribeContextForm";
 
 const ProgressBar = ({ stage }) => {
   return (
-    <div className="relative pt-1 w-full">
+    <div className="relative w-full">
       <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-300 w-full">
         <div
           style={{ width: `${((stage - 1) / 2) * 100}%` }}
@@ -16,32 +16,32 @@ const ProgressBar = ({ stage }) => {
         >
           <div className="absolute  w-full flex justify-between items-center z-20">
             <div
-              className={`flex justify-center items-center h-12 w-12 rounded-[2rem] align-middle transition-all duration-500 ${
+              className={`flex justify-center items-center h-10 w-10 md:h-12 md:w-12 rounded-[2rem] align-middle transition-all duration-500 ${
                 stage >= 1
                   ? "bg-white text-green-200 border border-green-200"
                   : "bg-gray-300"
               }`}
             >
               <div className=""></div>
-              <span className="text-lg">{stage > 1 ?"✓": "1"}</span>
+              <span className="text-lg">{stage > 1 ? "✓" : "1"}</span>
             </div>
             <div
-              className={`flex justify-center items-center h-12 w-12 rounded-[2rem] align-middle transition-all duration-500 ${
+              className={`flex justify-center items-center h-10 w-10 md:h-12 md:w-12 rounded-[2rem] align-middle transition-all duration-500 ${
                 stage >= 2
                   ? "bg-white text-green-200 border border-green-200"
                   : "bg-gray-300"
               }`}
             >
-              <span className="text-lg">{stage > 2 ?"✓": "2"}</span>
+              <span className="text-lg">{stage > 2 ? "✓" : "2"}</span>
             </div>
             <div
-              className={`flex justify-center items-center h-12 w-12 rounded-[2rem] align-middle transition-all duration-500 ${
+              className={`flex justify-center items-center h-10 w-10 md:h-12 md:w-12 rounded-[2rem] align-middle transition-all duration-500 ${
                 stage >= 3
                   ? "bg-white text-green-200 border border-green-200"
                   : "bg-gray-300"
               }`}
             >
-              <span className="text-lg">{stage > 3 ?"✓": "3"}</span>
+              <span className="text-lg">{stage > 3 ? "✓" : "3"}</span>
             </div>
           </div>
         </div>
@@ -216,8 +216,6 @@ const PreferencesForm = ({
     return aiFunctionsInfo;
   };
 
-  // Function to handle form submission
-  // Inside PreferencesForm component
   const handleChatPreferencesFormSubmit = async (e, userChatPreferences) => {
     e.preventDefault();
 
@@ -359,32 +357,6 @@ const PreferencesForm = ({
     // streamGptResponse(gptRequestPayload)
   };
 
-  const checkIfStageComplete = (stage, preferences) => {
-    switch (stage) {
-      case 1:
-        return preferences.mode !== "";
-      case 2:
-        return (
-          preferences.topic !== "" &&
-          preferences.goal !== "" &&
-          preferences.personalInfo !== ""
-        );
-      case 3:
-        if (preferences.mode === "Tutor Session") {
-          return (
-            preferences.tutorType !== "" &&
-            preferences.tutorName !== "" &&
-            preferences.tutorBehavior !== ""
-          );
-        } else if (preferences.mode === "Note Generation") {
-          return preferences.noteType !== "" && preferences.noteTitle !== "";
-        }
-        break;
-      default:
-        return false;
-    }
-  };
-
   // useEffect(() => {
   //   console.log(preferences);
   // }, [preferences]);
@@ -397,75 +369,75 @@ const PreferencesForm = ({
         <div className="w-full h-full flex flex-col md:justify-center items-center py-8 md:py-6 px-4">
           <ProgressBar stage={stage} />
           {stage === 1 ? (
-            <div className="absolute top-[3.75rem] md:top-16 mb-2 py-2 px-4">
-              <h1 className="text-center text-gray-700 font-light text-[2.15rem] md:text-5xl">
+            <div className="absolute top-[3.5rem] md:top-16 md:mb-2 py-2 px-4">
+              <h1 className="text-center text-gray-700 font-light text-2xl md:text-5xl">
                 choose your interaction
               </h1>
             </div>
           ) : stage === 2 ? (
-            <div className="absolute top-[3.75rem] md:top-16 mb-2 py-2 px-4">
-              <h1 className="text-center text-gray-700 font-light text-[2.15rem] md:text-5xl">
+            <div className="absolute top-[3.5rem] md:top-16 md:mb-2 py-2 px-4">
+              <h1 className="text-center text-gray-700 font-light text-2xl md:text-5xl">
                 provide some context
               </h1>
             </div>
           ) : stage === 3 ? (
-            <div className="absolute top-[3.75rem] md:top-16 mb-2 py-2 px-4">
-              <h1 className="text-center text-gray-700 font-light text-[2.15rem] md:text-5xl">
+            <div className="absolute top-[3.5rem] md:top-16 md:mb-2 py-2 px-4">
+              <h1 className="text-center text-gray-700 font-light text-2xl md:text-5xl">
                 confirm your preferences
               </h1>
             </div>
           ) : null}
-          <form className="w-full h-full md:h-full rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg">
+          <form className="w-full h-full md:h-full rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg pt-10 md:pt-16">
             {stage === 1 && (
-              <div className="h-full flex flex-col md:justify-center items-center pt-16">
+              <div className="h-full flex flex-col md:justify-center items-center">
                 <ModelSelect
                   onChange={(value) =>
                     updatePreferences("selectedModel", value)
                   }
                 />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full md:max-w-5xl">
+                <div className="h-2/3 md:h-auto grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 w-full md:max-w-5xl">
                   {/* Note Generation Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-2 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Note Generation");
                       goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                    <h2 className="text-xl md:text-2xl md:mb-4 text-gray-700 font-light">
                       note generation
                     </h2>
-                    <p className="text-center text-gray-700 h-1/2 mb-4">
+                    <p className="text-small md:text-md text-center text-gray-700 h-1/2 md:mb-4">
                       generate notes in various formats.
                     </p>
                   </div>
                   {/* Tutor Session Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-2 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Tutor Session");
                       goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                    <h2 className="text-xl md:text-2xl md:mb-4 text-gray-700 font-light">
                       tutoring session
                     </h2>
-                    <p className="text-center text-gray-700 h-1/2 mb-4">
+                    <p className="text-small md:text-md text-center text-gray-700 h-1/2 md:mb-4">
                       engage in an academic dialogue with a virtual tutor.
                     </p>
                   </div>
                   {/* Flascard Generation Selection */}
                   <div
-                    className="flex flex-col items-center h-full p-6 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
+                    className="flex flex-col items-center h-full p-2 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
                     onClick={() => {
                       updatePreferences("mode", "Flashcard Generation");
                       goToNextStage();
                     }}
                   >
-                    <h2 className="text-2xl mb-2 md:mb-4 text-gray-700 font-light">
+                    <h2 className="text-xl md:text-2xl md:mb-4 text-gray-700 font-light">
                       flashcard generation
                     </h2>
-                    <p className="text-center text-gray-700 h-1/2 mb-4">
+                    <p className="text-small md:text-md text-center text-gray-700 h-1/2 md:mb-4">
                       generate a set of flashcards to help you study.
                     </p>
                   </div>
@@ -484,14 +456,14 @@ const PreferencesForm = ({
             )}
             {stage === 3 && (
               <>
-                <div className="bg-white rounded-md md:px-4 h-[90vh] pt-14 md:pt-[4.5rem] w-full">
+                <h2 className="p-0 text-center text-gray-800 font-light text-xs md:text-lg">
+                  This information will be referenced by Nabu to provide a more
+                  personalized interaction
+                </h2>
+                <div className="bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-4">
                   {/* <h1 className="text-center text-gray-800 text-2xl font-light">
                     Interaction Info
                   </h1> */}
-                  <h2 className="p-0 text-center text-gray-800 font-light text-sm md:text-lg">
-                    This information will be referenced by Nabu to provide a
-                    more personalized interaction
-                  </h2>
                   <GenericInput
                     label="Topic"
                     value={preferences.topic}
@@ -625,18 +597,18 @@ const PreferencesForm = ({
                     height={"5rem"}
                   />
                 </div>
-                <div className="absolute left-0 bottom-28 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
+                <div className="absolute left-0 bottom-24 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
                   <button
                     onClick={(e) => {
                       e.preventDefault();
                       goToPreviousStage();
                     }}
-                    className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                    className="btn-secondary w-3/5 md:w-1/5 mx-2 p-1 md:p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
                   >
                     back
                   </button>
                   <button
-                    className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+                    className="btn-primary w-3/5 md:w-1/5 mx-4 p-1 md:p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
                     onClick={(e) => {
                       const userChatPreferences = { ...preferences };
                       handleChatPreferencesFormSubmit(e, userChatPreferences);

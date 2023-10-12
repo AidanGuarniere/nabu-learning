@@ -79,11 +79,11 @@ function Dashboard({
         </div>
       </div>
       {/* <div className="md:hidden w-full flex items-center bg-gray-900 text-gray-200 p-[.625rem] border-b border-white/20 z-[90] "> */}
-      <div className="md:hidden w-full flex items-center bg-gray-900 text-gray-400 p-[.625rem] z-[90] ">
+      <div className="md:hidden w-full h-[2.45rem] flex justify-center items-center bg-gray-900 text-gray-400 p-[.625rem]  ">
         <button
           onClick={toggleSidebar}
           // className=" inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white dark:hover:text-white z-[80]"
-          className=" mt-2 ml-2 inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none dark:hover:text-white z-[80]"
+          className={`absolute left-[1.25rem] top-2 inline-flex items-center justify-center rounded-md hover:text-gray-900 focus:outline-none dark:hover:text-white ${!showActions && "z-50"}`}
         >
           <svg
             stroke="currentColor"

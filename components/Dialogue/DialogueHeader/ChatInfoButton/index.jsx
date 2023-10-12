@@ -2,9 +2,9 @@ import React, { useState } from "react";
 
 const ChatInfoButton = ({ showChatInfoForm, setShowChatInfoForm }) => {
   return (
-    <div className="absolute right-0 m-2 md:m-[.55rem] ">
+    <div className="absolute right-1 md:right-2 md:m-[.55rem]">
       <button
-        className="dashboard-text w-full flex md:mb-0 p-2.5 items-center gap-3 hover:bg-green-200 transition-colors duration-200 text-white font-light cursor-pointer flex-shrink-0 bg-green-400 rounded-[.425rem]"
+        className=" w-full flex md:mb-0 px-1.5 py-1 md:p-2.5 items-center gap-3 hover:bg-green-200 transition-colors duration-200 text-white font-light cursor-pointer flex-shrink-0 bg-green-400 rounded-[.425rem]"
         onClick={() => {
           setShowChatInfoForm(!showChatInfoForm);
         }}

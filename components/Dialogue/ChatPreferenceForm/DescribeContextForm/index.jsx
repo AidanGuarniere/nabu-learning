@@ -239,15 +239,15 @@ const DescribeContextForm = ({
   // }, [contextStream]);
 
   return (
-    <div className="stretch flex flex-col w-full h-full justify-start md:justify-center pt-12 md:py-4">
-      <h1 className="text-sm md:text-xl font-light text-center text-gray-800 py-4 max-w-4xl">
+    <div className="stretch flex flex-col w-full h-full justify-start md:justify-center ">
+      <h1 className="text-sm md:text-xl font-light text-center text-gray-800 md:py-4 max-w-4xl">
         Write a few sentences about the topic you want to study, your learning
         goals, or anything else you think would be relevant to your tutoring
         session.
       </h1>
-      <div className="h-3/4">
+      <div className="h-full">
         <form
-          className="flex flex-row gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 sm:pl-3.5 py-2 sm:py-3.5 pr-0 relative border border-black/10 
+          className="flex h-2/3 md:h-3/4 flex-row gap-3 w-full mx-auto max-w-[96%] md:max-w-md lg:max-w-2xl xl:max-w-3xl mt-2 mb-1 sm:pl-3.5 py-2 sm:py-3.5 pr-0 relative border border-black/10 
                bg-white rounded-[.4325rem] dark:border-gray-900/50 dark:text-white dark:bg-gray-700 shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:min-h-[1rem] "
           onSubmit={(e) => {
             submitContext(e);
@@ -258,7 +258,7 @@ const DescribeContextForm = ({
           <div className="w-full p-0 m-0">
             <textarea
               ref={textareaRef}
-              className="resize-none h-[28rem] w-full m-0 border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 
+              className="resize-none h-full md:h-full w-full m-0 border-0 bg-transparent p-0 pl-2 pr-7 focus:ring-0 
                    focus-visible:ring-0 focus:outline-none focus:border-0 dark:bg-transparent md:pl-1 font-mendium align-top placeholder-gray-500 text-gray-700"
               tabIndex="0"
               placeholder="e.g. I want to study linear algebra to learn more about AI."
@@ -271,7 +271,7 @@ const DescribeContextForm = ({
               style={{
                 minHeight: "1rem",
                 fontSize: "1.12rem",
-                maxHeight: "28rem",
+                // maxHeight: "28rem",
                 lineHeight: "1.5rem",
               }}
               onKeyDown={handleKeyDown}
@@ -315,18 +315,18 @@ const DescribeContextForm = ({
         </form>
       </div>
 
-      <div className="absolute left-0 bottom-28 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
+      <div className="absolute left-0 bottom-24 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
         <button
           onClick={(e) => {
             e.preventDefault();
             goToPreviousStage();
           }}
-          className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+          className="btn-secondary w-3/5 md:w-1/5 mx-2 p-1 md:p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
         >
           back
         </button>
         <button
-          className="btn-primary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
+          className="btn-primary w-3/5 md:w-1/5 mx-2 p-1 md:p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
           // disabled={!checkIfStageComplete(stage, preferences)}
           onClick={(e) => {
             e.preventDefault();
