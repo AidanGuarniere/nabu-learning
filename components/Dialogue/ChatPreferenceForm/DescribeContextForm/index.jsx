@@ -209,7 +209,7 @@ const DescribeContextForm = ({
     const initialMessage = {
       role: "system",
       //change
-      content: `You are to analyze the user's message and extrapolate as much relevant context for the following ${preferences.mode} as you can by fulfilling the object described in commitChatContext.`,
+      content: `Analyze the user's message for the upcoming ${preferences.mode}. Identify what key topics, terms, and underlying concepts embedded in the text to guide the session. Populate these findings in commitChatContext.`,
     };
     const userMessageContext = { ...userContextDescription };
     const messageHistory = [

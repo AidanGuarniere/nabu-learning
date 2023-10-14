@@ -456,11 +456,11 @@ const PreferencesForm = ({
             )}
             {stage === 3 && (
               <>
-                <h2 className="p-0 text-center text-gray-800 font-light text-xs md:text-lg">
+                <h2 className="p-0 md:pt-4 text-center text-gray-800 font-light text-xs md:text-lg">
                   This information will be referenced by Nabu to provide a more
                   personalized interaction
                 </h2>
-                <div className="bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-4">
+                <div className="bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-0">
                   {/* <h1 className="text-center text-gray-800 text-2xl font-light">
                     Interaction Info
                   </h1> */}

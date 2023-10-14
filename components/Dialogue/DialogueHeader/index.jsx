@@ -6,7 +6,7 @@ const DialogueHeader = ({ chats, setChats, selectedChatIndex, session }) => {
   const [showChatInfoForm, setShowChatInfoForm] = useState(false);
 
   return (
-    <div className="fixed z-10 inset-0 md:pl-[260px] flex md:justify-center items-center h-[2.5rem] py-2 w-full border-b border-gray-500/20 bg-gray-100 ">
+    <div className="fixed z-10 inset-0 md:pl-[260px] flex md:justify-center items-center h-[2.5rem] md:h-[3.5rem] py-2 w-full border-b border-gray-500/20 bg-gray-100 ">
       <div className="w-1/6 md:w-0 md:hidden"></div>
       <span className="text-center md:text-left text-gray-500 w-3/5 px-4 md:px-0 md:w-auto whitespace-nowrap truncate">
         {chats[selectedChatIndex].chatPreferences.topic},{" "}

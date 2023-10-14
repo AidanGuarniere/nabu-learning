@@ -127,8 +127,8 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
             suggestResponses(e);
           }
         }}
-        className={`col-span-3  h-12 py-2 px-2 md:px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-xs md:text-sm text-centered${
-          loadingSuggestions ? " disabled" : ""
+        className={`col-span-3 h-12 py-2 px-0 md:px-4 bg-white border border-gray-200 text-gray-800 rounded-md text-xs md:text-sm text-centered ${
+          loadingSuggestions ? "disabled" : ""
         }`}
       >
         suggestions
