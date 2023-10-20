@@ -1,15 +1,12 @@
-// import { writeFile } from 'fs/promises'
 import { NextRequest, NextResponse } from "next/server";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
+import { PdfReader } from "pdfreader";
+import { encode } from "gpt-tokenizer";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 export async function POST(request: NextRequest) {
   const data = await request.formData();
@@ -21,26 +18,96 @@ export async function POST(request: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  const uint8Array = new Uint8Array(buffer);
+  let tokenLimit: number = 256;
 
-  const pdf = await pdfjsLib.getDocument({ data: uint8Array }).promise;
+  // errors be present
+  function createOverlappingChunks(text: string, tokenLimit: number): string[] {
+    const chunks: string[] = [];
+    let startIdx = 0;
+    let endIdx = 0;
+    let tokenCount = 0;
 
-  let scrapedData = "";
+    while (startIdx < text.length) {
+      // Reset token count for new chunk
+      tokenCount = 0;
 
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    console.log("items:", textContent.items);
-    scrapedData += textContent.items
-      .map((item) => {
-        if (typeof item["str"] === "string") {
-          return item["str"];
-        }
-      })
-      .join(" ");
+      // Find endIdx for the current chunk based on token count
+      while (endIdx < text.length && tokenCount <= tokenLimit) {
+        endIdx++;
+        const chunk = text.slice(startIdx, endIdx);
+        tokenCount = encode(chunk).length;
+      }
+
+      // Adjust endIdx to ensure token count is within limit
+      if (tokenCount > tokenLimit) {
+        endIdx--;
+      }
+
+      // Add chunk to chunks array
+      const chunk = text.slice(startIdx, endIdx);
+      if (chunk) {
+        chunks.push(chunk);
+      }
+
+      // Overlap: Start the next chunk halfway through the current one
+      const increment = Math.max(1, Math.floor((endIdx - startIdx) / 2));
+      if (endIdx >= text.length) {
+        startIdx = text.length;
+      } else {
+        startIdx = startIdx + increment;
+      }
+    }
+
+    return chunks;
   }
 
-  console.log("Scraped Data:", scrapedData);
-
-  return NextResponse.json({ success: true });
+  const parsePdf = (buffer: Buffer) => {
+    return new Promise<string>((resolve, reject) => {
+      let scrapedData = "";
+      new PdfReader(null).parseBuffer(buffer, (err, item) => {
+        if (err) reject(err);
+        else if (!item) {
+          resolve(scrapedData);
+        } else if (item.text) scrapedData = `${scrapedData} ${item.text}`;
+      });
+    });
+  };
+  // Usage
+  try {
+    // Await the completion of the PDF parsing
+    const scrapedData = await parsePdf(buffer);
+    // Now call createOverlappingChunks with the fully populated scrapedData
+    const parsedChunks = createOverlappingChunks(scrapedData, tokenLimit);
+    console.log("pc", parsedChunks);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false });
+  }
 }
+
+// scrapedSentences.forEach((sentence) => {
+//   const sentenceTokens = encode(sentence);
+//   const sentenceTokenCount = sentenceTokens.length;
+//   // if the sentence fits within the current index of textToBeEmbedded
+//   if (sentenceTokenCount < tokenLimit) {
+//     // if first index, just push sentence
+//     if (textToBeEmbedded.length === 0) {
+//       textToBeEmbedded.push(sentence);
+//     } else {
+//       // if adding to an existing array, concatinate current index w new sentence
+//       textToBeEmbedded[textToBeEmbedded.length - 1] = `${
+//         textToBeEmbedded[textToBeEmbedded.length - 1]
+//       } ${sentence}`;
+//     }
+//     // update tokenLimit to account for newly added content
+//     tokenLimit = tokenLimit - sentenceTokenCount;
+//   } else {
+//     if (sentenceTokenCount > tokenLimit && sentenceTokenCount < 256) {
+//       textToBeEmbedded.push(sentence);
+//       tokenLimit = 256 - sentenceTokenCount;
+//     } else {
+//       console.log("yuuuuge");
+//     }
+//   }
+// });

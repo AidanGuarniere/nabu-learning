@@ -32,7 +32,7 @@ export function UploadPDF() {
         onChange={(e) => setFile(e.target.files?.[0])}
       />
 
-      <input type="submit" value="Upload" />
+      <button type="submit">Upload</button>
     </form>
   );
 }

@@ -1,7 +1,6 @@
 import { Document, DocumentJSON } from "../types";
 import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
-import fs from "fs";
 import { Configuration, OpenAIApi } from "openai";
 
 loadEnvConfig("");

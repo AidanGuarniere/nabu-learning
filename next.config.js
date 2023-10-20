@@ -9,6 +9,9 @@ const nextConfig = {
   images: {
     domains: ["via.placeholder.com"],
   },
+  experimental: {
+    serverComponentsExternalPackages: ['pdf2json'],
+  },
 };
 
 module.exports = nextConfig;

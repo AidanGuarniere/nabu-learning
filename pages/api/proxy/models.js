@@ -1,39 +1,50 @@
-// pages/api/upload.js
-import multer from 'multer';
-import { getDocument } from 'pdfjs-dist/es5/build/pdf';
+import dbConnect from "../../../utils/dbConnect";
+import User from "../../../models/UserSchema";
+import { authOptions } from "../auth/[...nextauth]";
+import { getServerSession } from "next-auth/next";
+import { decrypt } from "../../../utils/crypto";
+import axios from "axios";
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single('pdf');
+const fetchModelsFromAPI = async (openAIAPIKey) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${openAIAPIKey}`,
+      "Content-Type": "application/json",
+    },
+  };
 
-const extractTextFromPDF = async (pdfBuffer) => {
-  const pdf = await getDocument({ data: pdfBuffer }).promise;
-  let extractedText = '';
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const textContent = await page.getTextContent();
-    extractedText += textContent.items.map(item => item.str).join(' ');
+  try {
+    const models = await axios.get("https://api.openai.com/v1/models", config);
+    return models.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
+};
 
-  return extractedText;
+const handleRequest = async () => {
+  const openAIAPIKey = process.env.OPENAI_API_KEY;
+  ;
+  return fetchModelsFromAPI(openAIAPIKey);
 };
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
+  if (req.method !== "GET") {
+    res.setHeader("Allow", ["GET"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  upload(req, res, async (err) => {
-    if (err) {
-      return res.status(500).json({ error: `Upload Error: ${err.message}` });
-    }
+  await dbConnect();
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
-    try {
-      const extractedText = await extractTextFromPDF(req.file.buffer);
-      res.status(200).json({ text: extractedText });
-    } catch (error) {
-      res.status(500).json({ error: `Failed to process PDF: ${error.message}` });
-    }
-  });
+  try {
+    const models = await handleRequest();
+    res.status(200).json({ models });
+  } catch (error) {
+    const statusCode = error.status || 500;
+    res.status(statusCode).json({ error: error.message });
+  }
 }
