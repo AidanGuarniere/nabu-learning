@@ -3,8 +3,8 @@ export enum OpenAIModel {
   }
   
   export type Document = {
-    title: string;
-    url: string;
+    fileName: string;
+    author: string;
     date: string;
     content: string;
     length: number;
@@ -13,8 +13,7 @@ export enum OpenAIModel {
   };
   
   export type DocumentChunk = {
-    document_title: string;
-    document_url: string;
+    page: number;
     document_date: string;
     content: string;
     content_length: number;
@@ -24,8 +23,6 @@ export enum OpenAIModel {
   
   export type DocumentJSON = {
     current_date: string;
-    author: string;
-    url: string;
     length: number;
     tokens: number;
     documents: Document[];

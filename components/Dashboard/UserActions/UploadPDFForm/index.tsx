@@ -1,15 +1,17 @@
 import { useState } from "react";
 
 export function UploadPDF() {
-  const [file, setFile] = useState<File>();
+  const [files, setFiles] = useState<FileList | null>(null);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file) return;
+    if (!files) return;
 
     try {
       const data = new FormData();
-      data.set("file", file);
+      for (let i = 0; i < files.length; i++) {
+        data.append("files", files[i]);
+      }
 
       const res = await fetch("/api/uploadPDF", {
         method: "POST",
@@ -29,7 +31,8 @@ export function UploadPDF() {
         type="file"
         name="pdf"
         accept=".pdf"
-        onChange={(e) => setFile(e.target.files?.[0])}
+        multiple
+        onChange={(e) => setFiles(e.target.files)}
       />
 
       <button type="submit">Upload</button>

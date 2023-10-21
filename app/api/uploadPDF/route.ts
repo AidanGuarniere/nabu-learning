@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PdfReader } from "pdfreader";
 import { encode } from "gpt-tokenizer";
+import { Document, DocumentChunk } from "../../../types";
 
+// for pdf upload
 export const config = {
   api: {
     bodyParser: false,
@@ -9,105 +11,138 @@ export const config = {
 };
 
 export async function POST(request: NextRequest) {
+  // get file(s) data from client
   const data = await request.formData();
-  const file: File | null = data.get("file") as unknown as File;
+  const files: File[] = data.getAll("files") as unknown as File[];
 
-  if (!file) {
+  // if no files, abort
+  if (!files.length) {
     return NextResponse.json({ success: false });
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  let tokenLimit: number = 256;
+  // process PDF file
+  async function processFile(file: File) {
+    // get mm/dd/yyyy of last PDF edit
+    const pdfDate = new Date(file.lastModified * 1000);
+    const formatDate = (date) => {
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based in JS
+      const day = String(date.getDate()).padStart(2, "0");
+      const year = date.getFullYear();
 
-  // errors be present
-  function createOverlappingChunks(text: string, tokenLimit: number): string[] {
-    const chunks: string[] = [];
-    let startIdx = 0;
-    let endIdx = 0;
-    let tokenCount = 0;
+      return `${month}/${day}/${year}`;
+    };
+    const formattedPdfDate = formatDate(pdfDate);
 
-    while (startIdx < text.length) {
-      // Reset token count for new chunk
-      tokenCount = 0;
+    // get pdf file name
+    const title = file.name;
 
-      // Find endIdx for the current chunk based on token count
-      while (endIdx < text.length && tokenCount <= tokenLimit) {
-        endIdx++;
-        const chunk = text.slice(startIdx, endIdx);
-        tokenCount = encode(chunk).length;
+    // convert pdf binary to buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // set token limit for ada 002 embeddings
+    let tokenLimit: number = 512;
+
+    // create overlapping chunks of text where each chunk's token count <= tokenLimit
+    // called after PDF text is scraped
+    function createOverlappingChunks(
+      text: string,
+      tokenLimit: number
+    ): DocumentChunk[] {
+      const chunks: DocumentChunk[] = [];
+      let startIdx = 0;
+      let endIdx = 0;
+      let tokenCount = 0;
+
+      while (startIdx < text.length) {
+        // Reset token count for new chunk
+        tokenCount = 0;
+
+        // Find endIdx for the current chunk based on token count
+        while (endIdx < text.length && tokenCount <= tokenLimit) {
+          endIdx++;
+          const chunk = text.slice(startIdx, endIdx);
+          tokenCount = encode(chunk).length;
+        }
+
+        // Adjust endIdx to ensure token count is within limit
+        if (tokenCount > tokenLimit) {
+          endIdx--;
+        }
+
+        // Add chunk to chunks array
+        const chunkContent = text.slice(startIdx, endIdx);
+        if (chunkContent) {
+          const chunk: DocumentChunk = {
+            page: 0, // Placeholder, will need logic to determine page number
+            document_date: "", // Placeholder, will need logic to determine document date
+            content: chunkContent,
+            content_length: chunkContent.length,
+            content_tokens: encode(chunkContent).length,
+            embedding: [], // Placeholder, will need logic to populate embedding
+          };
+          chunks.push(chunk);
+        }
+
+        // Overlap: Start the next chunk halfway through the current one
+        const increment = Math.max(1, Math.floor((endIdx - startIdx) / 2));
+        if (endIdx >= text.length) {
+          startIdx = text.length;
+        } else {
+          startIdx = startIdx + increment;
+        }
       }
 
-      // Adjust endIdx to ensure token count is within limit
-      if (tokenCount > tokenLimit) {
-        endIdx--;
-      }
-
-      // Add chunk to chunks array
-      const chunk = text.slice(startIdx, endIdx);
-      if (chunk) {
-        chunks.push(chunk);
-      }
-
-      // Overlap: Start the next chunk halfway through the current one
-      const increment = Math.max(1, Math.floor((endIdx - startIdx) / 2));
-      if (endIdx >= text.length) {
-        startIdx = text.length;
-      } else {
-        startIdx = startIdx + increment;
-      }
+      return chunks;
     }
 
-    return chunks;
+    // parse pdf according to Document type interface
+    const parsePdf = (buffer: Buffer) => {
+      return new Promise<any>((resolve, reject) => {
+        let documentData: Document = {
+          author: "",
+          content: "",
+          length: 0,
+          tokens: 0,
+          fileName: title,
+          date: formattedPdfDate,
+          chunks: [],
+        };
+        new PdfReader(null).parseBuffer(buffer, (err, item) => {
+          if (err) reject(err);
+          // all items have been checked || pdf was blank
+          else if (!item) {
+            if (documentData.content.length) {
+              // update documentData after all text has been scraped
+              documentData.length = documentData.content.length;
+              documentData.tokens = encode(documentData.content).length;
+            }
+            // resolve promise by returning document object
+            resolve(documentData);
+          } else if (item.text)
+            documentData.content = `${documentData.content} ${item.text}`;
+        });
+      });
+    };
+
+    // turn buffer blob into pdf text via pdfreader, parse necessary data within parseBuffer
+    const scrapedData = await parsePdf(buffer);
+
+    // after PDF text is parsed, map over it to create overlapping chunks of text for embeddings according to DocumentChunk type interface
+    scrapedData.chunks = createOverlappingChunks(
+      scrapedData.content,
+      tokenLimit
+    );
+    console.log("scrapedData", scrapedData);
+    return scrapedData;
   }
 
-  const parsePdf = (buffer: Buffer) => {
-    return new Promise<string>((resolve, reject) => {
-      let scrapedData = "";
-      new PdfReader(null).parseBuffer(buffer, (err, item) => {
-        if (err) reject(err);
-        else if (!item) {
-          resolve(scrapedData);
-        } else if (item.text) scrapedData = `${scrapedData} ${item.text}`;
-      });
-    });
-  };
-  // Usage
+  // parse and chunk each PDF file uploaded
   try {
-    // Await the completion of the PDF parsing
-    const scrapedData = await parsePdf(buffer);
-    // Now call createOverlappingChunks with the fully populated scrapedData
-    const parsedChunks = createOverlappingChunks(scrapedData, tokenLimit);
-    console.log("pc", parsedChunks);
-    return NextResponse.json({ success: true });
+    const results = await Promise.all(files.map((file) => processFile(file)));
+    return NextResponse.json({ success: true, documents: results });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false });
   }
 }
-
-// scrapedSentences.forEach((sentence) => {
-//   const sentenceTokens = encode(sentence);
-//   const sentenceTokenCount = sentenceTokens.length;
-//   // if the sentence fits within the current index of textToBeEmbedded
-//   if (sentenceTokenCount < tokenLimit) {
-//     // if first index, just push sentence
-//     if (textToBeEmbedded.length === 0) {
-//       textToBeEmbedded.push(sentence);
-//     } else {
-//       // if adding to an existing array, concatinate current index w new sentence
-//       textToBeEmbedded[textToBeEmbedded.length - 1] = `${
-//         textToBeEmbedded[textToBeEmbedded.length - 1]
-//       } ${sentence}`;
-//     }
-//     // update tokenLimit to account for newly added content
-//     tokenLimit = tokenLimit - sentenceTokenCount;
-//   } else {
-//     if (sentenceTokenCount > tokenLimit && sentenceTokenCount < 256) {
-//       textToBeEmbedded.push(sentence);
-//       tokenLimit = 256 - sentenceTokenCount;
-//     } else {
-//       console.log("yuuuuge");
-//     }
-//   }
-// });
