@@ -1,7 +1,8 @@
-// import { supabaseAdmin } from "@/utils";
-const supabaseAdmin = {rpc:function name(params:string) {
-    
-}}
+import { createClient } from "@supabase/supabase-js";
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export const config = {
   runtime: "edge"
@@ -9,9 +10,11 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { query, apiKey, matches } = (await req.json()) as {
+    const { query, apiKey, user_id, file_names, matches } = (await req.json()) as {
       query: string;
       apiKey: string;
+      user_id: string;
+      file_names: string[];
       matches: number;
     };
 
@@ -33,8 +36,9 @@ const handler = async (req: Request): Promise<Response> => {
     const embedding = json.data[0].embedding;
 
     const { data: chunks, error } = await supabaseAdmin.rpc("documents_search", {
-      query_user_id: session.user._id,
       query_embedding: embedding,
+      query_user_id: user_id,
+      query_file_names: file_names,
       similarity_threshold: 0.01,
       match_count: matches
     });
