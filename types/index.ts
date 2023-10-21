@@ -9,11 +9,12 @@ export enum OpenAIModel {
     content: string;
     length: number;
     tokens: number;
-    chunks: DocumentChunk[];
+    chunks: any[];
   };
   
   export type DocumentChunk = {
     page: number;
+    fileName: string;
     document_date: string;
     content: string;
     content_length: number;

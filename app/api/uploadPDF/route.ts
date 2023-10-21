@@ -40,58 +40,60 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // set token limit for ada 002 embeddings
+    // set token limit for ada 002 text embeddings
     let tokenLimit: number = 512;
 
     // create overlapping chunks of text where each chunk's token count <= tokenLimit
     // called after PDF text is scraped
     function createOverlappingChunks(
-      text: string,
+      pageChunks: string[],
       tokenLimit: number
     ): DocumentChunk[] {
       const chunks: DocumentChunk[] = [];
-      let startIdx = 0;
-      let endIdx = 0;
-      let tokenCount = 0;
+      pageChunks.forEach((page, i) => {
+        let startIdx = 0;
+        let endIdx = 0;
+        let tokenCount = 0;
+        while (startIdx < page.length) {
+          // Reset token count for new chunk
+          tokenCount = 0;
 
-      while (startIdx < text.length) {
-        // Reset token count for new chunk
-        tokenCount = 0;
+          // Find endIdx for the current chunk based on token count
+          while (endIdx < page.length && tokenCount <= tokenLimit) {
+            endIdx++;
+            const chunk = page.slice(startIdx, endIdx);
+            tokenCount = encode(chunk).length;
+          }
 
-        // Find endIdx for the current chunk based on token count
-        while (endIdx < text.length && tokenCount <= tokenLimit) {
-          endIdx++;
-          const chunk = text.slice(startIdx, endIdx);
-          tokenCount = encode(chunk).length;
+          // Adjust endIdx to ensure token count is within limit
+          if (tokenCount > tokenLimit) {
+            endIdx--;
+          }
+
+          // Add chunk to chunks array
+          const chunkContent = page.slice(startIdx, endIdx);
+          if (chunkContent) {
+            const chunk: DocumentChunk = {
+              page: i + 1, // Placeholder, will need logic to determine page number
+              document_date: formattedPdfDate,
+              fileName: title,
+              content: chunkContent,
+              content_length: chunkContent.length,
+              content_tokens: encode(chunkContent).length,
+              embedding: [], // Placeholder, will need logic to populate embedding
+            };
+            chunks.push(chunk);
+          }
+
+          // Overlap: Start the next chunk halfway through the current one
+          const increment = Math.max(1, Math.floor((endIdx - startIdx) / 2));
+          if (endIdx >= page.length) {
+            startIdx = page.length;
+          } else {
+            startIdx = startIdx + increment;
+          }
         }
-
-        // Adjust endIdx to ensure token count is within limit
-        if (tokenCount > tokenLimit) {
-          endIdx--;
-        }
-
-        // Add chunk to chunks array
-        const chunkContent = text.slice(startIdx, endIdx);
-        if (chunkContent) {
-          const chunk: DocumentChunk = {
-            page: 0, // Placeholder, will need logic to determine page number
-            document_date: "", // Placeholder, will need logic to determine document date
-            content: chunkContent,
-            content_length: chunkContent.length,
-            content_tokens: encode(chunkContent).length,
-            embedding: [], // Placeholder, will need logic to populate embedding
-          };
-          chunks.push(chunk);
-        }
-
-        // Overlap: Start the next chunk halfway through the current one
-        const increment = Math.max(1, Math.floor((endIdx - startIdx) / 2));
-        if (endIdx >= text.length) {
-          startIdx = text.length;
-        } else {
-          startIdx = startIdx + increment;
-        }
-      }
+      });
 
       return chunks;
     }
@@ -109,7 +111,9 @@ export async function POST(request: NextRequest) {
           chunks: [],
         };
         new PdfReader(null).parseBuffer(buffer, (err, item) => {
-          if (err) reject(err);
+          if (err) {
+            reject(err);
+          }
           // all items have been checked || pdf was blank
           else if (!item) {
             if (documentData.content.length) {
@@ -119,22 +123,23 @@ export async function POST(request: NextRequest) {
             }
             // resolve promise by returning document object
             resolve(documentData);
-          } else if (item.text)
+          } else if (item.text) {
             documentData.content = `${documentData.content} ${item.text}`;
+            documentData.chunks[documentData.chunks.length - 1] = `${
+              documentData.chunks[documentData.chunks.length - 1]
+            } ${item.text}`;
+          } else if (item.page) {
+            documentData.chunks[item.page - 1] = "";
+          }
         });
       });
     };
 
     // turn buffer blob into pdf text via pdfreader, parse necessary data within parseBuffer
     const scrapedData = await parsePdf(buffer);
-
     // after PDF text is parsed, map over it to create overlapping chunks of text for embeddings according to DocumentChunk type interface
-    scrapedData.chunks = createOverlappingChunks(
-      scrapedData.content,
-      tokenLimit
-    );
-    console.log("scrapedData", scrapedData);
-    return scrapedData;
+    const chunkedData = createOverlappingChunks(scrapedData.chunks, tokenLimit);
+    return chunkedData;
   }
 
   // parse and chunk each PDF file uploaded
