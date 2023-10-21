@@ -1,0 +1,20 @@
+[
+    {
+      page: 1,
+      document_date: '01/08/55773',
+      fileName: 'lecture-notes-example.pdf',
+      content: 'text... (shortened for example purposes)',
+      content_length: 1496,
+      content_tokens: 355,
+      embedding: []
+    },
+    {
+      page: 2,
+      document_date: '01/08/55773',
+      fileName: 'lecture-notes-example.pdf',
+      content: 'text...',
+      content_length: 1811,
+      content_tokens: 512,
+      embedding: []
+    },
+]

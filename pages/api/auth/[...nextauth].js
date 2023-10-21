@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
@@ -84,9 +84,8 @@ const authOptions = {
     },
   },
   adapter: MongoDBAdapter(clientPromise),
-
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   callbacks: {
     async signIn({ account, profile }) {

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { NextAuthOptions } from "next-auth";
 import { PdfReader } from "pdfreader";
 import { encode } from "gpt-tokenizer";
 import { Document, DocumentChunk } from "../../../types";
+import typeSafeAuthOptions from "../../../pages/api/auth/typeOptions";
+import { authOptions } from "../../../pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth/next";
+import { generateEmbeddings } from "../../../scripts/embed";
 
 // for pdf upload
 export const config = {
@@ -10,7 +15,19 @@ export const config = {
   },
 };
 
-export async function POST(request: NextRequest) {
+type UserSession =
+  | {
+      id: string;
+      username: string;
+    }
+  | undefined;
+
+export async function POST(request: NextRequest, response: NextResponse) {
+  const session: any = await getServerSession(typeSafeAuthOptions);
+  if (!session) {
+    return NextResponse.json({ success: false });
+  }
+  const userId: string = session.user.id;
   // get file(s) data from client
   const data = await request.formData();
   const files: File[] = data.getAll("files") as unknown as File[];
@@ -145,7 +162,10 @@ export async function POST(request: NextRequest) {
   // parse and chunk each PDF file uploaded
   try {
     const results = await Promise.all(files.map((file) => processFile(file)));
-    return NextResponse.json({ success: true, documents: results });
+    const flattenedResults = results.flat();
+    const embeddings = generateEmbeddings(userId, flattenedResults);
+    console.log("e",embeddings)
+    return NextResponse.json({ success: true, documentChunks: results });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ success: false });
