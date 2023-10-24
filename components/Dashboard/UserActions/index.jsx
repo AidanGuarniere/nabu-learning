@@ -3,10 +3,13 @@ import LogoutButton from "./LogoutButton";
 import DeleteAllChatsButton from "./DeleteAllChatsButton";
 import DarkModeToggle from "./DarkModeToggle";
 import UserProfileButton from "./UserProfileButton";
+import UploadPdfButton from "./UploadPdfButton";
 import UserProfileForm from "./UserProfileForm";
+import UploadPdfForm from "./UploadPdfForm";
 import { getUser } from "../../../utils/userUtils";
 
 const UserActions = ({ chats, session, setError, handleDeleteChats }) => {
+  const [showUploadPdfForm, setShowUploadPdfForm] = useState(false);
   const [showUserProfileForm, setShowUserProfileForm] = useState(false);
   const [userProfile, setUserProfile] = useState({
     name: "",
@@ -38,6 +41,16 @@ const UserActions = ({ chats, session, setError, handleDeleteChats }) => {
             <UserProfileButton
               showUserProfileForm={showUserProfileForm}
               setShowUserProfileForm={setShowUserProfileForm}
+            />
+            {showUploadPdfForm && (
+              <UploadPdfForm
+                showUploadPdfForm={showUploadPdfForm}
+                setShowUploadPdfForm={setShowUploadPdfForm}
+              />
+            )}
+            <UploadPdfButton
+              showUploadPdfForm={showUploadPdfForm}
+              setShowUploadPdfForm={setShowUploadPdfForm}
             />
             {/* <DarkModeToggle /> */}
             <LogoutButton />
