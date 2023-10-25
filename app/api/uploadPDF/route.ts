@@ -4,7 +4,6 @@ import { PdfReader } from "pdfreader";
 import { encode } from "gpt-tokenizer";
 import { Document, DocumentChunk } from "../../../types";
 import typeSafeAuthOptions from "../../../pages/api/auth/typeOptions";
-import { authOptions } from "../../../pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth/next";
 import { generateEmbeddings } from "../../../scripts/embed";
 
@@ -164,7 +163,6 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const results = await Promise.all(files.map((file) => processFile(file)));
     const flattenedResults = results.flat();
     const embeddings = generateEmbeddings(userId, flattenedResults);
-    console.log("e",embeddings)
     return NextResponse.json({ success: true, documentChunks: results });
   } catch (error) {
     console.error(error);

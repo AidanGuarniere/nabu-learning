@@ -7,7 +7,6 @@ import { Configuration, OpenAIApi } from "openai";
 loadEnvConfig("");
 
 export async function POST(request: NextRequest) {
-  console.log(request.body);
   const documentChunks: DocumentChunk[] = request.body;
   if (!Array.isArray(documentChunks)) {
     return NextResponse.json({ success: false, message: "Invalid input" });

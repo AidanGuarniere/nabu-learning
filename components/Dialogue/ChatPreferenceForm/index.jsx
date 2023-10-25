@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import ModelSelect from "./ModelSelect"; // Import the existing ModelSelect component
 import GenericInput from "../../UtilityComponents/GenericInput";
 import GenericSelect from "../../UtilityComponents/GenericSelect";
 import { createChat } from "../../../utils/chatUtils";
 import { getUser } from "../../../utils/userUtils";
+import { getDocumentsByUserId } from "../../../utils/documentUtils";
 import DescribeContextForm from "./DescribeContextForm";
 
 const ProgressBar = ({ stage }) => {
   return (
-    <div className="relative w-full">
+    <div className="mt-10 relative w-full">
       <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-300 w-full">
         <div
           style={{ width: `${((stage - 1) / 2) * 100}%` }}
@@ -70,7 +71,6 @@ const PreferencesForm = ({
     priorKnowledge: "",
     learningStyle: "",
     challenges: "",
-    // timeFrame: Frame,
     goal: "",
     tutorType: "",
     tutorName: "",
@@ -81,7 +81,28 @@ const PreferencesForm = ({
     flashcardDifficulty: "",
     flashcardCount: 10,
     additionalInfo: "",
+    references: [],
   });
+  const [documents, setDocuments] = useState([]);
+
+  useEffect(() => {
+    console.log(preferences.references)
+  }, [preferences])
+  
+
+  useEffect(() => {
+    const getDocumentsBasicInfo = async () => {
+      try {
+        const documentsData = await getDocumentsByUserId();
+        if (documentsData.length) {
+          setDocuments(documentsData);
+        }
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      }
+    };
+    getDocumentsBasicInfo();
+  }, [setDocuments]);
 
   const goToNextStage = () => {
     setStage((prevStage) => prevStage + 1);
@@ -357,12 +378,8 @@ const PreferencesForm = ({
     // streamGptResponse(gptRequestPayload)
   };
 
-  // useEffect(() => {
-  //   console.log(preferences);
-  // }, [preferences]);
-
   return (
-    <div className="w-full h-full ">
+    <div className="w-full h-full overflow-hidden ">
       {loading ? (
         "loading"
       ) : (
@@ -460,142 +477,175 @@ const PreferencesForm = ({
                   This information will be referenced by Nabu to provide a more
                   personalized interaction
                 </h2>
-                <div className="bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-0">
-                  {/* <h1 className="text-center text-gray-800 text-2xl font-light">
-                    Interaction Info
-                  </h1> */}
-                  <GenericInput
-                    label="Topic"
-                    value={preferences.topic}
-                    onChange={(value) => updatePreferences("topic", value)}
-                    placeholder={`What is the topic of ${
-                      preferences.mode === "Tutor Session"
-                        ? "this tutoring session"
-                        : preferences.mode === "Note Generation"
-                        ? "these notes"
-                        : "these flashcards"
-                    }?`}
-                    maxLength={500}
-                    height={"auto"}
-                  />
-                  <GenericInput
-                    label="Goal"
-                    value={preferences.goal}
-                    onChange={(value) => updatePreferences("goal", value)}
-                    placeholder={`What is the goal ${
-                      preferences.mode === "Tutor Session"
-                        ? "for this tutoring session"
-                        : preferences.mode === "Note Generation"
-                        ? "in writing these notes"
-                        : "in making these flashcards"
-                    }?`}
-                    maxLength={500}
-                    height={"auto"}
-                  />
+                <div className="gap-4 bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-0">
+                  <div className="h-full">
+                    <GenericInput
+                      label="Topic"
+                      value={preferences.topic}
+                      onChange={(value) => updatePreferences("topic", value)}
+                      placeholder={`What is the topic of ${
+                        preferences.mode === "Tutor Session"
+                          ? "this tutoring session"
+                          : preferences.mode === "Note Generation"
+                          ? "these notes"
+                          : "these flashcards"
+                      }?`}
+                      maxLength={500}
+                      height={"auto"}
+                    />
+                    {/* <GenericInput
+                      label="Goal"
+                      value={preferences.goal}
+                      onChange={(value) => updatePreferences("goal", value)}
+                      placeholder={`What is the goal ${
+                        preferences.mode === "Tutor Session"
+                          ? "for this tutoring session"
+                          : preferences.mode === "Note Generation"
+                          ? "in writing these notes"
+                          : "in making these flashcards"
+                      }?`}
+                      maxLength={500}
+                      height={"auto"}
+                    /> */}
 
-                  {preferences.mode === "Tutor Session" && (
-                    <>
-                      <div className="flex justify-between">
-                        <div className="w-1/2 pr-2">
-                          <GenericSelect
-                            label="Tutor Type"
-                            value={preferences.tutorType}
-                            onChange={(value) =>
-                              updatePreferences("tutorType", value)
-                            }
-                            options={["Traditional", "Socratic"]}
-                            height="3.5rem"
-                          />
+                    {preferences.mode === "Tutor Session" && (
+                      <>
+                        <div className="flex justify-between">
+                          <div className="w-1/2 pr-2">
+                            <GenericSelect
+                              label="Tutor Type"
+                              value={preferences.tutorType}
+                              onChange={(value) =>
+                                updatePreferences("tutorType", value)
+                              }
+                              options={["Traditional", "Socratic"]}
+                              height="3.5rem"
+                            />
+                          </div>
+                          <div className="w-1/2 pl-2">
+                            <GenericInput
+                              label="Tutor Name"
+                              value={preferences.tutorName}
+                              onChange={(value) =>
+                                updatePreferences("tutorName", value)
+                              }
+                              placeholder="What name would you like your tutor to have? E.g. Socrates"
+                              maxLength={50}
+                            />
+                          </div>
                         </div>
-                        <div className="w-1/2 pl-2">
-                          <GenericInput
-                            label="Tutor Name"
-                            value={preferences.tutorName}
-                            onChange={(value) =>
-                              updatePreferences("tutorName", value)
-                            }
-                            placeholder="What name would you like your tutor to have? E.g. Socrates"
-                            maxLength={50}
-                          />
+                        {/* <GenericInput
+                          label="Tutor Behavior"
+                          value={preferences.tutorBehavior}
+                          onChange={(value) =>
+                            updatePreferences("tutorBehavior", value)
+                          }
+                          placeholder="What kind of personality or behavior do you want your tutor to have?"
+                          maxLength={200}
+                        />{" "} */}
+                      </>
+                    )}
+                    {preferences.mode === "Note Generation" && (
+                      <>
+                        <div className="flex justify-between">
+                          <div className="w-1/2 pr-2">
+                            <GenericSelect
+                              label="Note Type"
+                              value={preferences.noteType}
+                              onChange={(value) =>
+                                updatePreferences("noteType", value)
+                              }
+                              options={["Summary", "Cornell", "Outline"]}
+                              height="3.5rem"
+                            />
+                          </div>
+                          <div className="w-1/2 pl-2">
+                            <GenericInput
+                              label="Note Title"
+                              value={preferences.noteTitle}
+                              onChange={(value) =>
+                                updatePreferences("noteTitle", value)
+                              }
+                              placeholder="Enter your note title here"
+                              maxLength={50}
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <GenericInput
-                        label="Tutor Behavior"
-                        value={preferences.tutorBehavior}
-                        onChange={(value) =>
-                          updatePreferences("tutorBehavior", value)
-                        }
-                        placeholder="What kind of personality or behavior do you want your tutor to have?"
-                        maxLength={200}
-                      />{" "}
-                    </>
-                  )}
-                  {preferences.mode === "Note Generation" && (
-                    <>
-                      <div className="flex justify-between">
-                        <div className="w-1/2 pr-2">
-                          <GenericSelect
-                            label="Note Type"
-                            value={preferences.noteType}
-                            onChange={(value) =>
-                              updatePreferences("noteType", value)
-                            }
-                            options={["Summary", "Cornell", "Outline"]}
-                            height="3.5rem"
-                          />
-                        </div>
-                        <div className="w-1/2 pl-2">
-                          <GenericInput
-                            label="Note Title"
-                            value={preferences.noteTitle}
-                            onChange={(value) =>
-                              updatePreferences("noteTitle", value)
-                            }
-                            placeholder="Enter your note title here"
-                            maxLength={50}
-                          />
-                        </div>
-                      </div>
-                      <GenericInput
-                        label="Writing Style"
-                        value={preferences.noteWritingStyle}
-                        onChange={(value) =>
-                          updatePreferences("noteWritingStyle", value)
-                        }
-                        placeholder="Specify your preferred writing style"
-                        maxLength={200}
-                      />{" "}
-                    </>
-                  )}
-                  {preferences.mode === "Flashcard Generation" && (
-                    <>
-                      <GenericSelect
-                        label="Flashcard Difficulty"
-                        value={preferences.flashcardDifficulty}
-                        onChange={(value) =>
-                          updatePreferences("flashcardDifficulty", value)
-                        }
-                        options={["Easy", "Medium", "Hard"]}
-                        height="3.5rem"
-                      />
-                    </>
-                  )}
-                  <GenericInput
-                    label="Additional Info"
-                    value={preferences.additionalInfo}
-                    onChange={(value) =>
-                      updatePreferences("additionalInfo", value)
-                    }
-                    placeholder={`Any other information you feel would be relevant to ${
-                      preferences.mode === "Tutor Session"
-                        ? "this tutoring session"
-                        : preferences.mode === "Note Generation"
-                        ? "these notes"
-                        : "these flashcards"
-                    }.`}
-                    maxLength={1500}
-                    height={"5rem"}
-                  />
+                        <GenericInput
+                          label="Writing Style"
+                          value={preferences.noteWritingStyle}
+                          onChange={(value) =>
+                            updatePreferences("noteWritingStyle", value)
+                          }
+                          placeholder="Specify your preferred writing style"
+                          maxLength={200}
+                        />{" "}
+                      </>
+                    )}
+                    {preferences.mode === "Flashcard Generation" && (
+                      <>
+                        <GenericSelect
+                          label="Flashcard Difficulty"
+                          value={preferences.flashcardDifficulty}
+                          onChange={(value) =>
+                            updatePreferences("flashcardDifficulty", value)
+                          }
+                          options={["Easy", "Medium", "Hard"]}
+                          height="3.5rem"
+                        />
+                      </>
+                    )}
+                    <GenericInput
+                      label="Additional Info"
+                      value={preferences.additionalInfo}
+                      onChange={(value) =>
+                        updatePreferences("additionalInfo", value)
+                      }
+                      placeholder={`Any other information you feel would be relevant to ${
+                        preferences.mode === "Tutor Session"
+                          ? "this tutoring session"
+                          : preferences.mode === "Note Generation"
+                          ? "these notes"
+                          : "these flashcards"
+                      }.`}
+                      maxLength={1500}
+                      height={"5rem"}
+                    />
+                    <label className="text-gray-700 text-lg md:text-xl font-light">
+                      Select References
+                    </label>
+                    <input
+                      placeholder="Search documents"
+                      className="w-full bg-gray-100 py-2 px-3 border border-gray-200 rounded-t-md text-gray-800 font-light focus:outline-none "
+                    />
+                    <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[20%] overflow-auto">
+                      {documents.length ? (
+                        documents.map((document, i) => (
+                          <li
+                            className="text-gray-800 font-light py-2 px-4 border-b border-gray-200 mx-2"
+                            key={`${document.file_name}${document.document_date}`}
+                          >
+                            <input
+                              type="checkbox"
+                              className="bg-white border border-gray-200"
+                              onChange={() => {
+                                updatePreferences("references", [
+                                  ...preferences.references,
+                                  document.file_name,
+                                ]);
+                              }}
+                            ></input>{" "}
+                            {document.file_name} Last Edit:
+                            {document.document_date}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-gray-800 font-light py-2 px-4 border-b border-gray-200 mx-2">
+                          no documents found
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
                 <div className="absolute left-0 bottom-24 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
                   <button
@@ -619,41 +669,6 @@ const PreferencesForm = ({
                 </div>
               </>
             )}
-            {/* {stage > 1 && (
-              <div className="h-1/6 flex justify-center items-start  w-full md:max-w-3xl mt-4 md:mt-0">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToPreviousStage();
-                  }}
-                  className="btn-secondary w-3/5 md:w-1/5 mx-2 p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
-                >
-                  back
-                </button>
-                {stage < 3 ? (
-                  <button
-                    className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
-                    // disabled={!checkIfStageComplete(stage, preferences)}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      goToNextStage();
-                    }} // Logic to check if all options are filled
-                  >
-                    next
-                  </button>
-                ) : (
-                  <button
-                    className="btn-primary w-3/5 md:w-1/5 mx-4 p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
-                    onClick={(e) => {
-                      const userChatPreferences = { ...preferences };
-                      handleChatPreferencesFormSubmit(e, userChatPreferences);
-                    }}
-                  >
-                    submit
-                  </button>
-                )}
-              </div>
-            )} */}
           </form>
         </div>
       )}

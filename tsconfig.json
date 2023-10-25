@@ -31,6 +31,7 @@
     "**/*.tsx",
     "pages/api/proxy/gpt.ts",
     "utils/openAIStream.ts",
+    "pages/api/documents/getDocumentsByUserId/index.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [

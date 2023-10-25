@@ -142,7 +142,7 @@ const Dialogue = ({
             <ChatScrollButton chatRef={chatRef} scrollHeight={scrollHeight} />
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center w-full h-full ">
+          <div className="flex flex-col items-center justify-center w-full h-full overflow-hidden">
             <ChatPreferenceForm
               session={session}
               setError={setError}

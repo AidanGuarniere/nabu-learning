@@ -68,7 +68,6 @@ const DescribeContextForm = ({
 
       try {
         const value = JSON.parse(stream.substring(valueStart, valueEnd).trim());
-        console.log(key, value);
         updatePreferences(key, value);
       } catch (e) {
         console.error(

@@ -9,7 +9,6 @@ function MessageList({ chats, selectedChat, session, setChats, currentlyStreamed
       (chat) => chat._id === selectedChat
     );
     const currentMessages = chats[selectedChatIndex]?.messages;
-    console.log("messages",currentMessages)
     if (messages !== currentMessages) {
       setMessages(currentMessages);
     }

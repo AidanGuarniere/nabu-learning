@@ -1,6 +1,7 @@
 import dbConnect from "../../../utils/dbConnect";
 import User from "../../../models/UserSchema";
 import { authOptions } from "../auth/[...nextauth]";
+import typeSafeAuthOptions from "../auth/typeOptions"
 import { getServerSession } from "next-auth/next";
 import rateLimiter from "../../../utils/rateLimiter";
 
@@ -49,7 +50,7 @@ export default async function handler(req, res) {
 
   await dbConnect();
 
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getServerSession(req, res, typeSafeAuthOptions);
   if (!session) {
     return res.status(401).json({ error: "Unauthorized" });
   }

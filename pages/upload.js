@@ -1,24 +1,15 @@
-import { UploadPDF } from "../components/Dashboard/UserActions/UploadPDFForm";
-export  default function UploadPage() {
-    const handleUpload = async (event) => {
-      event.preventDefault();
-  
-      const formData = new FormData();
-      formData.append("pdf", event.target.pdf.files[0]);
-  
-      const response = await fetch("/api/documents/uploadPDF", {
-        method: "POST",
-        body: formData,
-      });
-  
+import React from "react";
+
+const FetchButton = () => {
+  const fetchDocuments = async () => {
+    try {
+      const response = await fetch("/api/documents/getDocumentsByUserId");
       const data = await response.json();
-      console.log(data.text); // Here, you have the extracted text from the PDF.
-    };
-  
-    return (
-      <div>
-        <UploadPDF/>
-      </div>
-    );
-  }
-  
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+    }
+  };
+  return <button onClick={fetchDocuments}>Fetch Documents</button>;
+};
+
+export default FetchButton;
