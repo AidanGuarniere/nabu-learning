@@ -70,6 +70,9 @@ const chatPreferencesSchema = new mongoose.Schema({
     type: String,
     maxlength: 1500,
   },
+  references: {
+    type: [String],
+  },
 });
 
 function arrayLimit(val) {

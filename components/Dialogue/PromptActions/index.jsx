@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import PromptForm from "./PromptForm";
 import RegenResponseButton from "./RegenResponseButton";
 import streamGptResponse from "../../../utils/streamGptResponse";
+import streamGptResponseWithReferences from "../../../utils/streamGptResponseWithReferences";
+
 import SuggestedResponseButtons from "./SuggestedResponseButtons";
 
 function PromptActions({
@@ -33,31 +35,25 @@ function PromptActions({
   //   }
   // }, [selectedChat, chats]);
 
-  const createMessageData = async (e) => {
+  const createMessageData = async (e, selectedChatIndex, currentChat) => {
     let messageHistory = [];
     //  change to selectedChat.id
     let chatId = { ...selectedChat };
     //  change to selectedChat.model
-    //change to selectedChat
-    const selectedChatIndex = chats.findIndex(
-      (chat) => chat._id === selectedChat
-    );
-    //change to selectedChat
-    const updatedChat = { ...chats[selectedChatIndex] };
-    const messageModel = updatedChat.chatPreferences.selectedModel;
-    updatedChat.messages.push({
+    const messageModel = currentChat.chatPreferences.selectedModel;
+    currentChat.messages.push({
       role: "user",
       content: userText,
     });
     //  change to setSelectedChat(updatedChat), filter extra message properties
     let updatedChats = [...chats];
-    updatedChats[selectedChatIndex] = updatedChat;
+    updatedChats[selectedChatIndex] = currentChat;
     setChats(updatedChats);
-    messageHistory = updatedChat.messages.map((message) => ({
+    messageHistory = currentChat.messages.map((message) => ({
       role: message.role,
       content: message.content || JSON.stringify(message.function_call),
     }));
-    const chatFunctions = updatedChat.functions;
+    const chatFunctions = currentChat.functions;
     setUserText("");
     e.target.style.height = "auto";
     return { chatId, messageModel, messageHistory, chatFunctions };
@@ -75,8 +71,17 @@ function PromptActions({
       setStream("");
 
       try {
+        const selectedChatIndex = chats.findIndex(
+          (chat) => chat._id === selectedChat
+        );
+        //change to selectedChat
+        const currentChat = { ...chats[selectedChatIndex] };
         // get exisitng message history from chats state + submitted user prompt via usertext to create gpt request payload
-        const messageData = await createMessageData(e);
+        const messageData = await createMessageData(
+          e,
+          selectedChatIndex,
+          currentChat
+        );
         const gptRequestPayload = {
           model: messageData.messageModel,
           messages: messageData.messageHistory,
@@ -90,14 +95,27 @@ function PromptActions({
           };
         }
 
-        // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
-        streamGptResponse(
-          gptRequestPayload,
-          chats,
-          selectedChat,
-          currentlyStreamedChatRef,
-          setStream
-        );
+        if (currentChat.chatPreferences.references) {
+          console.log("searching")
+          const file_names = currentChat.chatPreferences.references;
+          streamGptResponseWithReferences(
+            file_names,
+            gptRequestPayload,
+            chats,
+            selectedChat,
+            currentlyStreamedChatRef,
+            setStream
+          );
+        } else {
+          // send gptRequestPayload to proxy/gpt endpoint which will submit it to the OpenAI chat completions api and stream the response back to the client
+          streamGptResponse(
+            gptRequestPayload,
+            chats,
+            selectedChat,
+            currentlyStreamedChatRef,
+            setStream
+          );
+        }
         setLoading(false);
       } catch (error) {
         setShowRegen(true);
@@ -161,7 +179,11 @@ function PromptActions({
           showRegen={showRegen}
         />
       )}
-      <SuggestedResponseButtons chats={chats} selectedChat={selectedChat} setUserText={setUserText} />
+      <SuggestedResponseButtons
+        chats={chats}
+        selectedChat={selectedChat}
+        setUserText={setUserText}
+      />
       <PromptForm
         userText={userText}
         setUserText={setUserText}
