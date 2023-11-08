@@ -97,7 +97,7 @@ const DescribeContextForm = ({
     setContext({});
     setContextStream("");
     setLoadingContext(true);
-    const messageModel = "gpt-4";
+    const messageModel = "gpt-4-1106-preview";
     const commitChatContext = {
       name: "commitChatContext",
       description:

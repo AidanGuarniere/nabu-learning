@@ -9,7 +9,7 @@ const chatPreferencesSchema = new mongoose.Schema({
   selectedModel: {
     type: String,
     required: true,
-    enum: ["gpt-3.5-turbo", "gpt-4"],
+    enum: ["gpt-3.5-turbo", "gpt-4", "gpt-4-1106-preview"],
   },
   topic: {
     type: String,

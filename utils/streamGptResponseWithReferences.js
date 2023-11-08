@@ -32,10 +32,13 @@ const streamGptResponseWithReferences = async (
     gptRequestPayload.messages[gptRequestPayload.messages.length - 1].content;
 
   const referencesData = JSON.parse(await getReferences(query, file_names));
-  console.log(referencesData)
-  const references = referencesData.map(reference => 
-    `file name: ${reference.filename}, page number: ${reference.page}, content: ${reference.content}`
-  ).join('\n');
+  console.log(referencesData);
+  const references = referencesData
+    .map(
+      (reference) =>
+        `file name: ${reference.filename}, page number: ${reference.page}, content: ${reference.content}`
+    )
+    .join("\n");
   // add references to user query
   const gptRequestPayloadWithReferences = { ...gptRequestPayload };
   gptRequestPayloadWithReferences.messages[
@@ -59,33 +62,14 @@ const streamGptResponseWithReferences = async (
   const data = response.body;
   // if stream is sending data
   if (data) {
-    let functionDeclared = false;
     const onParse = (event) => {
       // watch for data events
       if (event.type === "event") {
         const eventData = event.data;
         try {
-          // parse chunk to json {"text": "value"}
           const parsedChunk = JSON.parse(eventData.trim());
           if (parsedChunk.text) {
-            // if (currentlyStreamedChatRef.current.function_call) {
-            //     const chatFunction =
-            //         currentlyStreamedChatRef.current.function_call.name;
-            //     if (
-            //         chatFunction === "generateFlashcards" &&
-            //         !functionDeclared
-            //     ) {
-            //         setStream(
-            //             (prev) =>
-            //                 `"function_called":"${chatFunction}" ${prev}${parsedChunk.text}`
-            //         );
-            //         functionDeclared = true;
-            //     } else {
-            //         setStream((prev) => prev + parsedChunk.text);
-            //     }
-            // } else {
             setStream((prev) => `${prev}${parsedChunk.text}`);
-            // }
           }
         } catch (e) {
           console.error("Error parsing JSON: ", e);
@@ -126,13 +110,12 @@ const streamGptResponseWithReferences = async (
       // reset stream
       setStream("");
       // reset currentlyStreamedChatRef
-        currentlyStreamedChatRef.current = {};
-        // update chat document w new messages
-        const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
-        const chatId = chats[chatIndex]._id;
-        const chatMessages = chats[chatIndex].messages;
-        updateChat(chatId, { messages: chatMessages });
-      
+      currentlyStreamedChatRef.current = {};
+      // update chat document w new messages
+      const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
+      const chatId = chats[chatIndex]._id;
+      const chatMessages = chats[chatIndex].messages;
+      updateChat(chatId, { messages: chatMessages });
     }
   }
 };

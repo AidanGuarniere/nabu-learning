@@ -8,7 +8,9 @@ const ModelSelect = ({ value, onChange, }) => {
     axios
       .get("/api/proxy/models")
       .then((response) => {
+        console.log(response)
         response.data.models.data.forEach((model) => {
+          
           if (model.id === "gpt-4") {
             setHasGPT4(true);
           }
@@ -38,6 +40,9 @@ const ModelSelect = ({ value, onChange, }) => {
           <>
             <option key={"gpt-4"} value={"gpt-4"}>
               {"gpt-4"}
+            </option>
+            <option key={"gpt-4-1106-preview"} value={"gpt-4-1106-preview"}>
+              {"gpt-4-1106-preview"}
             </option>
             {/* <option key={"gpt-4-0314"} value={"gpt-4-0314"}>
               {"gpt-4-0314"}

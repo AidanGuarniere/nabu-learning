@@ -65,7 +65,7 @@ const PreferencesForm = ({
   // hold chat values to update chats state until db interaction good to go, then create new chat in db with currentlyStreamedChatRef value
   const [preferences, setPreferences] = useState({
     mode: "",
-    selectedModel: "gpt-3.5-turbo",
+    selectedModel: "gpt-4-1106-preview",
     topic: "",
     keyConcepts: [""],
     priorKnowledge: "",
@@ -86,11 +86,6 @@ const PreferencesForm = ({
   const [documents, setDocuments] = useState([]);
 
   useEffect(() => {
-    console.log(preferences.references)
-  }, [preferences])
-  
-
-  useEffect(() => {
     const getDocumentsBasicInfo = async () => {
       try {
         const documentsData = await getDocumentsByUserId();
@@ -102,7 +97,7 @@ const PreferencesForm = ({
       }
     };
     getDocumentsBasicInfo();
-  }, [setDocuments]);
+  }, []);
 
   const goToNextStage = () => {
     setStage((prevStage) => prevStage + 1);
