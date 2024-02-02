@@ -79,7 +79,7 @@ const UserProfileForm = ({
         />
         <div className="flex justify-center mt-4 space-x-4">
           <button
-            className="bg-red-700 hover:bg-red-600 h-10 py-2 px-4 rounded-md"
+            className="btn-secondary w-2/5 md:w-1/5 mx-2 p-1 md:p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
             onClick={() => {
               if (userProfileRef.current !== userProfile) {
                 setUserProfile(userProfileRef.current);
@@ -90,7 +90,7 @@ const UserProfileForm = ({
             Cancel
           </button>
           <button
-            className="bg-green-400 hover:bg-green-200 h-10 py-2 px-4 rounded-md"
+            className="btn-primary w-2/5 md:w-1/5 mx-4 p-1 md:p-2 rounded-md text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
             onClick={() => {
               submitUserProfileForm();
             }}

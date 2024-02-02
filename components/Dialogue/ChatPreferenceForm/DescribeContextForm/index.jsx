@@ -238,7 +238,7 @@ const DescribeContextForm = ({
   // }, [contextStream]);
 
   return (
-    <div className="stretch flex flex-col w-full h-full justify-start md:justify-center ">
+    <div className="stretch flex flex-col w-full h-full justify-start md:justify-center pt-10">
       <h1 className="text-sm md:text-xl font-light text-center text-gray-800 md:py-4 max-w-4xl">
         Write a few sentences about the topic you want to study, your learning
         goals, or anything else you think would be relevant to your tutoring

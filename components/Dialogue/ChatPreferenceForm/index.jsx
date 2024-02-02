@@ -9,7 +9,7 @@ import DescribeContextForm from "./DescribeContextForm";
 
 const ProgressBar = ({ stage }) => {
   return (
-    <div className="mt-10 relative w-full">
+    <div className="mt-10 fixed top-10 md:top-0 w-[90%] md:w-[75vw] px bg-white">
       <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-300 w-full">
         <div
           style={{ width: `${((stage - 1) / 2) * 100}%` }}
@@ -84,10 +84,6 @@ const PreferencesForm = ({
     references: [],
   });
   const [documents, setDocuments] = useState([]);
-
-  useEffect(() => {
-    console.log(preferences.references)
-  }, [preferences])
   
 
   useEffect(() => {
@@ -379,7 +375,7 @@ const PreferencesForm = ({
   };
 
   return (
-    <div className="w-full h-full overflow-hidden ">
+    <div className="w-full h-full ">
       {loading ? (
         "loading"
       ) : (
@@ -398,21 +394,21 @@ const PreferencesForm = ({
               </h1>
             </div>
           ) : stage === 3 ? (
-            <div className="absolute top-[3.5rem] md:top-16 md:mb-2 py-2 px-4">
+            <div className="absolute top-[3.5rem] md:top-16 md:mb-2 py-2 px-4 w-full">
               <h1 className="text-center text-gray-700 font-light text-2xl md:text-5xl">
                 confirm your preferences
               </h1>
             </div>
           ) : null}
-          <form className="w-full h-full md:h-full rounded-xl bg-white md:h-full flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg pt-10 md:pt-16">
+          <form className="w-full h-full rounded-xl bg-white flex flex-col justify-start items-center max-w-5xl mx-auto rounded-lg pt-10 md:pt-16">
             {stage === 1 && (
-              <div className="h-full flex flex-col md:justify-center items-center">
+              <div className="h-full flex flex-col md:justify-center items-center pt-[20%] md:pt-0">
                 <ModelSelect
                   onChange={(value) =>
                     updatePreferences("selectedModel", value)
                   }
                 />
-                <div className="h-2/3 md:h-auto grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6 w-full md:max-w-5xl">
+                <div className="h-2/3 md:h-auto grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 w-full md:max-w-5xl">
                   {/* Note Generation Selection */}
                   <div
                     className="flex flex-col items-center h-full p-2 md:p-8 bg-gray-100 border rounded-lg cursor-pointer shadow-sm md:hover:shadow-xl md:transform md:transition-all md:duration-500 md:hover:scale-105"
@@ -472,13 +468,13 @@ const PreferencesForm = ({
               </div>
             )}
             {stage === 3 && (
-              <>
-                <h2 className="p-0 md:pt-4 text-center text-gray-800 font-light text-xs md:text-lg">
+              <div className="w-full flex justify-center ">
+                <h2 className="fixed top-[17%] md:top-[19%] p-0 md:pt-4 text-center text-gray-800 font-light text-xs md:text-lg">
                   This information will be referenced by Nabu to provide a more
                   personalized interaction
                 </h2>
-                <div className="gap-4 bg-white rounded-md md:px-4 h-[72.5%] md:h-full overflow-y-auto md:overflow-hidden w-full md:pt-0">
-                  <div className="h-full">
+                <div className="fixed top-[22.5%] md:top-[30%] gap-4 bg-white rounded-md md:px-4 h-[60%] md:h-[50%] overflow-y-auto w-[72.5vw]">
+                  <div className="h-full pb-[10%]">
                     <GenericInput
                       label="Topic"
                       value={preferences.topic}
@@ -491,23 +487,8 @@ const PreferencesForm = ({
                           : "these flashcards"
                       }?`}
                       maxLength={500}
-                      height={"auto"}
+                      height={"3.5rem"}
                     />
-                    {/* <GenericInput
-                      label="Goal"
-                      value={preferences.goal}
-                      onChange={(value) => updatePreferences("goal", value)}
-                      placeholder={`What is the goal ${
-                        preferences.mode === "Tutor Session"
-                          ? "for this tutoring session"
-                          : preferences.mode === "Note Generation"
-                          ? "in writing these notes"
-                          : "in making these flashcards"
-                      }?`}
-                      maxLength={500}
-                      height={"auto"}
-                    /> */}
-
                     {preferences.mode === "Tutor Session" && (
                       <>
                         <div className="flex justify-between">
@@ -618,7 +599,7 @@ const PreferencesForm = ({
                       placeholder="Search documents"
                       className="w-full bg-gray-100 py-2 px-3 border border-gray-200 rounded-t-md text-gray-800 font-light focus:outline-none "
                     />
-                    <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[20%] overflow-auto">
+                    <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[40%] overflow-auto">
                       {documents.length ? (
                         documents.map((document, i) => (
                           <li
@@ -645,6 +626,7 @@ const PreferencesForm = ({
                         </li>
                       )}
                     </ul>
+                    <div className="h-[5%]"></div>
                   </div>
                 </div>
                 <div className="absolute left-0 bottom-24 md:bottom-[2.5rem] md:pl-[260px] flex justify-center items-start w-full">
@@ -667,7 +649,7 @@ const PreferencesForm = ({
                     submit
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </form>
         </div>

@@ -162,7 +162,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
   try {
     const results = await Promise.all(files.map((file) => processFile(file)));
     const flattenedResults = results.flat();
-    const embeddings = generateEmbeddings(userId, flattenedResults);
+    const embeddings = await generateEmbeddings(userId, flattenedResults);
     return NextResponse.json({ success: true, documentChunks: results });
   } catch (error) {
     console.error(error);

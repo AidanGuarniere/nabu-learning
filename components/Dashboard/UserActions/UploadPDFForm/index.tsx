@@ -37,22 +37,23 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
       });
       // handle the error
       if (!res.ok) throw new Error(await res.text());
-      if (res.ok) {
-        const getDocumentsBasicInfo = async () => {
-          try {
-            const documentsData = await getDocumentsByUserId();
-            if (documentsData.length) {
-              setDocuments(documentsData);
-            }
-          } catch (error) {
-            console.error("Error fetching documents:", error);
-          }
-        };
-        getDocumentsBasicInfo();
-      }
     } catch (e: any) {
       // Handle errors here
       console.error(e);
+    } finally {
+      console.log("hey")
+      const getDocumentsBasicInfo = async () => {
+        try {
+          const documentsData = await getDocumentsByUserId();
+          console.log(documentsData)
+          if (documentsData.length) {
+            setDocuments(documentsData);
+          }
+        } catch (error) {
+          console.error("Error fetching documents:", error);
+        }
+      };
+      getDocumentsBasicInfo();
     }
   };
   const removeFile = (indexToRemove: number) => {
@@ -89,7 +90,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
   }, [setShowUploadPdfForm]);
 
   return (
-    <div className="w-[100vw] md:w-auto fixed inset-0 bg-opacity-50 backdrop-blur-md flex justify-center items-center md:ml-[260px]">
+    <div className="w-[100vw] h-[100vh] md:w-auto fixed inset-0 bg-opacity-50 backdrop-blur-md flex justify-center items-center md:ml-[260px]">
       <div
         ref={formRef}
         className="bg-white border border-gray-800 rounded-md p-6 z-10 w-4/5 h-4/5"
@@ -99,10 +100,10 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
           Documents
         </h1>
         <h2 className="px-2 py-3 text-center text-gray-800 font-light">
-          Upload PDF files to reference their contents in future interactions
+          Upload PDF files to reference their contents in future interactions <br></br>*uploads may take a moment. files will appear in the Existing Uploads list upon successful upload. Will improve UI later 
         </h2>
-        <div>
-          <form onSubmit={onSubmit}>
+        <div className="h-full">
+          <form className="h-full" onSubmit={onSubmit}>
             <div className="flex justify-between items-center">
               <label
                 htmlFor="fileInput"
@@ -180,7 +181,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
             <h2 className="px-2 py-3 text-center text-gray-800 font-light">
               Existing Uploads{" "}
             </h2>
-            <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[20%] overflow-auto">
+            <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[35%] md:max-h-[30%] overflow-auto">
               {documents.length ? (
                 documents.map((document: any, i) => (
                   <li
@@ -197,7 +198,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
               )}
             </ul>
 
-            <div className="absolute left-0 bottom-24 md:bottom-[7rem] flex justify-center items-start w-full">
+            <div className="absolute left-0 bottom-24 md:bottom-[7rem] flex justify-center items-start w-full px-12 pb-4 md:p-0">
               <button
                 className="btn-secondary w-2/5 md:w-1/5 mx-2 p-1 md:p-2 rounded-md text-primary text-gray-800 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-colors duration-200"
                 onClick={() => {
