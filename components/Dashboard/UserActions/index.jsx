@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LogoutButton from "./LogoutButton";
 import DeleteAllChatsButton from "./DeleteAllChatsButton";
-import DarkModeToggle from "./DarkModeToggle";
 import UserProfileButton from "./UserProfileButton";
 import UploadPdfButton from "./UploadPdfButton";
 import UserProfileForm from "./UserProfileForm";

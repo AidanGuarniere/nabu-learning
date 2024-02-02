@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { NextAuthOptions } from "next-auth";
 import { PdfReader } from "pdfreader";
 import { encode } from "gpt-tokenizer";
 import { Document, DocumentChunk } from "../../../types";
