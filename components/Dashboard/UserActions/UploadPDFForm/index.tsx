@@ -41,7 +41,6 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
       // Handle errors here
       console.error(e);
     } finally {
-      console.log("hey")
       const getDocumentsBasicInfo = async () => {
         try {
           const documentsData = await getDocumentsByUserId();
@@ -54,6 +53,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
         }
       };
       getDocumentsBasicInfo();
+      setFiles([])
     }
   };
   const removeFile = (indexToRemove: number) => {

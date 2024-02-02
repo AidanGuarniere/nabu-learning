@@ -8,11 +8,11 @@ import { getServerSession } from "next-auth/next";
 import { generateEmbeddings } from "../../../scripts/embed";
 
 // for pdf upload
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 type UserSession =
   | {
