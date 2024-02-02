@@ -53,9 +53,7 @@ export const generateEmbeddings = async (
 
     if (error) {
       console.log("error", error);
-    } else {
-      console.log("saved", i);
-    }
+    } 
 
     await new Promise((resolve) => setTimeout(resolve, 200));
   }

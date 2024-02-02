@@ -32,7 +32,6 @@ const streamGptResponseWithReferences = async (
     gptRequestPayload.messages[gptRequestPayload.messages.length - 1].content;
 
   const referencesData = JSON.parse(await getReferences(query, file_names));
-  console.log(referencesData)
   const references = referencesData.map(reference => 
     `file name: ${reference.filename}, page number: ${reference.page}, content: ${reference.content}`
   ).join('\n');

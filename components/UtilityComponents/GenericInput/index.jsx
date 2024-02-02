@@ -19,13 +19,17 @@ const GenericInput = ({
     }
   };
   useEffect(() => {
-    if(value){
-    setCharacterCount(value.length)};
-  }, []);
+    if (value && characterCount !== value.length) {
+      setCharacterCount(value.length);
+    }
+  }, [value]);
 
   return (
     <div className="mb-[-1rem] md:m-0 p-0">
-      <label className="text-gray-700 text-lg md:text-xl font-light" htmlFor={label}>
+      <label
+        className="text-gray-700 text-lg md:text-xl font-light"
+        htmlFor={label}
+      >
         {label}
       </label>
       <textarea

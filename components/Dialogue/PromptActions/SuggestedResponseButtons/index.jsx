@@ -6,37 +6,6 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
   const [suggestionStream, setSuggestionStream] = useState("");
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-  let lastProcessedPosition = 0;
-  let suggestedUserResponsesOutput = [];
-
-  const processSuggestedResponses = (stream) => {
-    if (stream.length <= lastProcessedPosition) return;
-
-    let currentPosition = lastProcessedPosition;
-
-    if (stream.includes('"suggestedUserResponses": [', currentPosition)) {
-      currentPosition =
-        stream.indexOf('"suggestedUserResponses": [', currentPosition) + 26;
-
-      while (currentPosition < stream.length) {
-        let stringStart = stream.indexOf('"', currentPosition);
-        let stringEnd = stream.indexOf('"', stringStart + 1);
-
-        if (stringStart === -1 || stringEnd === -1) {
-          break;
-        }
-
-        let suggestion = stream.substring(stringStart + 1, stringEnd);
-        suggestedUserResponsesOutput.push(suggestion);
-        setSuggestedResponses(suggestedUserResponsesOutput);
-
-        currentPosition = stringEnd + 1;
-      }
-    }
-
-    lastProcessedPosition = currentPosition;
-  };
-
   useEffect(() => {
     setSuggestionStream("");
     setSuggestedResponses([]);
@@ -50,8 +19,38 @@ const SuggestedResponseButtons = ({ chats, selectedChat, setUserText }) => {
   ]);
 
   useEffect(() => {
+    let lastProcessedPosition = 0;
+    let suggestedUserResponsesOutput = [];
+
+    const processSuggestedResponses = (stream) => {
+      if (stream.length <= lastProcessedPosition) return;
+
+      let currentPosition = lastProcessedPosition;
+
+      if (stream.includes('"suggestedUserResponses": [', currentPosition)) {
+        currentPosition =
+          stream.indexOf('"suggestedUserResponses": [', currentPosition) + 26;
+
+        while (currentPosition < stream.length) {
+          let stringStart = stream.indexOf('"', currentPosition);
+          let stringEnd = stream.indexOf('"', stringStart + 1);
+
+          if (stringStart === -1 || stringEnd === -1) {
+            break;
+          }
+
+          let suggestion = stream.substring(stringStart + 1, stringEnd);
+          suggestedUserResponsesOutput.push(suggestion);
+          setSuggestedResponses(suggestedUserResponsesOutput);
+
+          currentPosition = stringEnd + 1;
+        }
+      }
+
+      lastProcessedPosition = currentPosition;
+    };
     processSuggestedResponses(suggestionStream);
-  }, [suggestionStream, processSuggestedResponses]);
+  }, [suggestionStream]);
 
   const suggestResponses = async (e) => {
     setSuggestedResponses([]);

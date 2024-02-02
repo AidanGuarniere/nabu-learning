@@ -96,7 +96,6 @@ function PromptActions({
         }
 
         if (currentChat.chatPreferences.references) {
-          console.log("searching")
           const file_names = currentChat.chatPreferences.references;
           streamGptResponseWithReferences(
             file_names,

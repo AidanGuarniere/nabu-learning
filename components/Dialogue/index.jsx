@@ -18,6 +18,7 @@ const Dialogue = ({
   selectedChatLoading,
 }) => {
   const chatRef = useRef(null);
+  const chatsRef = useRef(null);
   const [scrollHeight, setScrollHeight] = useState();
   const [prevSelectedChat, setPrevSelectedChat] = useState(null);
   const [prevMessageCount, setPrevMessageCount] = useState(0);
@@ -31,6 +32,9 @@ const Dialogue = ({
   useLayoutEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+    if (chatsRef.current !== chats) {
+      chatsRef.current = chats;
     }
   }, [chats]);
 
@@ -75,7 +79,7 @@ const Dialogue = ({
       const gptRequestPayload = currentlyStreamedChatRef.current;
       streamGptResponse(
         gptRequestPayload,
-        chats,
+        chatsRef,
         selectedChat,
         currentlyStreamedChatRef,
         setStream

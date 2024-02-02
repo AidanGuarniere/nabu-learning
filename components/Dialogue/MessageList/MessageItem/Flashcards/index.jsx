@@ -65,7 +65,7 @@ const Flashcards = ({ flashcardData }) => {
         }
       }
     }
-  }, [flashcardData]);
+  }, [bufferCount, flashcardData]);
 
   useEffect(() => {
     // This will run every time bufferCount updates

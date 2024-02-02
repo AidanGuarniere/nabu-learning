@@ -44,7 +44,6 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
       const getDocumentsBasicInfo = async () => {
         try {
           const documentsData = await getDocumentsByUserId();
-          console.log(documentsData);
           if (documentsData.length) {
             setDocuments(documentsData);
           }

@@ -37,8 +37,10 @@ const UserProfileForm = ({
   };
 
   useEffect(() => {
-    userProfileRef.current = userProfile;
-  }, []);
+    if (userProfileRef.current !== userProfile) {
+      userProfileRef.current = userProfile;
+    }
+  }, [userProfile]);
 
   const submitUserProfileForm = () => {
     const userProfilePayload = { ...userProfile };
