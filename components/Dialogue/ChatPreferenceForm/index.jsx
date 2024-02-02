@@ -84,7 +84,6 @@ const PreferencesForm = ({
     references: [],
   });
   const [documents, setDocuments] = useState([]);
-  
 
   useEffect(() => {
     const getDocumentsBasicInfo = async () => {
@@ -287,7 +286,10 @@ const PreferencesForm = ({
           userChatPreferences.noteType
         } format, titled "${userChatPreferences.noteTitle}", and written in a ${
         userChatPreferences.noteTone
-      } tone. Feel free to include bullet points, equations, or code snippets in your answers if relevant. 
+      } tone. ${
+        userChatPreferences.noteType !== "Cornell" &&
+        `Feel free to include bullet points, equations, or code snippets in your answers if relevant.`
+      } 
         The specific goal is to ${
           userChatPreferences.goal
         }, and the information provided must directly relate to this objective.
@@ -311,9 +313,6 @@ const PreferencesForm = ({
       }.
       Each flashcard should adhere to the selected difficulty level of ${
         userChatPreferences.flashcardDifficulty
-      }.
-      The specific goal in creating these flashcards is to ${
-        userChatPreferences.goal
       }.
       ${
         name &&

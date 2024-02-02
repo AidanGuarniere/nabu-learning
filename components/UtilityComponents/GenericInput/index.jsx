@@ -22,7 +22,7 @@ const GenericInput = ({
     if (value && characterCount !== value.length) {
       setCharacterCount(value.length);
     }
-  }, [value]);
+  }, [value, characterCount]);
 
   return (
     <div className="mb-[-1rem] md:m-0 p-0">

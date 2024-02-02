@@ -36,30 +36,30 @@ const DescribeContextForm = ({
     let lastProcessedPosition = 0;
     const processContext = (stream) => {
       if (stream.length <= lastProcessedPosition) return;
-  
+
       let currentPosition = lastProcessedPosition;
       let insideString = false;
-  
+
       while (currentPosition < stream.length) {
         let keyStart = stream.indexOf('"', currentPosition);
         if (keyStart === -1) break;
-  
+
         let keyEnd = stream.indexOf('"', keyStart + 1);
         if (keyEnd === -1) {
           currentPosition = keyStart + 1;
           break;
         }
-  
+
         let key = stream.substring(keyStart + 1, keyEnd);
-  
+
         let valueStart = stream.indexOf(":", keyEnd) + 1;
         if (valueStart === 0) {
           currentPosition = keyEnd + 1;
           break;
         }
-  
+
         let valueEnd = valueStart;
-  
+
         while (valueEnd < stream.length) {
           const currentChar = stream.charAt(valueEnd);
           if (currentChar === '"') insideString = !insideString;
@@ -67,28 +67,32 @@ const DescribeContextForm = ({
             break;
           valueEnd++;
         }
-  
+
         if (valueEnd >= stream.length) {
           currentPosition = valueEnd;
           break;
         }
-  
+
         try {
-          const value = JSON.parse(stream.substring(valueStart, valueEnd).trim());
+          const value = JSON.parse(
+            stream.substring(valueStart, valueEnd).trim()
+          );
           updatePreferences(key, value);
         } catch (e) {
           console.error(
             "Invalid JSON encountered. Skipping this key-value pair."
           );
         }
-  
+
         currentPosition = valueEnd + 1;
       }
-  
+
       lastProcessedPosition = currentPosition;
     };
-    processContext(contextStream);
-  }, [contextStream]);
+    if (contextStream) {
+      processContext(contextStream);
+    }
+  }, [contextStream, updatePreferences]);
 
   const submitContext = async (e) => {
     e.preventDefault;

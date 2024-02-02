@@ -96,9 +96,15 @@ const streamGptResponse = async (
       if (!utilityFunction) {
         currentlyStreamedChatRef.current = {};
         // update chat document w new messages
-        const chatIndex = chats.findIndex((chat) => chat._id === selectedChat);
-        const chatId = chats[chatIndex]._id;
-        const chatMessages = chats[chatIndex].messages;
+        const chatIndex = chats.current
+          ? chats.current.findIndex((chat) => chat._id === selectedChat)
+          : chats.findIndex((chat) => chat._id === selectedChat);
+        const chatId = chats.current
+          ? chats.current[chatIndex]._id
+          : chats[chatIndex]._id;
+        const chatMessages = chats.current
+          ? chats.current[chatIndex].messages
+          : chats[chatIndex].messages;
         updateChat(chatId, { messages: chatMessages });
       }
     }
