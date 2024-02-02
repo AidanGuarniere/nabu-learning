@@ -1,11 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import GenericInput from "../../../UtilityComponents/GenericInput";
-import { updateUser } from "../../../../utils/userUtils";
+import { getDocumentsByUserId } from "../../../../utils/documentUtils";
 
 const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
   const formRef: any = useRef();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [documents, setDocuments] = useState([]);
+
+  useEffect(() => {
+    const getDocumentsBasicInfo = async () => {
+      try {
+        const documentsData = await getDocumentsByUserId();
+        if (documentsData.length) {
+          setDocuments(documentsData);
+        }
+      } catch (error) {
+        console.error("Error fetching documents:", error);
+      }
+    };
+    getDocumentsBasicInfo();
+  }, [setDocuments]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,11 +37,22 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
       });
       // handle the error
       if (!res.ok) throw new Error(await res.text());
+      if (res.ok) {
+        const getDocumentsBasicInfo = async () => {
+          try {
+            const documentsData = await getDocumentsByUserId();
+            if (documentsData.length) {
+              setDocuments(documentsData);
+            }
+          } catch (error) {
+            console.error("Error fetching documents:", error);
+          }
+        };
+        getDocumentsBasicInfo();
+      }
     } catch (e: any) {
       // Handle errors here
       console.error(e);
-    } finally {
-      setShowUploadPdfForm(false);
     }
   };
   const removeFile = (indexToRemove: number) => {
@@ -152,6 +177,25 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
                 )}
               </ul>
             )}
+            <h2 className="px-2 py-3 text-center text-gray-800 font-light">
+              Existing Uploads{" "}
+            </h2>
+            <ul className="bg-white border-x border-b border-gray-200 rounded-b-md min-h-[3rem] max-h-[20%] overflow-auto">
+              {documents.length ? (
+                documents.map((document: any, i) => (
+                  <li
+                    className="text-gray-800 font-light py-2 px-4 border-b border-gray-200 mx-2"
+                    key={`${document.file_name}${document.document_date}`}
+                  >
+                    {document.file_name}
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-800 font-light py-2 px-4 border-b border-gray-200 mx-2">
+                  no documents found
+                </li>
+              )}
+            </ul>
 
             <div className="absolute left-0 bottom-24 md:bottom-[7rem] flex justify-center items-start w-full">
               <button
