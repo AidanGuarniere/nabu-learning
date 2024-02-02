@@ -5,7 +5,7 @@ import DarkModeToggle from "./DarkModeToggle";
 import UserProfileButton from "./UserProfileButton";
 import UploadPdfButton from "./UploadPdfButton";
 import UserProfileForm from "./UserProfileForm";
-import UploadPdfForm from "./UploadPdfForm";
+import UploadPdfForm from "./UploadPDFForm";
 import { getUser } from "../../../utils/userUtils";
 
 const UserActions = ({ chats, session, setError, handleDeleteChats }) => {
@@ -27,7 +27,7 @@ const UserActions = ({ chats, session, setError, handleDeleteChats }) => {
 
   return (
     <div className="w-full z-10 p-[.55rem] bg-gray-900">
-      <div className="border-t border-white/20 w-full pt-3 ">
+      <div className="border-t border-white/20 w-full pt-3">
         {session && (
           <>
             {showUserProfileForm && (

@@ -44,7 +44,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
       const getDocumentsBasicInfo = async () => {
         try {
           const documentsData = await getDocumentsByUserId();
-          console.log(documentsData)
+          console.log(documentsData);
           if (documentsData.length) {
             setDocuments(documentsData);
           }
@@ -53,7 +53,7 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
         }
       };
       getDocumentsBasicInfo();
-      setFiles([])
+      setFiles([]);
     }
   };
   const removeFile = (indexToRemove: number) => {
@@ -100,7 +100,9 @@ const UploadPdfForm = ({ showUploadPdfForm, setShowUploadPdfForm }) => {
           Documents
         </h1>
         <h2 className="px-2 py-3 text-center text-gray-800 font-light">
-          Upload PDF files to reference their contents in future interactions <br></br>*uploads may take a moment. files will appear in the Existing Uploads list upon successful upload. Will improve UI later 
+          Upload PDF files to reference their contents in future interactions{" "}
+          <br></br>*uploads may take a moment. files will appear in the Existing
+          Uploads list upon successful upload. Will improve UI later
         </h2>
         <div className="h-full">
           <form className="h-full" onSubmit={onSubmit}>
