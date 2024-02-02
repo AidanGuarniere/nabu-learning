@@ -2,7 +2,6 @@ import {  DocumentChunk } from "../types";
 import { loadEnvConfig } from "@next/env";
 import { createClient } from "@supabase/supabase-js";
 import { Configuration, OpenAIApi } from "openai";
-import { useImperativeHandle } from "react";
 
 loadEnvConfig("");
 

@@ -1,6 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from "next-auth/next"; // Adjusted the import
-// import { createClient } from "@supabase/supabase-js";
 import { authOptions } from '../auth/[...nextauth]';
 
 // const supabaseAdmin = createClient(
