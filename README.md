@@ -1,6 +1,8 @@
 # nabu
 
-nabu is an open-source project designed to help people learn with AI
+nabu is an open-source learning tool I built to make studying easier.
+
+(these docs are out of date! missing Supabase-related instructions. if you're interested in utilizing this code, feel free to reach out and I'll help you get started with it.)
 
 ## Table of Contents
 
@@ -31,6 +33,8 @@ nabu is an open-source project designed to help people learn with AI
 - [Mongoose](https://mongoosejs.com/) - An Object Data Modeling (ODM) library for MongoDB and Node.js
 - [Redis](https://redis.io/) - An in-memory data structure store, used as a database, cache, and message broker
 - [Crypto](https://nodejs.org/api/crypto.html) - A built-in Node.js module for handling cryptographic operations
+- [Supabase](https://supabase.com/) - An open source Firebase alternative
+
 
 ## Setup 
 
@@ -44,11 +48,9 @@ We use MongoDB for storing user information and session data. You can set up a M
 
 Once you have a running MongoDB instance, you'll need to obtain the connection string. If you're using MongoDB Atlas, you can find the connection string in your cluster's connection settings.
 
-Add the MongoDB connection string to your `.env.local` file like so:
-
 ### Redis Setup
 
-We use Redis for rate limiting in our API routes. You can set up a Redis instance in several ways, including:
+We use Redis for rate limiting in our API routes (currently disabled). You can set up a Redis instance in several ways, including:
 
 - Download and install Redis directly on your local machine (not recommended for Windows users).
 - Use a Docker container to run Redis.
@@ -58,18 +60,12 @@ Once you have a running Redis instance, you'll need to obtain the connection str
 
 ## Installation
 
-1. Clone this repository:
-
-   ```
-   git clone https://github.com/your-username/nabu.git
-   ```
-
-   or get started using GitHub's template feature
+1. Clone or fork this repository
 
 2. Navigate to the project directory:
 
    ```
-   cd nabu
+   cd your_path/nabu-learning
    ```
 
 3. Install the dependencies:
@@ -90,11 +86,10 @@ Once you have a running Redis instance, you'll need to obtain the connection str
    NEXTAUTH_URL=http://localhost:3000
    MONGODB_URI=yourURI
    NEXTAUTH_SECRET=yourSecret
-   ENCRYPTION_KEY: a 32-digit hexadecimal string for AES-128 encryption (for users' API key)
    REDIS_URL=yourRedisConnectionString
    ```
 
-Replace `http://localhost:3000` with whatever port your application is running on, `yourURI` with your MongoDB connection string, `yourSecret` with a secure random string, `your32HexDigitString` with a 32-digit hexadecimal string for AES-128 encryption, and `yourRedisConnectionString` with your Redis connection string.
+Replace `http://localhost:3000` with whatever port or URL your application is running on, `yourURI` with your MongoDB connection string, `yourSecret` with a secure random string, and `yourRedisConnectionString` with your Redis connection string.
 
 ...
 
@@ -154,26 +149,15 @@ To deploy your nabu Clone to Vercel, follow these steps:
    NEXTAUTH_URL: https://your-vercel-url.vercel.app
    MONGODB_URI: yourURI
    NEXTAUTH_SECRET: yourSecret
-   ENCRYPTION_KEY: a 32-digit hexadecimal string for AES-128 encryption (for users' API key)
    REDIS_URL=yourRedisConnectionString
    ```
 
-Replace `http://localhost:3000` with whatever port your application is running on, `yourURI` with your MongoDB connection string, `yourSecret` with a secure random string, `your32HexDigitString` with a 32-digit hexadecimal string for AES-128 encryption, and `yourRedisConnectionString` with your Redis connection string.
+Replace `http://localhost:3000` with whatever port your application is running on, `yourURI` with your MongoDB connection string, `yourSecret` with a secure random string, and `yourRedisConnectionString` with your Redis connection string.
 
 7. Once the deployment is complete, Vercel will provide you with a live URL to access your nabu Clone.
 
 Remember that every time you make changes to your nabu Clone and want to deploy the updated version, you can simply run `vercel --prod` from the project directory.
 
-## Contributing
-
-We welcome contributions! To contribute, please follow these steps:
-
-1. Fork this repository
-2. Clone your fork to your local machine: `git clone https://github.com/your-username/nabu.git`
-3. Create your feature branch: `git checkout -b feature/my-new-feature` or `git checkout -b fix/my-new-fix`
-4. Commit your changes: `git commit -am 'Add some feature'`
-5. Push to the branch: `git push origin feature/my-new-feature`
-6. Submit a pull request
 
 ## License
 
